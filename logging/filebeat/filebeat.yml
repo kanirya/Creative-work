@@ -1,0 +1,58 @@
+filebeat.inputs:
+  # Docker container logs
+  - type: container
+    enabled: true
+    paths:
+      - '/var/lib/docker/containers/*/*.log'
+    
+    # Processors to enrich logs
+    processors:
+      - add_docker_metadata:
+          host: "unix:///var/run/docker.sock"
+      
+      - decode_json_fields:
+          fields: ["message"]
+          target: ""
+          overwrite_keys: true
+      
+      # Drop logs from filebeat, elasticsearch, logstash, kibana to avoid circular logging
+      - drop_event:
+          when:
+            or:
+              - contains:
+                  container.name: "edupilot-filebeat"
+              - contains:
+                  container.name: "edupilot-elasticsearch"
+              - contains:
+                  container.name: "edupilot-logstash"
+              - contains:
+                  container.name: "edupilot-kibana"
+
+# Output to Logstash
+output.logstash:
+  hosts: ["logstash:5044"]
+  
+  # Load balancing
+  loadbalance: true
+  
+  # Compression
+  compression_level: 3
+
+# Logging configuration
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: /var/log/filebeat
+  name: filebeat
+  keepfiles: 7
+  permissions: 0644
+
+# Monitoring
+monitoring.enabled: false
+
+# Processors
+processors:
+  - add_host_metadata:
+      when.not.contains.tags: forwarded
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~

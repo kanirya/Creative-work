@@ -27,6 +27,14 @@ help:
 	@echo "  make logs-scheduler  - View Scheduler logs"
 	@echo "  make logs-web        - View Web App logs"
 	@echo "  make logs-marketing  - View Marketing Site logs"
+	@echo ""
+	@echo "Logging infrastructure targets:"
+	@echo "  make logging-start   - Start centralized logging (ELK stack)"
+	@echo "  make logging-stop    - Stop centralized logging"
+	@echo "  make logging-setup   - Configure Elasticsearch (run after first start)"
+	@echo "  make logging-status  - Check logging infrastructure status"
+	@echo "  make logging-logs    - View logging infrastructure logs"
+	@echo "  make kibana          - Open Kibana in browser"
 
 # Start all services
 start:
@@ -208,3 +216,65 @@ pull:
 	@echo "Pulling latest images..."
 	@docker-compose pull
 	@echo "Images updated."
+
+# Logging infrastructure targets
+logging-start:
+	@echo "Starting centralized logging infrastructure..."
+	@docker-compose -f docker-compose.yml -f logging/docker-compose.logging.yml up -d elasticsearch logstash kibana filebeat
+	@echo "Logging infrastructure started."
+	@echo "Wait 60 seconds for Elasticsearch to be ready, then run 'make logging-setup'"
+
+logging-stop:
+	@echo "Stopping centralized logging infrastructure..."
+	@docker-compose -f logging/docker-compose.logging.yml stop elasticsearch logstash kibana filebeat
+	@echo "Logging infrastructure stopped."
+
+logging-setup:
+	@echo "Configuring Elasticsearch with 30-day retention policy..."
+	@bash logging/scripts/setup-elasticsearch.sh || powershell -ExecutionPolicy Bypass -File logging/scripts/setup-elasticsearch.ps1
+	@echo "Elasticsearch configured successfully!"
+	@echo "Access Kibana at: http://localhost:5601"
+
+logging-status:
+	@echo "Logging infrastructure status:"
+	@docker-compose -f logging/docker-compose.logging.yml ps
+
+logging-logs:
+	@echo "Viewing logging infrastructure logs..."
+	@docker-compose -f logging/docker-compose.logging.yml logs -f
+
+logging-logs-elasticsearch:
+	@docker-compose -f logging/docker-compose.logging.yml logs -f elasticsearch
+
+logging-logs-logstash:
+	@docker-compose -f logging/docker-compose.logging.yml logs -f logstash
+
+logging-logs-kibana:
+	@docker-compose -f logging/docker-compose.logging.yml logs -f kibana
+
+logging-logs-filebeat:
+	@docker-compose -f logging/docker-compose.logging.yml logs -f filebeat
+
+logging-clean:
+	@echo "WARNING: This will remove all logs and logging infrastructure!"
+	@read -p "Are you sure? [y/N] " -n 1 -r; \
+	echo; \
+	if [[ $REPLY =~ ^[Yy]$ ]]; then \
+		docker-compose -f logging/docker-compose.logging.yml down -v; \
+		echo "Logging infrastructure removed."; \
+	else \
+		echo "Cleanup cancelled."; \
+	fi
+
+kibana:
+	@echo "Opening Kibana in browser..."
+	@command -v xdg-open > /dev/null && xdg-open http://localhost:5601 || \
+	 command -v open > /dev/null && open http://localhost:5601 || \
+	 echo "Please open http://localhost:5601 in your browser"
+
+# Start everything including logging
+start-all:
+	@echo "Starting all services including logging infrastructure..."
+	@docker-compose -f docker-compose.yml -f logging/docker-compose.logging.yml up -d
+	@echo "All services started."
+	@echo "Wait 60 seconds, then run 'make logging-setup' to configure Elasticsearch"
