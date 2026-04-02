@@ -208,7 +208,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - **Property 12: Low Confidence Indication**
     - **Validates: Requirements 6.5**
 
-  - [-] 8.7 Implement retry logic with exponential backoff
+  - [x] 8.7 Implement retry logic with exponential backoff
     - Create retry decorator for external API calls
     - Configure retry parameters (3 attempts, exponential backoff)
     - Add jitter to prevent thundering herd
@@ -218,7 +218,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - **Property 4: Retry with Exponential Backoff**
     - **Validates: Requirements 2.4, 3.5, 13.4**
 
-  - [ ] 8.9 Add structured logging and error handling
+  - [-] 8.9 Add structured logging and error handling
     - Configure Python logging with JSON formatter
     - Add correlation ID propagation from API Gateway
     - Implement FastAPI exception handlers

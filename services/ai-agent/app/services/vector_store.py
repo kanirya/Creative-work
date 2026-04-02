@@ -4,6 +4,7 @@ from uuid import UUID
 import logging
 from langchain_openai import OpenAIEmbeddings
 from app.config import get_settings
+from app.utils.retry import retry_on_api_error, retry_on_db_error
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -28,6 +29,7 @@ class VectorStoreService:
         if self.connection and not self.connection.closed:
             self.connection.close()
     
+    @retry_on_api_error(max_attempts=3)
     async def similarity_search(
         self,
         query: str,
@@ -103,6 +105,7 @@ class VectorStoreService:
             logger.error(f"Error performing similarity search: {str(e)}", exc_info=True)
             raise
     
+    @retry_on_api_error(max_attempts=3)
     async def add_document(
         self,
         student_id: UUID,
