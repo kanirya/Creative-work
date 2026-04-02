@@ -1,13 +1,41 @@
 import type { Metadata } from 'next';
+import { pageSEO, generateBreadcrumbSchema } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'About - EduPilot',
-  description: 'Learn about EduPilot and our mission to transform education with AI technology.',
+  title: pageSEO.about.title,
+  description: pageSEO.about.description,
+  keywords: pageSEO.about.keywords,
+  openGraph: {
+    title: pageSEO.about.title,
+    description: pageSEO.about.description,
+    type: 'website',
+    url: 'https://edupilot.com/about',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: pageSEO.about.title,
+    description: pageSEO.about.description,
+  },
+  alternates: {
+    canonical: 'https://edupilot.com/about',
+  },
 };
+
+const breadcrumbSchema = generateBreadcrumbSchema([
+  { name: 'Home', url: 'https://edupilot.com' },
+  { name: 'About', url: 'https://edupilot.com/about' },
+]);
 
 export default function AboutPage() {
   return (
-    <main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbSchema),
+        }}
+      />
+      <main>
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">
@@ -46,5 +74,6 @@ export default function AboutPage() {
         </div>
       </section>
     </main>
+    </>
   );
 }

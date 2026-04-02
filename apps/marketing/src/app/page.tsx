@@ -1,8 +1,22 @@
 import Link from 'next/link';
+import { softwareApplicationSchema, faqSchema } from '@/lib/seo';
 
 export default function HomePage() {
   return (
-    <main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(softwareApplicationSchema),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(faqSchema),
+        }}
+      />
+      <main>
       {/* Hero Section */}
       <section className="bg-gradient-to-b from-blue-50 to-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -133,5 +147,6 @@ export default function HomePage() {
         </div>
       </section>
     </main>
+    </>
   );
 }

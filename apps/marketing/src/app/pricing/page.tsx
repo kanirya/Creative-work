@@ -1,14 +1,78 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { pageSEO, generateBreadcrumbSchema } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'Pricing - EduPilot',
-  description: 'Simple, transparent pricing for students. Start free and upgrade as you grow.',
+  title: pageSEO.pricing.title,
+  description: pageSEO.pricing.description,
+  keywords: pageSEO.pricing.keywords,
+  openGraph: {
+    title: pageSEO.pricing.title,
+    description: pageSEO.pricing.description,
+    type: 'website',
+    url: 'https://edupilot.com/pricing',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: pageSEO.pricing.title,
+    description: pageSEO.pricing.description,
+  },
+  alternates: {
+    canonical: 'https://edupilot.com/pricing',
+  },
+};
+
+const breadcrumbSchema = generateBreadcrumbSchema([
+  { name: 'Home', url: 'https://edupilot.com' },
+  { name: 'Pricing', url: 'https://edupilot.com/pricing' },
+]);
+
+const offerSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: 'EduPilot',
+  description: 'AI-powered study assistant for students',
+  offers: [
+    {
+      '@type': 'Offer',
+      name: 'Free Plan',
+      price: '0',
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+    },
+    {
+      '@type': 'Offer',
+      name: 'Pro Plan',
+      price: '9.99',
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+    },
+    {
+      '@type': 'Offer',
+      name: 'Premium Plan',
+      price: '19.99',
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+    },
+  ],
 };
 
 export default function PricingPage() {
   return (
-    <main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbSchema),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(offerSchema),
+        }}
+      />
+      <main>
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -125,5 +189,6 @@ export default function PricingPage() {
         </div>
       </section>
     </main>
+    </>
   );
 }

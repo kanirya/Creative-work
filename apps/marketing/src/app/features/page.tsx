@@ -1,9 +1,30 @@
 import type { Metadata } from 'next';
+import { pageSEO, generateBreadcrumbSchema } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'Features - EduPilot',
-  description: 'Discover all the powerful features that make EduPilot the best AI study assistant for students.',
+  title: pageSEO.features.title,
+  description: pageSEO.features.description,
+  keywords: pageSEO.features.keywords,
+  openGraph: {
+    title: pageSEO.features.title,
+    description: pageSEO.features.description,
+    type: 'website',
+    url: 'https://edupilot.com/features',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: pageSEO.features.title,
+    description: pageSEO.features.description,
+  },
+  alternates: {
+    canonical: 'https://edupilot.com/features',
+  },
 };
+
+const breadcrumbSchema = generateBreadcrumbSchema([
+  { name: 'Home', url: 'https://edupilot.com' },
+  { name: 'Features', url: 'https://edupilot.com/features' },
+]);
 
 export default function FeaturesPage() {
   const features = [
@@ -55,7 +76,14 @@ export default function FeaturesPage() {
   ];
 
   return (
-    <main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbSchema),
+        }}
+      />
+      <main>
       <section className="bg-gradient-to-b from-blue-50 to-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -81,5 +109,6 @@ export default function FeaturesPage() {
         </div>
       </section>
     </main>
+    </>
   );
 }
