@@ -318,14 +318,14 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - _Requirements: 4.2, 4.6_
 
 
-- [ ] 11. Implement Scheduler Service (Python + APScheduler)
-  - [ ] 11.1 Set up FastAPI project with APScheduler
+- [x] 11. Implement Scheduler Service (Python + APScheduler)
+  - [x] 11.1 Set up FastAPI project with APScheduler
     - Create FastAPI app structure
     - Install APScheduler and configure AsyncIOScheduler
     - Create Pydantic models for job configuration
     - _Requirements: 13.1_
 
-  - [ ] 11.2 Implement scraping job scheduling
+  - [x] 11.2 Implement scraping job scheduling
     - Create job for triggering LMS scraper every 6 hours per student
     - Add job management endpoints (create, update, delete jobs)
     - Store job configurations in database
@@ -335,12 +335,12 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - **Property 5: Scraping Job Scheduling**
     - **Validates: Requirements 2.6, 13.1**
 
-  - [ ] 11.4 Implement transcription job scheduling
+  - [x] 11.4 Implement transcription job scheduling
     - Create job for queuing new recordings within 5 minutes
     - Trigger transcription service for queued recordings
     - _Requirements: 4.1, 13.2_
 
-  - [ ] 11.5 Implement database backup scheduling
+  - [x] 11.5 Implement database backup scheduling
     - Create daily backup job at 2 AM UTC
     - Execute pg_dump for PostgreSQL backup
     - Store backups with timestamp
@@ -350,7 +350,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - **Property 24: Database Backup Scheduling**
     - **Validates: Requirements 12.4**
 
-  - [ ] 11.7 Implement job retry and failure handling
+  - [x] 11.7 Implement job retry and failure handling
     - Add retry logic with exponential backoff for failed jobs
     - Send alerts to administrators after all retries fail
     - Maintain job execution history for 90 days
