@@ -12,7 +12,7 @@ COPY packages/ui/package.json ./packages/ui/
 COPY packages/utils/package.json ./packages/utils/
 
 # Install dependencies
-RUN npm ci --workspace=@edupilot/web --include-workspace-root
+RUN npm install --workspace=@edupilot/web --include-workspace-root
 
 # Stage 2: Builder
 FROM node:20-alpine AS builder

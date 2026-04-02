@@ -8,7 +8,7 @@ COPY package.json package-lock.json* ./
 COPY apps/marketing/package.json ./apps/marketing/
 
 # Install dependencies
-RUN npm ci --workspace=@edupilot/marketing --include-workspace-root
+RUN npm install --workspace=@edupilot/marketing --include-workspace-root
 
 # Stage 2: Builder
 FROM node:20-alpine AS builder
