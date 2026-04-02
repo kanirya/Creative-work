@@ -56,9 +56,13 @@ export default function LoginPage() {
           <p className="text-gray-600 mt-2">Sign in to your account</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6" aria-label="Login form">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            <div 
+              className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded"
+              role="alert"
+              aria-live="polite"
+            >
               {error}
             </div>
           )}
@@ -98,6 +102,7 @@ export default function LoginPage() {
             variant="primary"
             className="w-full"
             disabled={loading}
+            aria-label={loading ? 'Signing in, please wait' : 'Sign in to your account'}
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </Button>

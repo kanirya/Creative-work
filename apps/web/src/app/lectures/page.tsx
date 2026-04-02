@@ -88,7 +88,7 @@ export default function LecturesPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Lecture List */}
-            <div className="lg:col-span-1 space-y-3">
+            <div className="lg:col-span-1 space-y-3" role="navigation" aria-label="Lecture recordings list">
               <h2 className="text-lg font-semibold text-gray-900">Recordings</h2>
               {mockLectures.map((lecture) => (
                 <Card
@@ -99,6 +99,16 @@ export default function LecturesPage() {
                       : 'hover:shadow-md'
                   }`}
                   onClick={() => setSelectedLecture(lecture.id)}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Select lecture: ${lecture.title}`}
+                  aria-pressed={selectedLecture === lecture.id}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setSelectedLecture(lecture.id);
+                    }
+                  }}
                 >
                   <h3 className="font-semibold text-gray-900 text-sm">
                     {lecture.title}
@@ -149,12 +159,21 @@ export default function LecturesPage() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       Transcription
                     </h3>
-                    <div className="space-y-3 max-h-96 overflow-y-auto">
+                    <div className="space-y-3 max-h-96 overflow-y-auto" role="list" aria-label="Lecture transcription segments">
                       {mockTranscription.segments.map((segment) => (
                         <div
                           key={segment.id}
-                          className="flex gap-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                          className="flex gap-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
                           onClick={() => handleSegmentClick(segment.startTime)}
+                          role="button"
+                          tabIndex={0}
+                          aria-label={`Jump to ${formatTimestamp(segment.startTime)}: ${segment.text}`}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              handleSegmentClick(segment.startTime);
+                            }
+                          }}
                         >
                           <span className="text-sm font-medium text-blue-600 flex-shrink-0">
                             {formatTimestamp(segment.startTime)}

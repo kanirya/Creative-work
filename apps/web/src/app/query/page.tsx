@@ -92,7 +92,7 @@ export default function QueryPage() {
 
           {/* Query Input */}
           <Card className="p-6">
-            <form onSubmit={handleTextSubmit} className="space-y-4">
+            <form onSubmit={handleTextSubmit} className="space-y-4" aria-label="Query submission form">
               <div>
                 <label htmlFor="query" className="block text-sm font-medium text-gray-700 mb-2">
                   Your Question
@@ -104,7 +104,11 @@ export default function QueryPage() {
                   placeholder="e.g., What are the key topics in my Data Structures course?"
                   disabled={submitQuery.isPending || isRecording}
                   className="w-full"
+                  aria-describedby="query-help"
                 />
+                <p id="query-help" className="sr-only">
+                  Enter your question about courses, assignments, or lecture content
+                </p>
               </div>
 
               <div className="flex gap-3">
@@ -113,6 +117,7 @@ export default function QueryPage() {
                   variant="primary"
                   disabled={submitQuery.isPending || isRecording || !query.trim()}
                   className="flex-1"
+                  aria-label={submitQuery.isPending ? 'Processing your query' : 'Submit query'}
                 >
                   {submitQuery.isPending ? 'Processing...' : 'Submit'}
                 </Button>
@@ -121,6 +126,7 @@ export default function QueryPage() {
                   variant="secondary"
                   onClick={handleVoiceInput}
                   disabled={submitQuery.isPending || isRecording}
+                  aria-label={isRecording ? 'Recording voice input' : 'Start voice input'}
                 >
                   {isRecording ? 'Listening...' : '🎤 Voice'}
                 </Button>
@@ -130,11 +136,11 @@ export default function QueryPage() {
 
           {/* Response Display */}
           {response && (
-            <Card className="p-6">
+            <Card className="p-6" role="region" aria-label="AI response">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Response</h2>
               
               <div className="prose max-w-none">
-                <p className="text-gray-800 whitespace-pre-wrap">{response.answer}</p>
+                <p className="text-gray-800 whitespace-pre-wrap" aria-live="polite">{response.answer}</p>
               </div>
 
               {/* Confidence Score */}
