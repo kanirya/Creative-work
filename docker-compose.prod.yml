@@ -1,0 +1,53 @@
+# Production Docker Compose configuration with nginx reverse proxy
+version: '3.8'
+
+services:
+  # Nginx Reverse Proxy
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: edupilot-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - nginx-ssl:/etc/nginx/ssl
+      - nginx-logs:/var/log/nginx
+      - certbot-webroot:/var/www/certbot:ro
+    depends_on:
+      - api-gateway
+      - web
+      - marketing
+    networks:
+      - edupilot-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Override API Gateway to not expose port directly
+  api-gateway:
+    ports: []
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+
+  # Override Web App to not expose port directly
+  web:
+    ports: []
+
+  # Override Marketing Site to not expose port directly
+  marketing:
+    ports: []
+
+volumes:
+  nginx-ssl:
+    driver: local
+  nginx-logs:
+    driver: local
+  certbot-webroot:
+    driver: local
