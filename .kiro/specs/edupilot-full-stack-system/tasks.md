@@ -229,7 +229,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - **Validates: Requirements 18.3**
 
 
-- [ ] 9. Implement LMS Scraper Service (Python + Playwright)
+- [x] 9. Implement LMS Scraper Service (Python + Playwright)
   - [x] 9.1 Set up FastAPI project with Playwright
     - Create FastAPI app structure
     - Install playwright and configure browser automation
@@ -250,7 +250,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - Create scraper for announcements page
     - _Requirements: 2.2_
 
-  - [ ] 9.4 Implement data storage and embedding generation
+  - [x] 9.4 Implement data storage and embedding generation
     - Create HTTP client for storing data in PostgreSQL via API Gateway
     - Generate vector embeddings for scraped content
     - Store embeddings in document_embeddings table
@@ -260,7 +260,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - **Property 3: LMS Scraping Pipeline Completeness**
     - **Validates: Requirements 2.1, 2.2, 2.3**
 
-  - [ ] 9.6 Add error handling and retry logic
+  - [x] 9.6 Add error handling and retry logic
     - Implement retry with exponential backoff for LMS unavailability
     - Add logging for authentication failures
     - Handle network timeouts and page load errors

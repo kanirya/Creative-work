@@ -4,6 +4,7 @@ import logging
 from datetime import datetime
 from app.config import get_settings
 from app.models import CourseData, AssignmentData, AnnouncementData
+from app.utils.retry import retry_on_lms_error
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -13,6 +14,7 @@ class LMSScrapers:
     def __init__(self, context: BrowserContext):
         self.context = context
     
+    @retry_on_lms_error(max_attempts=3)
     async def scrape_courses(self) -> List[CourseData]:
         """
         Scrape student courses from LMS
@@ -79,6 +81,7 @@ class LMSScrapers:
         
         return courses
     
+    @retry_on_lms_error(max_attempts=3)
     async def scrape_assignments(self) -> List[AssignmentData]:
         """
         Scrape student assignments from LMS
@@ -156,6 +159,7 @@ class LMSScrapers:
         
         return assignments
     
+    @retry_on_lms_error(max_attempts=3)
     async def scrape_announcements(self) -> List[AnnouncementData]:
         """
         Scrape course announcements from LMS
