@@ -236,13 +236,13 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - Create Pydantic models for scraped data
     - _Requirements: 2.1_
 
-  - [ ] 9.2 Implement LMS authentication
+  - [x] 9.2 Implement LMS authentication
     - Create Playwright script for Iqra University LMS login
     - Handle authentication errors and session management
     - Add credential validation
     - _Requirements: 2.1, 2.5_
 
-  - [ ] 9.3 Implement data extraction scrapers
+  - [x] 9.3 Implement data extraction scrapers
     - Create scraper for courses page
     - Create scraper for grades page
     - Create scraper for assignments page
