@@ -97,7 +97,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - **Validates: Requirements 16.3**
 
 
-- [-] 5. Implement .NET 8 API Gateway - Infrastructure Layer
+- [x] 5. Implement .NET 8 API Gateway - Infrastructure Layer
   - [x] 5.1 Implement Entity Framework Core DbContext
     - Create ApplicationDbContext with entity configurations
     - Configure relationships and indexes
@@ -120,7 +120,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - **Property 46: Cache Consistency**
     - **Validates: Requirements 19.4**
 
-  - [ ] 5.5 Implement HTTP clients for microservices
+  - [x] 5.5 Implement HTTP clients for microservices
     - Create typed HTTP clients for AI Agent, LMS Scraper, Transcription, Scheduler services
     - Configure Polly for retry policies and circuit breakers
     - Add timeout configuration (10 seconds)
@@ -140,15 +140,15 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - **Property 21: Request Logging**
     - **Validates: Requirements 11.4**
 
-- [-] 6. Implement .NET 8 API Gateway - Presentation Layer
-  - [-] 6.1 Create API controllers
+- [x] 6. Implement .NET 8 API Gateway - Presentation Layer
+  - [x] 6.1 Create API controllers
     - Implement AuthController with login, refresh token endpoints
     - Implement StudentController with courses, assignments endpoints
     - Implement QueryController with text and voice query endpoints
     - Add API versioning and route configuration
     - _Requirements: 1.1, 5.1, 7.1_
 
-  - [ ] 6.2 Implement middleware pipeline
+  - [x] 6.2 Implement middleware pipeline
     - Create global exception handling middleware
     - Create authentication middleware for JWT validation
     - Create rate limiting middleware (100 requests/minute per student)
@@ -159,7 +159,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - **Property 20: Rate Limiting**
     - **Validates: Requirements 11.3**
 
-  - [ ] 6.4 Configure Swagger/OpenAPI documentation
+  - [x] 6.4 Configure Swagger/OpenAPI documentation
     - Install Swashbuckle package
     - Add XML documentation comments to controllers
     - Configure Swagger UI with authentication support
@@ -176,13 +176,13 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 8. Implement AI Agent Service (Python + LangChain)
-  - [ ] 8.1 Set up FastAPI project structure
+  - [x] 8.1 Set up FastAPI project structure
     - Create FastAPI app with routers for query processing
     - Configure Pydantic models for request/response validation
     - Set up environment configuration with python-dotenv
     - _Requirements: 5.1_
 
-  - [ ] 8.2 Implement vector store integration
+  - [x] 8.2 Implement vector store integration
     - Install langchain and pgvector packages
     - Create PGVector connection with OpenAI embeddings
     - Implement similarity search with filtering by student_id
@@ -197,7 +197,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - **Property 11: Vector Search Result Count**
     - **Validates: Requirements 6.2**
 
-  - [ ] 8.5 Implement RAG query processing
+  - [x] 8.5 Implement RAG query processing
     - Create LangChain RetrievalQA chain with OpenAI LLM
     - Implement query processing endpoint with context retrieval
     - Add source citation extraction from retrieved documents
@@ -208,7 +208,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - **Property 12: Low Confidence Indication**
     - **Validates: Requirements 6.5**
 
-  - [ ] 8.7 Implement retry logic with exponential backoff
+  - [-] 8.7 Implement retry logic with exponential backoff
     - Create retry decorator for external API calls
     - Configure retry parameters (3 attempts, exponential backoff)
     - Add jitter to prevent thundering herd

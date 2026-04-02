@@ -39,6 +39,18 @@ public static class DependencyInjection
             .AddPolicyHandler(GetRetryPolicy())
             .AddPolicyHandler(GetCircuitBreakerPolicy());
 
+        services.AddHttpClient<ILMSScraperService, LMSScraperHttpClient>()
+            .AddPolicyHandler(GetRetryPolicy())
+            .AddPolicyHandler(GetCircuitBreakerPolicy());
+
+        services.AddHttpClient<ITranscriptionService, TranscriptionHttpClient>()
+            .AddPolicyHandler(GetRetryPolicy())
+            .AddPolicyHandler(GetCircuitBreakerPolicy());
+
+        services.AddHttpClient<ISchedulerService, SchedulerHttpClient>()
+            .AddPolicyHandler(GetRetryPolicy())
+            .AddPolicyHandler(GetCircuitBreakerPolicy());
+
         return services;
     }
 
