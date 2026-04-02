@@ -1,0 +1,146 @@
+version: '3.8'
+
+# EduPilot Monitoring Infrastructure
+# Prometheus for metrics collection and Grafana for visualization
+#
+# Usage:
+#   docker-compose -f docker-compose.yml -f monitoring/docker-compose.monitoring.yml up -d
+#
+# Access Prometheus: http://localhost:9090
+# Access Grafana: http://localhost:3002 (admin/admin)
+
+networks:
+  edupilot-network:
+    external: true
+
+volumes:
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+services:
+  # Prometheus - Metrics collection and storage
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: edupilot-prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    networks:
+      - edupilot-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Grafana - Metrics visualization
+  grafana:
+    image: grafana/grafana:10.2.2
+    container_name: edupilot-grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:3002
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    ports:
+      - "3002:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    networks:
+      - edupilot-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # PostgreSQL Exporter - Database metrics
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: edupilot-postgres-exporter
+    restart: unless-stopped
+    environment:
+      - DATA_SOURCE_NAME=postgresql://${POSTGRES_USER:-edupilot}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-edupilot}?sslmode=disable
+    ports:
+      - "9187:9187"
+    depends_on:
+      - prometheus
+    networks:
+      - edupilot-network
+
+  # Redis Exporter - Redis metrics
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.55.0
+    container_name: edupilot-redis-exporter
+    restart: unless-stopped
+    environment:
+      - REDIS_ADDR=redis://redis:6379
+    ports:
+      - "9121:9121"
+    depends_on:
+      - prometheus
+    networks:
+      - edupilot-network
+
+  # cAdvisor - Container metrics
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.2
+    container_name: edupilot-cadvisor
+    restart: unless-stopped
+    privileged: true
+    ports:
+      - "8081:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    depends_on:
+      - prometheus
+    networks:
+      - edupilot-network
+
+  # Node Exporter - Host system metrics
+  node-exporter:
+    image: prom/node-exporter:v1.7.0
+    container_name: edupilot-node-exporter
+    restart: unless-stopped
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    depends_on:
+      - prometheus
+    networks:
+      - edupilot-network

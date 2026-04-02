@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using Prometheus;
 using EduPilot.Application;
 using EduPilot.Infrastructure;
 using EduPilot.Infrastructure.Logging;
@@ -139,6 +140,9 @@ app.UseHttpsRedirection();
 
 app.UseCors("AllowClientApps");
 
+// Prometheus metrics middleware
+app.UseHttpMetrics();
+
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
@@ -152,6 +156,9 @@ app.UseMiddleware<RateLimitingMiddleware>();
 app.MapControllers();
 
 app.MapHealthChecks("/health");
+
+// Prometheus metrics endpoint
+app.MapMetrics();
 
 try
 {

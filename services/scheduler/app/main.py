@@ -10,6 +10,7 @@ from app.config import get_settings
 from app.routers import jobs
 from app.models import HealthResponse
 from app.services.scheduler import get_scheduler
+from app.middleware.metrics import prometheus_middleware, metrics_endpoint
 
 # Configure logging
 logging.basicConfig(
@@ -53,6 +54,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Prometheus metrics middleware
+app.middleware("http")(prometheus_middleware)
 
 
 # Correlation ID middleware
@@ -107,6 +111,12 @@ async def health_check():
         status="healthy",
         active_jobs=active_jobs
     )
+
+
+@app.get("/metrics")
+async def metrics():
+    """Prometheus metrics endpoint"""
+    return metrics_endpoint()
 
 
 @app.get("/")

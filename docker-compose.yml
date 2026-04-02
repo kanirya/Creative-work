@@ -1,5 +1,12 @@
 version: '3.8'
 
+# EduPilot Docker Compose Configuration
+# 
+# For development: docker-compose up -d
+# For production with nginx reverse proxy: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# 
+# See nginx/README.md and nginx/DEPLOYMENT.md for nginx reverse proxy setup
+
 networks:
   edupilot-network:
     driver: bridge

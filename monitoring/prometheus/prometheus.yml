@@ -1,0 +1,100 @@
+# Prometheus Configuration for EduPilot System
+# Collects metrics from all services for monitoring response times, error rates, and resource usage
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'edupilot'
+    environment: 'production'
+
+# Alertmanager configuration (optional)
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets:
+#           - alertmanager:9093
+
+# Load rules once and periodically evaluate them
+# rule_files:
+#   - "alerts/*.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # .NET API Gateway metrics
+  - job_name: 'api-gateway'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['api-gateway:8080']
+        labels:
+          service: 'api-gateway'
+          language: 'dotnet'
+
+  # AI Agent Service metrics
+  - job_name: 'ai-agent'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['ai-agent:8001']
+        labels:
+          service: 'ai-agent'
+          language: 'python'
+
+  # LMS Scraper Service metrics
+  - job_name: 'lms-scraper'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['lms-scraper:8002']
+        labels:
+          service: 'lms-scraper'
+          language: 'python'
+
+  # Transcription Service metrics
+  - job_name: 'transcription'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['transcription:8003']
+        labels:
+          service: 'transcription'
+          language: 'python'
+
+  # Scheduler Service metrics
+  - job_name: 'scheduler'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['scheduler:8004']
+        labels:
+          service: 'scheduler'
+          language: 'python'
+
+  # PostgreSQL metrics (via postgres_exporter)
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+        labels:
+          service: 'postgres'
+
+  # Redis metrics (via redis_exporter)
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+        labels:
+          service: 'redis'
+
+  # Docker container metrics (via cAdvisor)
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+        labels:
+          service: 'cadvisor'
+
+  # Node exporter for host metrics
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          service: 'node-exporter'
