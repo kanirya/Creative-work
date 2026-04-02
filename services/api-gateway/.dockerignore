@@ -1,0 +1,16 @@
+**/.git
+**/.gitignore
+**/.vs
+**/.vscode
+**/bin
+**/obj
+**/*.user
+**/*.suo
+**/node_modules
+**/.env
+**/.env.*
+**/appsettings.Development.json
+**/Dockerfile
+**/.dockerignore
+**/README.md
+**/*.md
