@@ -175,7 +175,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
 - [ ] 7. Checkpoint - Ensure API Gateway tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 8. Implement AI Agent Service (Python + LangChain)
+- [x] 8. Implement AI Agent Service (Python + LangChain)
   - [x] 8.1 Set up FastAPI project structure
     - Create FastAPI app with routers for query processing
     - Configure Pydantic models for request/response validation
@@ -218,7 +218,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - **Property 4: Retry with Exponential Backoff**
     - **Validates: Requirements 2.4, 3.5, 13.4**
 
-  - [-] 8.9 Add structured logging and error handling
+  - [x] 8.9 Add structured logging and error handling
     - Configure Python logging with JSON formatter
     - Add correlation ID propagation from API Gateway
     - Implement FastAPI exception handlers
@@ -230,7 +230,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
 
 
 - [ ] 9. Implement LMS Scraper Service (Python + Playwright)
-  - [ ] 9.1 Set up FastAPI project with Playwright
+  - [x] 9.1 Set up FastAPI project with Playwright
     - Create FastAPI app structure
     - Install playwright and configure browser automation
     - Create Pydantic models for scraped data
