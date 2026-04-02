@@ -98,19 +98,19 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
 
 
 - [-] 5. Implement .NET 8 API Gateway - Infrastructure Layer
-  - [-] 5.1 Implement Entity Framework Core DbContext
+  - [x] 5.1 Implement Entity Framework Core DbContext
     - Create ApplicationDbContext with entity configurations
     - Configure relationships and indexes
     - Set up connection string management
     - _Requirements: 12.1, 12.3_
 
-  - [ ] 5.2 Implement repository pattern
+  - [x] 5.2 Implement repository pattern
     - Create StudentRepository implementing IStudentRepository
     - Create CourseRepository, AssignmentRepository
     - Add async CRUD operations with EF Core
     - _Requirements: 2.3, 12.1_
 
-  - [ ] 5.3 Implement Redis caching layer
+  - [-] 5.3 Implement Redis caching layer
     - Install StackExchange.Redis package
     - Create caching service with get/set/invalidate operations
     - Configure cache TTL policies (1 hour for queries, 6 hours for student data)
