@@ -6,12 +6,16 @@ networks:
 
 volumes:
   postgres-data:
+    driver: local
   redis-data:
+    driver: local
 
 services:
+  # Database Services
   postgres:
     image: pgvector/pgvector:pg16
     container_name: edupilot-postgres
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-edupilot}
       POSTGRES_USER: ${POSTGRES_USER:-edupilot}
@@ -20,18 +24,21 @@ services:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
     networks:
       - edupilot-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-edupilot}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-edupilot} -d ${POSTGRES_DB:-edupilot}"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s
 
   redis:
     image: redis:7-alpine
     container_name: edupilot-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
     ports:
       - "6379:6379"
     volumes:
@@ -43,22 +50,31 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 5s
 
+  # Backend Services
   api-gateway:
     build:
       context: ./services/api-gateway
       dockerfile: Dockerfile
-    container_name: edupilot-api
+    container_name: edupilot-api-gateway
+    restart: unless-stopped
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=${DATABASE_URL}
-      - ConnectionStrings__Redis=${REDIS_URL}
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=${DATABASE_URL:-postgresql://edupilot:password@postgres:5432/edupilot}
+      - ConnectionStrings__Redis=${REDIS_URL:-redis://redis:6379}
       - JwtSettings__SecretKey=${JWT_SECRET_KEY}
-      - JwtSettings__Issuer=${JWT_ISSUER}
-      - JwtSettings__Audience=${JWT_AUDIENCE}
-      - ServiceUrls__AgentService=${AGENT_SERVICE_URL}
-      - ServiceUrls__ScraperService=${SCRAPER_SERVICE_URL}
-      - ServiceUrls__TranscriberService=${TRANSCRIBER_SERVICE_URL}
+      - JwtSettings__Issuer=${JWT_ISSUER:-EduPilot}
+      - JwtSettings__Audience=${JWT_AUDIENCE:-EduPilot}
+      - JwtSettings__AccessTokenExpiryMinutes=${JWT_ACCESS_TOKEN_EXPIRY_MINUTES:-15}
+      - JwtSettings__RefreshTokenExpiryDays=${JWT_REFRESH_TOKEN_EXPIRY_DAYS:-7}
+      - ServiceUrls__AIAgentService=http://ai-agent:8001
+      - ServiceUrls__LMSScraperService=http://lms-scraper:8002
+      - ServiceUrls__TranscriptionService=http://transcription:8003
+      - ServiceUrls__SchedulerService=http://scheduler:8004
+      - Sentry__Dsn=${SENTRY_DSN:-}
+      - CorsOrigins=${CORS_ORIGINS:-http://localhost:3000,http://localhost:3001}
     ports:
       - "5000:8080"
     depends_on:
@@ -73,18 +89,22 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 40s
 
   ai-agent:
     build:
       context: ./services/ai-agent
       dockerfile: Dockerfile
     container_name: edupilot-ai-agent
+    restart: unless-stopped
     environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - REDIS_URL=${REDIS_URL}
+      - DATABASE_URL=${DATABASE_URL:-postgresql://edupilot:password@postgres:5432/edupilot}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - OPENAI_MODEL=${OPENAI_MODEL}
-      - OPENAI_EMBEDDING_MODEL=${OPENAI_EMBEDDING_MODEL}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o}
+      - OPENAI_EMBEDDING_MODEL=${OPENAI_EMBEDDING_MODEL:-text-embedding-3-small}
+      - API_GATEWAY_URL=http://api-gateway:8080
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
     ports:
       - "8001:8001"
     depends_on:
@@ -99,20 +119,26 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 30s
 
   lms-scraper:
     build:
       context: ./services/lms-scraper
       dockerfile: Dockerfile
-    container_name: edupilot-scraper
+    container_name: edupilot-lms-scraper
+    restart: unless-stopped
     environment:
-      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_URL=${DATABASE_URL:-postgresql://edupilot:password@postgres:5432/edupilot}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
       - API_GATEWAY_URL=http://api-gateway:8080
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
     ports:
       - "8002:8002"
     depends_on:
-      - postgres
-      - api-gateway
+      postgres:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
     networks:
       - edupilot-network
     healthcheck:
@@ -120,21 +146,31 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 30s
 
   transcription:
     build:
       context: ./services/transcription
       dockerfile: Dockerfile
     container_name: edupilot-transcription
+    restart: unless-stopped
     environment:
-      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_URL=${DATABASE_URL:-postgresql://edupilot:password@postgres:5432/edupilot}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - API_GATEWAY_URL=http://api-gateway:8080
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-}
+      - AWS_REGION=${AWS_REGION:-ap-south-1}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET:-edupilot-storage}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
     ports:
       - "8003:8003"
     depends_on:
-      - postgres
-      - api-gateway
+      postgres:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
     networks:
       - edupilot-network
     healthcheck:
@@ -142,40 +178,84 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 30s
 
   scheduler:
     build:
       context: ./services/scheduler
       dockerfile: Dockerfile
     container_name: edupilot-scheduler
+    restart: unless-stopped
     environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - SCRAPER_SERVICE_URL=http://lms-scraper:8002
-      - TRANSCRIBER_SERVICE_URL=http://transcription:8003
+      - DATABASE_URL=${DATABASE_URL:-postgresql://edupilot:password@postgres:5432/edupilot}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
       - API_GATEWAY_URL=http://api-gateway:8080
-    depends_on:
-      - postgres
-      - api-gateway
-      - lms-scraper
-      - transcription
-    networks:
-      - edupilot-network
-
-  nginx:
-    image: nginx:alpine
-    container_name: edupilot-nginx
+      - SCRAPER_SERVICE_URL=http://lms-scraper:8002
+      - TRANSCRIPTION_SERVICE_URL=http://transcription:8003
+      - AI_AGENT_SERVICE_URL=http://ai-agent:8001
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
     ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./infrastructure/nginx/ssl:/etc/nginx/ssl:ro
+      - "8004:8004"
     depends_on:
-      - api-gateway
+      postgres:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
+      lms-scraper:
+        condition: service_healthy
+      transcription:
+        condition: service_healthy
     networks:
       - edupilot-network
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 30s
+
+  # Frontend Services
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: edupilot-web
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=${API_URL:-http://localhost:5000}
+      - NEXT_PUBLIC_WEB_APP_URL=${WEB_APP_URL:-http://localhost:3000}
+    ports:
+      - "3000:80"
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    networks:
+      - edupilot-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  marketing:
+    build:
+      context: .
+      dockerfile: apps/marketing/Dockerfile
+    container_name: edupilot-marketing
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=${API_URL:-http://localhost:5000}
+      - NEXT_PUBLIC_MARKETING_URL=${MARKETING_URL:-http://localhost:3001}
+    ports:
+      - "3001:80"
+    networks:
+      - edupilot-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

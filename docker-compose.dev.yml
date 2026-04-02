@@ -1,0 +1,74 @@
+# Development override for docker-compose.yml
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+version: '3.8'
+
+services:
+  # Development overrides for faster iteration
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+      target: build  # Use build stage for hot reload
+    volumes:
+      - ./services/api-gateway:/src:ro
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+    command: dotnet watch run --project /src/EduPilot.API/EduPilot.API.csproj
+
+  ai-agent:
+    volumes:
+      - ./services/ai-agent:/app:ro
+    environment:
+      - LOG_LEVEL=DEBUG
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
+
+  lms-scraper:
+    volumes:
+      - ./services/lms-scraper:/app:ro
+    environment:
+      - LOG_LEVEL=DEBUG
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8002 --reload
+
+  transcription:
+    volumes:
+      - ./services/transcription:/app:ro
+    environment:
+      - LOG_LEVEL=DEBUG
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8003 --reload
+
+  scheduler:
+    volumes:
+      - ./services/scheduler:/app:ro
+    environment:
+      - LOG_LEVEL=DEBUG
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8004 --reload
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      target: builder  # Use builder stage for development
+    volumes:
+      - ./apps/web:/app/apps/web:ro
+      - ./packages:/app/packages:ro
+    environment:
+      - NODE_ENV=development
+    command: npm run dev --workspace=apps/web
+    ports:
+      - "3000:3000"  # Next.js dev server port
+
+  marketing:
+    build:
+      context: .
+      dockerfile: apps/marketing/Dockerfile
+      target: builder  # Use builder stage for development
+    volumes:
+      - ./apps/marketing:/app/apps/marketing:ro
+      - ./packages:/app/packages:ro
+    environment:
+      - NODE_ENV=development
+    command: npm run dev --workspace=apps/marketing
+    ports:
+      - "3001:3000"  # Next.js dev server port
