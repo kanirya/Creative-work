@@ -1,11 +1,26 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
-const isDev = process.env.NODE_ENV === 'development';
+const isDev = !app.isPackaged;
 
 let mainWindow;
 
-function createWindow() {
+async function waitForServer(url, maxAttempts = 30) {
+  const http = require('http');
+  for (let i = 0; i < maxAttempts; i++) {
+    try {
+      await new Promise((resolve, reject) => {
+        http.get(url, (res) => resolve()).on('error', reject);
+      });
+      return true;
+    } catch (e) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+  return false;
+}
+
+async function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -16,9 +31,27 @@ function createWindow() {
     },
   });
 
-  const url = isDev
-    ? 'http://localhost:3000'
-    : `file://${path.join(__dirname, '../.next/server/app/index.html')}`;
+  let url;
+  if (isDev) {
+    // Try ports 3000-3010 to find the Next.js dev server
+    let port = 3000;
+    let serverFound = false;
+    for (port = 3000; port <= 3010; port++) {
+      const testUrl = `http://localhost:${port}`;
+      if (await waitForServer(testUrl, 1)) {
+        url = testUrl;
+        serverFound = true;
+        console.log(`Found Next.js dev server on port ${port}`);
+        break;
+      }
+    }
+    if (!serverFound) {
+      console.error('Could not find Next.js dev server on ports 3000-3010');
+      url = 'http://localhost:3000'; // fallback
+    }
+  } else {
+    url = `file://${path.join(__dirname, '../out/index.html')}`;
+  }
 
   mainWindow.loadURL(url);
 

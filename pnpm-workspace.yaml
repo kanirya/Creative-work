@@ -2,3 +2,7 @@ packages:
   - 'apps/*'
   - 'services/*'
   - 'packages/*'
+allowBuilds:
+  electron: false
+  esbuild: false
+  unrs-resolver: false

@@ -38,7 +38,6 @@ public class AnnouncementConfiguration : IEntityTypeConfiguration<Announcement>
             .HasColumnName("priority")
             .HasMaxLength(20)
             .IsRequired()
-            .HasDefaultValue("normal")
             .HasConversion<string>();
 
         builder.Property(a => a.CreatedAt)

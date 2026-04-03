@@ -118,7 +118,27 @@ public class AuthenticationService : IAuthenticationService
 
     public bool VerifyPassword(string password, string passwordHash)
     {
-        return BCrypt.Net.BCrypt.Verify(password, passwordHash);
+        try
+        {
+            // Log for debugging
+            Console.WriteLine($"Verifying password. Hash starts with: {passwordHash.Substring(0, Math.Min(10, passwordHash.Length))}");
+            var result = BCrypt.Net.BCrypt.Verify(password, passwordHash);
+            Console.WriteLine($"Verification result: {result}");
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"BCrypt verification error: {ex.Message}");
+            // Try with enhanced entropy for older hash formats
+            try
+            {
+                return BCrypt.Net.BCrypt.Verify(password, passwordHash, enhancedEntropy: true);
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 
     private string GenerateAccessToken(string email, Guid studentId)

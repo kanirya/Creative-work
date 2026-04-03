@@ -81,7 +81,7 @@ export class EduPilotClient {
   // Authentication
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     const response = await this.axios.post<ApiResponse<LoginResponse>>(
-      '/api/auth/login',
+      '/api/v1/auth/login',
       credentials
     );
     
@@ -92,7 +92,7 @@ export class EduPilotClient {
 
   async refreshAccessToken(refreshToken: string): Promise<LoginResponse> {
     const response = await this.axios.post<ApiResponse<LoginResponse>>(
-      '/api/auth/refresh',
+      '/api/v1/auth/refresh',
       { refreshToken } as RefreshTokenRequest
     );
     return response.data.data!;
@@ -105,7 +105,7 @@ export class EduPilotClient {
   // Courses
   async getCourses(): Promise<CourseDto[]> {
     const response = await this.axios.get<ApiResponse<CourseDto[]>>(
-      '/api/students/courses'
+      '/api/v1/students/courses'
     );
     return response.data.data!;
   }
@@ -117,7 +117,7 @@ export class EduPilotClient {
     daysAhead?: number;
   }): Promise<AssignmentDto[]> {
     const response = await this.axios.get<ApiResponse<AssignmentDto[]>>(
-      '/api/students/assignments',
+      '/api/v1/students/assignments',
       { params }
     );
     return response.data.data!;
@@ -125,13 +125,13 @@ export class EduPilotClient {
 
   // Sync
   async syncData(): Promise<void> {
-    await this.axios.post('/api/students/sync');
+    await this.axios.post('/api/v1/students/sync');
   }
 
   // Query
   async submitQuery(query: QueryRequestDto): Promise<QueryResponseDto> {
     const response = await this.axios.post<ApiResponse<QueryResponseDto>>(
-      '/api/query',
+      '/api/v1/query',
       query
     );
     return response.data.data!;
@@ -142,7 +142,7 @@ export class EduPilotClient {
     formData.append('audioFile', audioFile);
 
     const response = await this.axios.post<ApiResponse<QueryResponseDto>>(
-      '/api/query/voice',
+      '/api/v1/query/voice',
       formData,
       {
         headers: {

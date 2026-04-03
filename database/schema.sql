@@ -165,9 +165,9 @@ CREATE TABLE announcements (
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
     posted_at TIMESTAMP NOT NULL,
-    priority VARCHAR(20) DEFAULT 'normal',
+    priority VARCHAR(20) DEFAULT 'Normal',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT chk_announcement_priority CHECK (priority IN ('low', 'normal', 'high', 'urgent'))
+    CONSTRAINT chk_announcement_priority CHECK (priority IN ('Low', 'Normal', 'High', 'Urgent'))
 );
 
 CREATE INDEX idx_announcements_course ON announcements(course_id);
@@ -256,15 +256,17 @@ CREATE INDEX idx_job_executions_status ON job_executions(status);
 -- ============================================================================
 
 -- Insert a test student
+-- Note: Password hash uses BCrypt $2y$ format compatible with BCrypt.Net-Next 4.0.2+
+-- Password: password
 INSERT INTO students (email, password_hash, first_name, last_name, university_id, enrolled_at)
 VALUES (
     'test@iqra.edu.pk',
-    '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYzpLHJ7.Pu', -- password: test123
+    '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     'Test',
     'Student',
     'IU2024001',
     CURRENT_TIMESTAMP
-);
+) ON CONFLICT (email) DO UPDATE SET password_hash = EXCLUDED.password_hash;
 
 -- Insert sample courses
 INSERT INTO courses (code, name, instructor, semester, credit_hours)
