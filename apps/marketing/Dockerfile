@@ -15,9 +15,9 @@ COPY apps/marketing ./apps/marketing
 # Install all dependencies
 RUN pnpm install --frozen-lockfile
 
-# Build the application (static export)
+# Build the application (static export) using turbo
 ENV NEXT_TELEMETRY_DISABLED 1
-RUN pnpm --filter @edupilot/marketing build
+RUN pnpm turbo build --filter=@edupilot/marketing
 
 # Stage 2: Production with nginx
 FROM nginx:alpine AS runner

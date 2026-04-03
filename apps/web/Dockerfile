@@ -13,12 +13,15 @@ COPY tsconfig.json .eslintrc.json .prettierrc* ./
 COPY apps/web ./apps/web
 COPY packages ./packages
 
+# Create public directory if it doesn't exist
+RUN mkdir -p apps/web/public
+
 # Install all dependencies
 RUN pnpm install --frozen-lockfile
 
-# Build the application
+# Build using turbo (will build dependencies first)
 ENV NEXT_TELEMETRY_DISABLED 1
-RUN pnpm --filter @edupilot/web build
+RUN pnpm turbo build --filter=@edupilot/web
 
 # Stage 2: Production with nginx
 FROM nginx:alpine AS runner
