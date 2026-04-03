@@ -679,7 +679,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - **Property 32: Log Retention**
     - **Validates: Requirements 15.6**
 
-  - [ ] 20.4 Implement metrics collection
+  - [x] 20.4 Implement metrics collection
     - Set up Prometheus for metrics collection
     - Add metrics exporters to all services
     - Collect response times, error rates, resource usage
@@ -689,7 +689,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - **Property 29: Metrics Collection**
     - **Validates: Requirements 15.2**
 
-  - [ ] 20.6 Configure alerting rules
+  - [x] 20.6 Configure alerting rules
     - Set up Alertmanager for Prometheus
     - Create alert for error rate > 5%
     - Create alert for response time > 10 seconds
@@ -704,7 +704,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - **Property 31: Response Time Alerting**
     - **Validates: Requirements 15.4**
 
-  - [ ] 20.9 Create monitoring dashboard
+  - [x] 20.9 Create monitoring dashboard
     - Set up Grafana for visualization
     - Create dashboards for system health metrics
     - Add panels for error rates, response times, resource usage
@@ -910,7 +910,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
 
 
 - [ ] 27. Integration and end-to-end wiring
-  - [ ] 27.1 Wire API Gateway to microservices
+  - [x] 27.1 Wire API Gateway to microservices
     - Configure service discovery and routing
     - Test request flow from gateway to each microservice
     - Verify correlation ID propagation
@@ -920,7 +920,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - **Property 19: Request Routing**
     - **Validates: Requirements 11.2**
 
-  - [ ] 27.3 Wire client apps to API Gateway
+  - [x] 27.3 Wire client apps to API Gateway
     - Configure API base URLs in all client apps
     - Test authentication flow from each client
     - Verify token refresh logic

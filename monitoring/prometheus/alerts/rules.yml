@@ -1,0 +1,138 @@
+groups:
+  - name: edupilot_alerts
+    interval: 30s
+    rules:
+      # Alert when error rate exceeds 5%
+      - alert: HighErrorRate
+        expr: |
+          (
+            sum(rate(http_errors_total[5m])) 
+            / 
+            sum(rate(http_requests_total[5m]))
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "High error rate detected in EduPilot services"
+          description: "Error rate is {{ $value | humanizePercentage }} (threshold: 5%)"
+          runbook_url: "https://docs.edupilot.com/runbooks/high-error-rate"
+
+      # Alert when response time exceeds 10 seconds
+      - alert: SlowResponseTime
+        expr: |
+          histogram_quantile(0.95, 
+            sum(rate(http_request_duration_seconds_bucket[5m])) by (le, service)
+          ) > 10
+        for: 5m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "Slow response time detected in {{ $labels.service }}"
+          description: "95th percentile response time is {{ $value }}s (threshold: 10s)"
+          runbook_url: "https://docs.edupilot.com/runbooks/slow-response"
+
+      # Alert when service is down
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: infrastructure
+        annotations:
+          summary: "Service {{ $labels.job }} is down"
+          description: "Service {{ $labels.job }} has been down for more than 1 minute"
+          runbook_url: "https://docs.edupilot.com/runbooks/service-down"
+
+      # Alert when database connections are high
+      - alert: HighDatabaseConnections
+        expr: pg_stat_database_numbackends{datname="edupilot"} > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "High number of database connections"
+          description: "Database has {{ $value }} active connections (threshold: 80)"
+          runbook_url: "https://docs.edupilot.com/runbooks/high-db-connections"
+
+      # Alert when Redis memory usage is high
+      - alert: HighRedisMemory
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          component: cache
+        annotations:
+          summary: "Redis memory usage is high"
+          description: "Redis is using {{ $value | humanizePercentage }} of available memory (threshold: 90%)"
+          runbook_url: "https://docs.edupilot.com/runbooks/high-redis-memory"
+
+      # Alert when container CPU usage is high
+      - alert: HighContainerCPU
+        expr: |
+          rate(container_cpu_usage_seconds_total{name=~"edupilot-.*"}[5m]) * 100 > 80
+        for: 10m
+        labels:
+          severity: warning
+          component: infrastructure
+        annotations:
+          summary: "High CPU usage in container {{ $labels.name }}"
+          description: "Container {{ $labels.name }} is using {{ $value }}% CPU (threshold: 80%)"
+          runbook_url: "https://docs.edupilot.com/runbooks/high-cpu"
+
+      # Alert when container memory usage is high
+      - alert: HighContainerMemory
+        expr: |
+          (container_memory_usage_bytes{name=~"edupilot-.*"} / container_spec_memory_limit_bytes{name=~"edupilot-.*"}) * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+          component: infrastructure
+        annotations:
+          summary: "High memory usage in container {{ $labels.name }}"
+          description: "Container {{ $labels.name }} is using {{ $value }}% of memory limit (threshold: 90%)"
+          runbook_url: "https://docs.edupilot.com/runbooks/high-memory"
+
+      # Alert when disk usage is high
+      - alert: HighDiskUsage
+        expr: |
+          (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100 < 10
+        for: 5m
+        labels:
+          severity: critical
+          component: infrastructure
+        annotations:
+          summary: "Low disk space on host"
+          description: "Only {{ $value }}% disk space remaining (threshold: 10%)"
+          runbook_url: "https://docs.edupilot.com/runbooks/low-disk-space"
+
+      # Alert when API Gateway request rate is unusually low (possible outage)
+      - alert: LowRequestRate
+        expr: |
+          sum(rate(http_requests_total{service="api-gateway"}[5m])) < 0.1
+        for: 10m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "Unusually low request rate to API Gateway"
+          description: "API Gateway is receiving {{ $value }} requests/second (expected > 0.1)"
+          runbook_url: "https://docs.edupilot.com/runbooks/low-request-rate"
+
+      # Alert when vector search is slow
+      - alert: SlowVectorSearch
+        expr: |
+          histogram_quantile(0.95,
+            rate(vector_search_duration_seconds_bucket[5m])
+          ) > 2
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Slow vector search performance"
+          description: "95th percentile vector search time is {{ $value }}s (threshold: 2s)"
+          runbook_url: "https://docs.edupilot.com/runbooks/slow-vector-search"

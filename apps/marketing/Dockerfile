@@ -1,32 +1,25 @@
 # Multi-stage Dockerfile for Marketing Site
-# Stage 1: Dependencies
-FROM node:20-alpine AS deps
-WORKDIR /app
-
-# Copy package files
-COPY package.json package-lock.json* ./
-COPY apps/marketing/package.json ./apps/marketing/
-
-# Install dependencies
-RUN npm install --workspace=@edupilot/marketing --include-workspace-root
-
-# Stage 2: Builder
+# Stage 1: Dependencies and Builder
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Copy dependencies from deps stage
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/apps/marketing/node_modules ./apps/marketing/node_modules
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Copy source code
+# Copy all package files
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml* ./
 COPY turbo.json ./
+COPY tsconfig.json .eslintrc.json .prettierrc* ./
 COPY apps/marketing ./apps/marketing
+
+# Install all dependencies
+RUN pnpm install --frozen-lockfile
 
 # Build the application (static export)
 ENV NEXT_TELEMETRY_DISABLED 1
-RUN npm run build --workspace=@edupilot/marketing
+RUN pnpm --filter @edupilot/marketing build
 
-# Stage 3: Production with nginx
+# Stage 2: Production with nginx
 FROM nginx:alpine AS runner
 
 WORKDIR /usr/share/nginx/html

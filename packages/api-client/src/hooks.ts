@@ -8,11 +8,77 @@ export const queryKeys = {
   assignments: (params?: any) => ['assignments', params] as const,
 };
 
-// Hooks
+// Create a global client instance (will be set by the app)
+let globalClient: EduPilotClient | null = null;
+
+export const setGlobalClient = (client: EduPilotClient) => {
+  globalClient = client;
+};
+
+const getClient = () => {
+  if (!globalClient) {
+    throw new Error('EduPilot client not initialized. Call setGlobalClient first.');
+  }
+  return globalClient;
+};
+
+// Individual hooks that can be imported directly
+export const useStudentCourses = () => {
+  return useQuery({
+    queryKey: queryKeys.courses,
+    queryFn: () => getClient().getCourses(),
+  });
+};
+
+export const useStudentAssignments = (params?: {
+  status?: string;
+  upcomingOnly?: boolean;
+  daysAhead?: number;
+}) => {
+  return useQuery({
+    queryKey: queryKeys.assignments(params),
+    queryFn: () => getClient().getAssignments(params),
+  });
+};
+
+export const useLogin = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (credentials: LoginRequest) => getClient().login(credentials),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.courses });
+      queryClient.invalidateQueries({ queryKey: queryKeys.assignments() });
+    },
+  });
+};
+
+export const useSyncData = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => getClient().syncData(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.courses });
+      queryClient.invalidateQueries({ queryKey: queryKeys.assignments() });
+    },
+  });
+};
+
+export const useSubmitQuery = () => {
+  return useMutation({
+    mutationFn: (query: QueryRequestDto) => getClient().submitQuery(query),
+  });
+};
+
+export const useSubmitVoiceQuery = () => {
+  return useMutation({
+    mutationFn: (audioFile: File) => getClient().submitVoiceQuery(audioFile),
+  });
+};
+
+// Legacy factory function for backward compatibility
 export const useEduPilotHooks = (client: EduPilotClient) => {
   const queryClient = useQueryClient();
 
-  // Courses
   const useCourses = () => {
     return useQuery({
       queryKey: queryKeys.courses,
@@ -20,7 +86,6 @@ export const useEduPilotHooks = (client: EduPilotClient) => {
     });
   };
 
-  // Assignments
   const useAssignments = (params?: {
     status?: string;
     upcomingOnly?: boolean;
@@ -32,8 +97,7 @@ export const useEduPilotHooks = (client: EduPilotClient) => {
     });
   };
 
-  // Login mutation
-  const useLogin = () => {
+  const useLoginMutation = () => {
     return useMutation({
       mutationFn: (credentials: LoginRequest) => client.login(credentials),
       onSuccess: () => {
@@ -43,8 +107,7 @@ export const useEduPilotHooks = (client: EduPilotClient) => {
     });
   };
 
-  // Sync mutation
-  const useSyncData = () => {
+  const useSyncDataMutation = () => {
     return useMutation({
       mutationFn: () => client.syncData(),
       onSuccess: () => {
@@ -54,15 +117,13 @@ export const useEduPilotHooks = (client: EduPilotClient) => {
     });
   };
 
-  // Query mutation
-  const useSubmitQuery = () => {
+  const useSubmitQueryMutation = () => {
     return useMutation({
       mutationFn: (query: QueryRequestDto) => client.submitQuery(query),
     });
   };
 
-  // Voice query mutation
-  const useSubmitVoiceQuery = () => {
+  const useSubmitVoiceQueryMutation = () => {
     return useMutation({
       mutationFn: (audioFile: File) => client.submitVoiceQuery(audioFile),
     });
@@ -71,9 +132,9 @@ export const useEduPilotHooks = (client: EduPilotClient) => {
   return {
     useCourses,
     useAssignments,
-    useLogin,
-    useSyncData,
-    useSubmitQuery,
-    useSubmitVoiceQuery,
+    useLogin: useLoginMutation,
+    useSyncData: useSyncDataMutation,
+    useSubmitQuery: useSubmitQueryMutation,
+    useSubmitVoiceQuery: useSubmitVoiceQueryMutation,
   };
 };

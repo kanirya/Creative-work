@@ -14,7 +14,7 @@ public class LMSScraperHttpClient : ILMSScraperService
     {
         _httpClient = httpClient;
         _logger = logger;
-        _httpClient.BaseAddress = new Uri(configuration["MicroserviceUrls:LMSScraper"] ?? "http://localhost:8002");
+        _httpClient.BaseAddress = new Uri(configuration["ServiceUrls:LMSScraperService"] ?? "http://localhost:8002");
         _httpClient.Timeout = TimeSpan.FromSeconds(10);
     }
 

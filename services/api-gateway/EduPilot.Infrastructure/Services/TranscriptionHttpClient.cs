@@ -14,7 +14,7 @@ public class TranscriptionHttpClient : ITranscriptionService
     {
         _httpClient = httpClient;
         _logger = logger;
-        _httpClient.BaseAddress = new Uri(configuration["MicroserviceUrls:Transcription"] ?? "http://localhost:8003");
+        _httpClient.BaseAddress = new Uri(configuration["ServiceUrls:TranscriptionService"] ?? "http://localhost:8003");
         _httpClient.Timeout = TimeSpan.FromSeconds(10);
     }
 

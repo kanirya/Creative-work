@@ -14,7 +14,7 @@ public class SchedulerHttpClient : ISchedulerService
     {
         _httpClient = httpClient;
         _logger = logger;
-        _httpClient.BaseAddress = new Uri(configuration["MicroserviceUrls:Scheduler"] ?? "http://localhost:8004");
+        _httpClient.BaseAddress = new Uri(configuration["ServiceUrls:SchedulerService"] ?? "http://localhost:8004");
         _httpClient.Timeout = TimeSpan.FromSeconds(10);
     }
 

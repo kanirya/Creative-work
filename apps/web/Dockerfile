@@ -1,38 +1,26 @@
 # Multi-stage Dockerfile for Student Web App
-# Stage 1: Dependencies
-FROM node:20-alpine AS deps
-WORKDIR /app
-
-# Copy package files
-COPY package.json package-lock.json* ./
-COPY apps/web/package.json ./apps/web/
-COPY packages/api-client/package.json ./packages/api-client/
-COPY packages/types/package.json ./packages/types/
-COPY packages/ui/package.json ./packages/ui/
-COPY packages/utils/package.json ./packages/utils/
-
-# Install dependencies
-RUN npm install --workspace=@edupilot/web --include-workspace-root
-
-# Stage 2: Builder
+# Stage 1: Dependencies and Builder
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Copy dependencies from deps stage
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
-COPY --from=deps /app/packages ./packages
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Copy source code
+# Copy all package files
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml* ./
 COPY turbo.json ./
+COPY tsconfig.json .eslintrc.json .prettierrc* ./
 COPY apps/web ./apps/web
 COPY packages ./packages
 
+# Install all dependencies
+RUN pnpm install --frozen-lockfile
+
 # Build the application
 ENV NEXT_TELEMETRY_DISABLED 1
-RUN npm run build --workspace=@edupilot/web
+RUN pnpm --filter @edupilot/web build
 
-# Stage 3: Production with nginx
+# Stage 2: Production with nginx
 FROM nginx:alpine AS runner
 
 # Install Node.js for Next.js standalone server

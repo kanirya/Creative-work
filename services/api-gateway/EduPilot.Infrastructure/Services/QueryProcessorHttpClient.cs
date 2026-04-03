@@ -19,7 +19,7 @@ public class QueryProcessorHttpClient : IQueryProcessor
     {
         _httpClient = httpClient;
         _logger = logger;
-        _agentServiceUrl = configuration["ServiceUrls:AgentService"] ?? "http://localhost:8001";
+        _agentServiceUrl = configuration["ServiceUrls:AIAgentService"] ?? "http://localhost:8001";
         _httpClient.BaseAddress = new Uri(_agentServiceUrl);
         _httpClient.Timeout = TimeSpan.FromSeconds(30);
     }
