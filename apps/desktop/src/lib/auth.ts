@@ -4,7 +4,15 @@ import { EduPilotClient } from '@edupilot/api-client';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
-export const apiClient = new EduPilotClient(API_URL);
+export const apiClient = new EduPilotClient({
+  baseURL: API_URL,
+  onTokenRefresh: (accessToken, refreshToken) => {
+    tokenStorage.setTokens({ accessToken, refreshToken });
+  },
+  onUnauthorized: () => {
+    tokenStorage.clearTokens();
+  },
+});
 
 export interface AuthTokens {
   accessToken: string;
@@ -37,6 +45,6 @@ export const tokenStorage = {
 if (typeof window !== 'undefined' && window.electron) {
   const tokens = tokenStorage.getTokens();
   if (tokens) {
-    apiClient.setAccessToken(tokens.accessToken);
+    apiClient.setTokens(tokens.accessToken, tokens.refreshToken);
   }
 }

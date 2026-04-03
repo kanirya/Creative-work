@@ -19,6 +19,9 @@ public class Student : BaseEntity
     private readonly List<LectureRecording> _recordings = new();
     public IReadOnlyCollection<LectureRecording> Recordings => _recordings.AsReadOnly();
 
+    private readonly List<Role> _roles = new();
+    public IReadOnlyCollection<Role> Roles => _roles.AsReadOnly();
+
     private Student() { } // For EF Core
 
     private Student(
@@ -98,6 +101,37 @@ public class Student : BaseEntity
 
         _courses.Add(course);
         UpdateTimestamp();
+    }
+
+    public void AssignRole(Role role)
+    {
+        if (role == null)
+            throw new ArgumentNullException(nameof(role));
+
+        if (_roles.Any(r => r.Id == role.Id))
+            return; // Already has role
+
+        _roles.Add(role);
+        UpdateTimestamp();
+    }
+
+    public void RemoveRole(Role role)
+    {
+        if (role == null)
+            throw new ArgumentNullException(nameof(role));
+
+        _roles.Remove(role);
+        UpdateTimestamp();
+    }
+
+    public bool HasRole(string roleName)
+    {
+        return _roles.Any(r => r.Name.Equals(roleName, StringComparison.OrdinalIgnoreCase));
+    }
+
+    public bool HasPermission(string permissionName)
+    {
+        return _roles.Any(r => r.HasPermission(permissionName));
     }
 
     public string FullName => $"{FirstName} {LastName}";

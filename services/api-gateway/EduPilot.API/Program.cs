@@ -119,9 +119,15 @@ builder.Services.AddCors(options =>
 });
 
 // Add health checks
+var redisConnectionString = builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379";
+// Remove redis:// prefix if present
+if (redisConnectionString.StartsWith("redis://"))
+{
+    redisConnectionString = redisConnectionString.Substring("redis://".Length);
+}
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("DefaultConnection")!)
-    .AddRedis(builder.Configuration.GetConnectionString("Redis")!);
+    .AddRedis(redisConnectionString);
 
 var app = builder.Build();
 

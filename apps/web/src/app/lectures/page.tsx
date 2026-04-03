@@ -55,7 +55,6 @@ const mockTranscription = {
 
 export default function LecturesPage() {
   const [selectedLecture, setSelectedLecture] = useState<string | null>(null);
-  const [currentTime, setCurrentTime] = useState(0);
 
   const formatDuration = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
@@ -70,8 +69,8 @@ export default function LecturesPage() {
   };
 
   const handleSegmentClick = (startTime: number) => {
-    setCurrentTime(startTime);
     // In a real implementation, this would seek the video player
+    console.log('Seeking to', startTime);
   };
 
   return (
@@ -99,16 +98,6 @@ export default function LecturesPage() {
                       : 'hover:shadow-md'
                   }`}
                   onClick={() => setSelectedLecture(lecture.id)}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Select lecture: ${lecture.title}`}
-                  aria-pressed={selectedLecture === lecture.id}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      setSelectedLecture(lecture.id);
-                    }
-                  }}
                 >
                   <h3 className="font-semibold text-gray-900 text-sm">
                     {lecture.title}

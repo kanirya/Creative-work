@@ -71,12 +71,3 @@ public class ScrapingStatusResponse
     public DateTime? LastScrapedAt { get; set; }
     public string? ErrorMessage { get; set; }
 }
-
-public enum ScrapingStatus
-{
-    Unknown,
-    Pending,
-    InProgress,
-    Completed,
-    Failed
-}

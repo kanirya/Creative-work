@@ -26,13 +26,19 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         // Redis
-        var redisConnection = ConnectionMultiplexer.Connect(
-            configuration.GetConnectionString("Redis") ?? "localhost:6379");
+        var redisConnectionString = configuration.GetConnectionString("Redis") ?? "localhost:6379";
+        // Remove redis:// prefix if present
+        if (redisConnectionString.StartsWith("redis://"))
+        {
+            redisConnectionString = redisConnectionString.Substring("redis://".Length);
+        }
+        var redisConnection = ConnectionMultiplexer.Connect($"{redisConnectionString},abortConnect=false");
         services.AddSingleton<IConnectionMultiplexer>(redisConnection);
         services.AddSingleton<ICacheService, RedisCacheService>();
 
         // Services
         services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services.AddSingleton<IEncryptionService, EncryptionService>();
 
         // HTTP Clients with Polly retry policies
         services.AddHttpClient<IQueryProcessor, QueryProcessorHttpClient>()

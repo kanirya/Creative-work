@@ -5,6 +5,7 @@ import { DashboardLayout } from '@/components/DashboardLayout';
 import { useStudentCourses, useStudentAssignments } from '@edupilot/api-client';
 import { Card } from '@edupilot/ui';
 import { formatDisplayDate, formatRelativeTime } from '@edupilot/utils';
+import type { AssignmentDto, CourseDto } from '@edupilot/types';
 
 export default function DashboardPage() {
   const { data: courses, isLoading: coursesLoading } = useStudentCourses();
@@ -12,8 +13,8 @@ export default function DashboardPage() {
 
   // Filter upcoming assignments (not submitted and not past due)
   const upcomingAssignments = assignments?.filter(
-    (a) => a.status !== 'Submitted' && new Date(a.dueDate) > new Date()
-  ).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+    (a: AssignmentDto) => a.status !== 'submitted' && new Date(a.dueDate) > new Date()
+  ).sort((a: AssignmentDto, b: AssignmentDto) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
 
   return (
     <ProtectedRoute>
@@ -32,10 +33,10 @@ export default function DashboardPage() {
               <div className="text-gray-600">Loading courses...</div>
             ) : courses && courses.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {courses.map((course) => (
+                {courses.map((course: CourseDto) => (
                   <Card key={course.id} className="p-6 hover:shadow-lg transition-shadow">
-                    <h3 className="text-lg font-semibold text-gray-900">{course.name}</h3>
-                    <p className="text-sm text-gray-600 mt-1">{course.code}</p>
+                    <h3 className="text-lg font-semibold text-gray-900">{course.courseName}</h3>
+                    <p className="text-sm text-gray-600 mt-1">{course.courseCode}</p>
                     {course.instructor && (
                       <p className="text-sm text-gray-500 mt-2">
                         Instructor: {course.instructor}
@@ -58,7 +59,7 @@ export default function DashboardPage() {
               <div className="text-gray-600">Loading assignments...</div>
             ) : upcomingAssignments && upcomingAssignments.length > 0 ? (
               <div className="space-y-3">
-                {upcomingAssignments.slice(0, 5).map((assignment) => (
+                {upcomingAssignments.slice(0, 5).map((assignment: AssignmentDto) => (
                   <Card key={assignment.id} className="p-4 hover:shadow-md transition-shadow">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">

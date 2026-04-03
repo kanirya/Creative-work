@@ -17,6 +17,11 @@ public class ApplicationDbContext : DbContext
     public DbSet<Transcription> Transcriptions => Set<Transcription>();
     public DbSet<TranscriptionSegment> TranscriptionSegments => Set<TranscriptionSegment>();
     public DbSet<Announcement> Announcements => Set<Announcement>();
+    public DbSet<SecurityEvent> SecurityEvents => Set<SecurityEvent>();
+    public DbSet<DataAccessLog> DataAccessLogs => Set<DataAccessLog>();
+    public DbSet<Role> Roles => Set<Role>();
+    public DbSet<Permission> Permissions => Set<Permission>();
+    public DbSet<LmsCredential> LmsCredentials => Set<LmsCredential>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

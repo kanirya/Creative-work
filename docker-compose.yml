@@ -32,6 +32,8 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/migrations/002_add_encryption.sql:/docker-entrypoint-initdb.d/02-encryption.sql:ro
+      - ./database/postgresql-encryption.conf:/etc/postgresql/postgresql-encryption.conf:ro
     networks:
       - edupilot-network
     healthcheck:
@@ -69,7 +71,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
       - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__DefaultConnection=${DATABASE_URL:-postgresql://edupilot:password@postgres:5432/edupilot}
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=${POSTGRES_DB:-edupilot};Username=${POSTGRES_USER:-edupilot};Password=${POSTGRES_PASSWORD:-password}
       - ConnectionStrings__Redis=${REDIS_URL:-redis://redis:6379}
       - JwtSettings__SecretKey=${JWT_SECRET_KEY}
       - JwtSettings__Issuer=${JWT_ISSUER:-EduPilot}
@@ -138,6 +140,9 @@ services:
       - DATABASE_URL=${DATABASE_URL:-postgresql://edupilot:password@postgres:5432/edupilot}
       - REDIS_URL=${REDIS_URL:-redis://redis:6379}
       - API_GATEWAY_URL=http://api-gateway:8080
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - LMS_BASE_URL=${LMS_BASE_URL:-https://lms.example.edu}
+      - LMS_LOGIN_URL=${LMS_LOGIN_URL:-https://lms.example.edu/login}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
     ports:
       - "8002:8002"
@@ -200,6 +205,8 @@ services:
       - SCRAPER_SERVICE_URL=http://lms-scraper:8002
       - TRANSCRIPTION_SERVICE_URL=http://transcription:8003
       - AI_AGENT_SERVICE_URL=http://ai-agent:8001
+      - LMS_SCRAPER_URL=http://lms-scraper:8002
+      - TRANSCRIPTION_URL=http://transcription:8003
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
     ports:
       - "8004:8004"

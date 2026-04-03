@@ -87,13 +87,3 @@ public class SchedulerHttpClient : ISchedulerService
         }
     }
 }
-
-public class JobInfo
-{
-    public Guid JobId { get; set; }
-    public string JobType { get; set; } = string.Empty;
-    public string CronExpression { get; set; } = string.Empty;
-    public DateTime? NextRunTime { get; set; }
-    public DateTime? LastRunTime { get; set; }
-    public string Status { get; set; } = string.Empty;
-}

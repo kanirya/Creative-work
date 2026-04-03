@@ -24,8 +24,8 @@ export default function QueryPage() {
 
     try {
       const result = await submitQuery.mutateAsync({
-        text: query,
-        isVoice: false,
+        query: query,
+        type: 'text',
       });
       setResponse(result);
     } catch (error) {
@@ -57,8 +57,8 @@ export default function QueryPage() {
 
       try {
         const result = await submitQuery.mutateAsync({
-          text: transcript,
-          isVoice: true,
+          query: transcript,
+          type: 'voice',
         });
         setResponse(result);
       } catch (error) {
@@ -136,7 +136,7 @@ export default function QueryPage() {
 
           {/* Response Display */}
           {response && (
-            <Card className="p-6" role="region" aria-label="AI response">
+            <Card className="p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Response</h2>
               
               <div className="prose max-w-none">
@@ -144,18 +144,18 @@ export default function QueryPage() {
               </div>
 
               {/* Confidence Score */}
-              {response.confidenceScore !== undefined && (
+              {response.confidence !== undefined && (
                 <div className="mt-4 pt-4 border-t border-gray-200">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Confidence Score:</span>
                     <span className="text-sm font-medium text-gray-900">
-                      {(response.confidenceScore * 100).toFixed(0)}%
+                      {(response.confidence * 100).toFixed(0)}%
                     </span>
                   </div>
                   <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
                     <div
                       className="bg-blue-600 h-2 rounded-full transition-all"
-                      style={{ width: `${response.confidenceScore * 100}%` }}
+                      style={{ width: `${response.confidence * 100}%` }}
                     />
                   </div>
                 </div>
@@ -168,7 +168,7 @@ export default function QueryPage() {
                   <ul className="space-y-2">
                     {response.sources.map((source, index) => (
                       <li key={index} className="text-sm text-gray-600">
-                        <span className="font-medium text-gray-900">•</span> {source}
+                        <span className="font-medium text-gray-900">•</span> {source.title}
                       </li>
                     ))}
                   </ul>

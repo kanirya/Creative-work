@@ -39,6 +39,10 @@ COPY --from=builder /app/apps/web/public ./apps/web/public
 # Copy nginx configuration
 COPY apps/web/nginx.conf /etc/nginx/nginx.conf
 
+# Copy startup script
+COPY apps/web/start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
 # Create non-root user
 RUN addgroup -g 1000 appuser && \
     adduser -D -u 1000 -G appuser appuser && \
@@ -48,11 +52,8 @@ RUN addgroup -g 1000 appuser && \
 EXPOSE 3000 80
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:80/api/health || exit 1
 
-# Switch to non-root user
-USER appuser
-
-# Start both Next.js server and nginx
-CMD ["sh", "-c", "node apps/web/server.js & nginx -g 'daemon off;'"]
+# Start both Next.js server and nginx using startup script
+CMD ["/app/start.sh"]

@@ -99,12 +99,3 @@ public class TranscriptionSegment
     public double StartTime { get; set; }
     public double EndTime { get; set; }
 }
-
-public enum TranscriptionStatus
-{
-    Unknown,
-    Queued,
-    Processing,
-    Completed,
-    Failed
-}
