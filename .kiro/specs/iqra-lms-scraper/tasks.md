@@ -96,7 +96,7 @@ The scraper uses Playwright to automate the full Microsoft login flow, then scra
     - Test course extraction with real Moodle HTML structure
     - Test handling of empty course list
 
-- [ ] 4. Implement assignments scraper
+- [x] 4. Implement assignments scraper
   - [x] 4.1 Discover all assignment activities across courses
     - For each enrolled course, navigate to course page
     - Find all assignment links: `a[href*="/mod/assign/view.php"]`
@@ -111,73 +111,73 @@ The scraper uses Playwright to automate the full Microsoft login flow, then scra
     - Parse Moodle date format: `"Sunday, 15 December 2024, 11:59 PM"`
     - Return `AssignmentData` with all real fields
 
-  - [ ] 4.3 Write unit tests for assignment scraper
+  - [x] 4.3 Write unit tests for assignment scraper
     - Test date parsing for Moodle date format
     - Test extraction with sample assignment page HTML
     - Test handling of ungraded/no-submission assignments
 
-- [ ] 5. Implement grades scraper
-  - [ ] 5.1 Scrape grade overview report
+- [x] 5. Implement grades scraper
+  - [x] 5.1 Scrape grade overview report
     - Navigate to `https://lms.iqra.edu.pk/grade/report/overview/index.php`
     - Extract per-course grade summary: course name, grade, percentage
     - Handle "No grade" case gracefully
 
-  - [ ] 5.2 Scrape detailed grade report per course
+  - [x] 5.2 Scrape detailed grade report per course
     - For each course, navigate to `/grade/report/user/index.php?id=<courseid>`
     - Extract grade table: item name, grade, percentage, feedback
     - Map grade items to assignment names
     - Return `GradeData` list with course_id, item_name, grade, max_grade, percentage
 
-  - [ ] 5.3 Add `GradeData` model to `models.py`
+  - [x] 5.3 Add `GradeData` model to `models.py`
     - Fields: `course_id`, `course_name`, `item_name`, `grade`, `max_grade`, `percentage`, `feedback`
     - Add `GradeData` to `ScrapingResult` response model
 
-  - [ ] 5.4 Write unit tests for grades scraper
+  - [x] 5.4 Write unit tests for grades scraper
     - Test grade table extraction
     - Test percentage calculation
     - Test handling of missing grades
 
-- [ ] 6. Implement announcements scraper
-  - [ ] 6.1 Scrape course announcements (forum posts)
+- [x] 6. Implement announcements scraper
+  - [x] 6.1 Scrape course announcements (forum posts)
     - For each course, find the "Announcements" forum: `a[href*="/mod/forum/view.php"]`
     - Navigate to the forum and extract all discussion threads
     - For each thread: title, author, date posted, first post content
     - Return `AnnouncementData` with real course_id and content
 
-  - [ ] 6.2 Scrape site-wide announcements
+  - [x] 6.2 Scrape site-wide announcements
     - Check `https://lms.iqra.edu.pk/` for site announcements block
     - Extract any global announcements visible on dashboard
     - Tag these with `course_code = "SITE"`
 
-  - [ ] 6.3 Write unit tests for announcements scraper
+  - [x] 6.3 Write unit tests for announcements scraper
     - Test forum thread extraction
     - Test date parsing for Moodle forum dates
 
-- [ ] 7. Implement calendar/schedule scraper
-  - [ ] 7.1 Scrape upcoming events from Moodle calendar
+- [x] 7. Implement calendar/schedule scraper
+  - [x] 7.1 Scrape upcoming events from Moodle calendar
     - Navigate to `https://lms.iqra.edu.pk/calendar/view.php?view=month`
     - Extract all events: name, date, time, course, event type (assignment due, quiz, etc.)
     - Also fetch upcoming events from dashboard calendar block
     - Return `ScheduleEvent` list
 
-  - [ ] 7.2 Add `ScheduleEvent` model to `models.py`
+  - [x] 7.2 Add `ScheduleEvent` model to `models.py`
     - Fields: `event_name`, `event_type`, `course_name`, `course_id`, `start_datetime`, `end_datetime`, `description`, `url`
 
-  - [ ] 7.3 Write unit tests for calendar scraper
+  - [x] 7.3 Write unit tests for calendar scraper
     - Test event extraction from calendar page
     - Test event type classification
 
-- [ ] 8. Implement quiz/exam scraper
-  - [ ] 8.1 Discover quiz activities across courses
+- [x] 8. Implement quiz/exam scraper
+  - [x] 8.1 Discover quiz activities across courses
     - For each course, find quiz links: `a[href*="/mod/quiz/view.php"]`
     - Extract quiz name, open/close dates, attempt status
     - Return `QuizData` list
 
-  - [ ] 8.2 Add `QuizData` model to `models.py`
+  - [x] 8.2 Add `QuizData` model to `models.py`
     - Fields: `course_id`, `quiz_name`, `opens_at`, `closes_at`, `time_limit`, `attempts_allowed`, `attempt_status`, `best_grade`
 
-- [ ] 9. Refactor scrapers.py with real Moodle selectors
-  - [ ] 9.1 Replace all placeholder selectors with real Moodle selectors
+- [x] 9. Refactor scrapers.py with real Moodle selectors
+  - [x] 9.1 Replace all placeholder selectors with real Moodle selectors
     - Update `scrape_courses()` with selectors from task 3.1
     - Update `scrape_assignments()` with selectors from task 4.1/4.2
     - Update `scrape_announcements()` with selectors from task 6.1
@@ -185,56 +185,56 @@ The scraper uses Playwright to automate the full Microsoft login flow, then scra
     - Update `scrape_schedule()` with selectors from task 7.1
     - Remove all `# TODO` comments and placeholder logic
 
-  - [ ] 9.2 Add comprehensive error handling per scraper
+  - [x] 9.2 Add comprehensive error handling per scraper
     - Wrap each scraper in try/except with specific error types
     - Log page URL and selector that failed
     - Return partial results rather than failing entirely
     - Add timeout handling: if page takes >30s, skip and log warning
 
-  - [ ] 9.3 Add scraper result validation
+  - [x] 9.3 Add scraper result validation
     - Validate that scraped data is non-empty and plausible
     - Log warning if 0 courses found (likely auth failure or page change)
     - Add sanity checks: course names should be non-empty strings, dates should be parseable
 
-- [ ] 10. Update data storage service
-  - [ ] 10.1 Update `data_storage.py` to store grades and schedule
+- [x] 10. Update data storage service
+  - [x] 10.1 Update `data_storage.py` to store grades and schedule
     - Add `store_grades(student_id, grades)` method
     - Add `store_schedule_events(student_id, events)` method
     - Add `store_quizzes(student_id, quizzes)` method
     - Ensure upsert logic (update if exists, insert if new) using `ON CONFLICT DO UPDATE`
 
-  - [ ] 10.2 Update embedding generation for new data types
+  - [x] 10.2 Update embedding generation for new data types
     - Generate embeddings for grade items: `"Grade for {item_name} in {course_name}: {grade}/{max_grade}"`
     - Generate embeddings for schedule events: `"Event: {name} on {date} for {course}"`
     - Store all embeddings in `document_embeddings` table with correct `source_type`
 
-  - [ ] 10.3 Add database migration for grades and schedule tables
+  - [x] 10.3 Add database migration for grades and schedule tables
     - Create `grades` table: `id, student_id, course_id, item_name, grade, max_grade, percentage, feedback, scraped_at`
     - Create `schedule_events` table: `id, student_id, event_name, event_type, course_id, start_datetime, end_datetime, description, url, scraped_at`
     - Create `quizzes` table: `id, student_id, course_id, quiz_name, opens_at, closes_at, attempt_status, best_grade, scraped_at`
     - Write migration file: `database/migrations/003_add_grades_schedule.sql`
 
-- [ ] 11. Update scraper router and API
-  - [ ] 11.1 Update `ScrapeRequest` model for Microsoft auth
+- [x] 11. Update scraper router and API
+  - [x] 11.1 Update `ScrapeRequest` model for Microsoft auth
     - Remove `lms_username` and `lms_password` fields (no longer used)
     - Add `ms_email: str` and `ms_password: str` fields (Microsoft credentials)
     - Or use service-level credentials from env vars (preferred for security)
     - Add `scrape_types: List[str]` field to allow selective scraping (courses, assignments, grades, etc.)
 
-  - [ ] 11.2 Update `perform_scraping()` background task
+  - [x] 11.2 Update `perform_scraping()` background task
     - Call all scrapers: courses, assignments, grades, announcements, schedule, quizzes
     - Store all results via updated `data_storage.py`
     - Update `ScrapingResult` to include `grades_count`, `events_count`, `quizzes_count`
     - Add per-scraper timing metrics to logs
 
-  - [ ] 11.3 Add scraping result endpoint
+  - [x] 11.3 Add scraping result endpoint
     - `GET /api/scrape/results/{student_id}` — return last scraped data summary
     - `GET /api/scrape/courses/{student_id}` — return scraped courses
     - `GET /api/scrape/assignments/{student_id}` — return scraped assignments
     - `GET /api/scrape/grades/{student_id}` — return scraped grades
 
-- [ ] 12. Update configuration and environment
-  - [ ] 12.1 Update `config.py` for Microsoft auth settings
+- [x] 12. Update configuration and environment
+  - [x] 12.1 Update `config.py` for Microsoft auth settings
     - Add `ms_email: str` — Microsoft account email
     - Add `ms_password: str` — Microsoft account password
     - Add `ms_tenant_id: str = "organizations"` — Azure AD tenant
@@ -242,26 +242,26 @@ The scraper uses Playwright to automate the full Microsoft login flow, then scra
     - Add `scrape_interval_hours: int = 6` — how often to re-scrape
     - Remove `lms_login_url` (no longer needed, OIDC URL is hardcoded)
 
-  - [ ] 12.2 Update `.env.example` with new variables
+  - [x] 12.2 Update `.env.example` with new variables
     - Add `MS_EMAIL=student@iqra.edu.pk`
     - Add `MS_PASSWORD=your_microsoft_password`
     - Add `SESSION_STORAGE_PATH=/tmp/moodle_session.json`
     - Document that these are Microsoft 365 credentials, not Moodle credentials
 
-  - [ ] 12.3 Update `docker-compose.yml` for new env vars
+  - [x] 12.3 Update `docker-compose.yml` for new env vars
     - Add `MS_EMAIL` and `MS_PASSWORD` to lms-scraper service environment
     - Add `SESSION_STORAGE_PATH` env var
     - Add volume mount for session storage: `./data/sessions:/tmp`
 
-- [ ] 13. Add Playwright browser configuration for Microsoft login
-  - [ ] 13.1 Configure browser for Microsoft login compatibility
+- [x] 13. Add Playwright browser configuration for Microsoft login
+  - [x] 13.1 Configure browser for Microsoft login compatibility
     - Set realistic user agent string (Chrome on Windows)
     - Set viewport to 1920x1080
     - Disable automation detection flags: `--disable-blink-features=AutomationControlled`
     - Set `navigator.webdriver = false` via page `addInitScript`
     - These prevent Microsoft from blocking automated logins
 
-  - [ ] 13.2 Handle Microsoft login page variations
+  - [x] 13.2 Handle Microsoft login page variations
     - Handle "Pick an account" page if multiple accounts are cached
     - Handle "Stay signed in?" prompt — always click "No"
     - Handle "Permissions requested" consent screen — click "Accept" if present
@@ -269,7 +269,7 @@ The scraper uses Playwright to automate the full Microsoft login flow, then scra
     - Add 2-second delays between form interactions to avoid bot detection
 
 - [ ] 14. Implement scraping scheduler integration
-  - [ ] 14.1 Update scheduler service to use new scraper API
+  - [-] 14.1 Update scheduler service to use new scraper API
     - Update `services/scheduler/app/jobs/scraping_jobs.py`
     - Change scrape request payload to use `ms_email`/`ms_password` from env
     - Schedule scraping every 6 hours per student

@@ -20,13 +20,11 @@ async def schedule_job(request: Request, job_request: ScheduleJobRequest):
         job_manager = get_job_manager()
         
         if job_request.job_type == JobType.SCRAPING:
-            # TODO: Get LMS credentials from database or request
-            # For now, this is a placeholder
+            # Microsoft credentials are stored in lms-scraper env vars (MS_EMAIL/MS_PASSWORD)
+            # No need to pass credentials here — the scraper service reads them from its own env
             job_id = await job_manager.schedule_scraping_job(
                 student_id=job_request.student_id,
-                lms_username="placeholder",
-                lms_password="placeholder",
-                cron_expression=job_request.cron_expression
+                cron_expression=job_request.cron_expression,
             )
             
             return JobInfo(

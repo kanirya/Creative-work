@@ -22,57 +22,110 @@ class JobExecutor:
         self,
         job_id: UUID,
         student_id: UUID,
-        lms_username: str,
-        lms_password: str
+        scrape_types: Optional[list] = None,
     ):
         """
-        Execute scraping job with retry and alerting
-        
+        Execute scraping job with retry and alerting.
+        Microsoft credentials are read from environment variables (MS_EMAIL, MS_PASSWORD)
+        configured in the lms-scraper service — not passed here.
+
         Args:
             job_id: Job ID
             student_id: Student ID
-            lms_username: LMS username
-            lms_password: LMS password
+            scrape_types: List of data types to scrape (default: all)
         """
-        retry_count = 0
-        
+        if scrape_types is None:
+            scrape_types = ["courses", "assignments", "grades", "announcements", "schedule", "quizzes"]
+
+        consecutive_failures = getattr(self, f"_failures_{student_id}", 0)
+
         try:
-            await self._execute_scraping_with_retry(student_id, lms_username, lms_password)
+            await self._execute_scraping_with_retry(student_id, scrape_types)
+            # Reset failure counter on success
+            setattr(self, f"_failures_{student_id}", 0)
+
+            # Health check: verify data was actually stored
+            await self._verify_scraping_result(student_id)
+
         except RetryError as e:
-            retry_count = 3
+            consecutive_failures += 1
+            setattr(self, f"_failures_{student_id}", consecutive_failures)
             error_message = str(e.last_attempt.exception())
-            logger.error(f"Scraping job {job_id} failed after {retry_count} retries")
-            
-            # Send alert
+            logger.error(f"Scraping job {job_id} failed after 3 retries (total failures: {consecutive_failures})")
+
             await self.alerting_service.send_job_failure_alert(
                 job_id=job_id,
                 job_type="scraping",
                 error_message=error_message,
-                retry_count=retry_count
+                retry_count=3,
             )
-            
             raise
-    
+
     @retry(
         stop=stop_after_attempt(3),
-        wait=wait_exponential(multiplier=1, min=2, max=30)
+        wait=wait_exponential(multiplier=1, min=4, max=60),
     )
-    async def _execute_scraping_with_retry(self, student_id: UUID, lms_username: str, lms_password: str):
-        """Execute scraping with retry logic"""
-        logger.info(f"Executing scraping job for student {student_id}")
-        
+    async def _execute_scraping_with_retry(self, student_id: UUID, scrape_types: list):
+        """Trigger scraping via lms-scraper service API."""
+        logger.info(f"Triggering scraping for student {student_id}, types={scrape_types}")
+
         async with httpx.AsyncClient(timeout=300.0) as client:
             response = await client.post(
-                f"{self.lms_scraper_url}/api/scrape",
+                f"{self.lms_scraper_url}/api/scrape/",
                 json={
                     "student_id": str(student_id),
-                    "lms_username": lms_username,
-                    "lms_password": lms_password
-                }
+                    "scrape_types": scrape_types,
+                },
             )
-            
             response.raise_for_status()
-            logger.info(f"Scraping job completed for student {student_id}")
+            logger.info(f"Scraping triggered for student {student_id}: {response.json()}")
+
+    async def _verify_scraping_result(self, student_id: UUID):
+        """
+        Poll scraping status until completed or failed.
+        If 0 courses returned, log a warning (possible auth failure).
+        """
+        import asyncio
+
+        max_wait_seconds = 600  # 10 minutes max
+        poll_interval = 15
+        elapsed = 0
+
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            while elapsed < max_wait_seconds:
+                await asyncio.sleep(poll_interval)
+                elapsed += poll_interval
+
+                try:
+                    resp = await client.get(
+                        f"{self.lms_scraper_url}/api/scrape/status/{student_id}"
+                    )
+                    data = resp.json()
+                    status = data.get("status")
+
+                    if status == "completed":
+                        courses = data.get("courses_count", 0)
+                        if courses == 0:
+                            logger.warning(
+                                f"Scraping completed for student {student_id} but 0 courses found. "
+                                "Possible auth failure or LMS structure change."
+                            )
+                        else:
+                            logger.info(
+                                f"Scraping verified for student {student_id}: "
+                                f"{courses} courses, {data.get('assignments_count', 0)} assignments"
+                            )
+                        return
+
+                    elif status == "failed":
+                        error = data.get("error_message", "unknown error")
+                        raise Exception(f"Scraping failed: {error}")
+
+                except httpx.HTTPError as e:
+                    logger.debug(f"Status poll error: {e}")
+                    continue
+
+        logger.warning(f"Scraping status check timed out for student {student_id}")
     
     async def execute_transcription_job_with_retry(
         self,

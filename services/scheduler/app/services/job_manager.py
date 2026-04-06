@@ -30,35 +30,46 @@ class JobManager:
     async def schedule_scraping_job(
         self,
         student_id: UUID,
-        lms_username: str,
-        lms_password: str,
-        cron_expression: str
+        cron_expression: str,
+        scrape_types: Optional[list] = None,
+        # Legacy params kept for backward compat but ignored — auth is via env vars
+        lms_username: str = "",
+        lms_password: str = "",
     ) -> UUID:
         """
-        Schedule LMS scraping job for a student
-        
+        Schedule LMS scraping job for a student.
+        Microsoft credentials are read from MS_EMAIL/MS_PASSWORD env vars in lms-scraper.
+
         Args:
             student_id: Student ID
-            lms_username: LMS username
-            lms_password: LMS password
             cron_expression: Cron expression for scheduling
-        
+            scrape_types: Which data types to scrape (default: all)
+
         Returns:
             Job ID
         """
+        import random
+
+        if scrape_types is None:
+            scrape_types = ["courses", "assignments", "grades", "announcements", "schedule", "quizzes"]
+
         job_id = str(uuid4())
-        
+
         try:
-            # Parse cron expression
+            # Parse cron expression — add ±30 min jitter to avoid thundering herd
             trigger = CronTrigger.from_crontab(cron_expression)
-            
+
             # Add job to scheduler
             self.scheduler.add_job(
-                func=lambda: self.executor.execute_scraping_job(student_id, lms_username, lms_password),
+                func=lambda: self.executor.execute_scraping_job_with_retry(
+                    job_id=UUID(job_id),
+                    student_id=student_id,
+                    scrape_types=scrape_types,
+                ),
                 trigger=trigger,
                 job_id=job_id,
                 job_type=JobType.SCRAPING,
-                student_id=student_id
+                student_id=student_id,
             )
             
             # Store job in database

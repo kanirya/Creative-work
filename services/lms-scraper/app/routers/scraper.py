@@ -178,3 +178,20 @@ async def get_scraping_status(request: Request, student_id: UUID):
         assignments_count=data.get("assignments_count", 0),
         grades_count=data.get("grades_count", 0),
     )
+
+
+@router.get("/results/{student_id}")
+async def get_scraping_results(student_id: UUID):
+    """Return last scraping summary for a student."""
+    data = _status_store.get(str(student_id))
+    if not data:
+        return {"student_id": str(student_id), "message": "No scraping data found"}
+    return {
+        "student_id": str(student_id),
+        "status": data.get("status"),
+        "last_scraped_at": data.get("last_scraped_at"),
+        "courses_count": data.get("courses_count", 0),
+        "assignments_count": data.get("assignments_count", 0),
+        "grades_count": data.get("grades_count", 0),
+        "error_message": data.get("error_message"),
+    }
