@@ -174,4 +174,67 @@ public class AdminController : BaseApiController
 
         return Ok(new ApiResponse { Success = true });
     }
+
+    /// <summary>
+    /// Get FERPA data access logs for a student (admin only)
+    /// </summary>
+    [HttpGet("ferpa/access-logs/{studentId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> GetDataAccessLogs(
+        Guid studentId,
+        [FromQuery] DateTime? from = null,
+        [FromQuery] DateTime? to = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 50)
+    {
+        var query = _dbContext.DataAccessLogs
+            .Where(l => l.StudentId == studentId);
+
+        if (from.HasValue)
+            query = query.Where(l => l.AccessedAt >= from.Value);
+        if (to.HasValue)
+            query = query.Where(l => l.AccessedAt <= to.Value);
+
+        var total = await query.CountAsync();
+        var logs = await query
+            .OrderByDescending(l => l.AccessedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(l => new
+            {
+                l.Id,
+                l.StudentId,
+                l.AccessedByUserId,
+                l.AccessedByEmail,
+                l.ResourceType,
+                l.ResourceId,
+                l.Action,
+                l.IpAddress,
+                l.AccessedAt,
+                l.Purpose
+            })
+            .ToListAsync();
+
+        return Ok(new ApiResponse<object>
+        {
+            Success = true,
+            Data = new { total, page, pageSize, logs }
+        });
+    }
+
+    /// <summary>
+    /// Trigger FERPA data retention policy enforcement (admin only)
+    /// </summary>
+    [HttpPost("ferpa/apply-retention")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> ApplyRetentionPolicies()
+    {
+        await _retentionService.ApplyRetentionPoliciesAsync();
+        _logger.LogInformation("FERPA data retention policies applied by admin");
+        return Ok(new ApiResponse { Success = true });
+    }
 }
