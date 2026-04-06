@@ -268,33 +268,33 @@ The scraper uses Playwright to automate the full Microsoft login flow, then scra
     - Handle password change prompts — raise `PasswordChangeRequiredError`
     - Add 2-second delays between form interactions to avoid bot detection
 
-- [ ] 14. Implement scraping scheduler integration
-  - [-] 14.1 Update scheduler service to use new scraper API
+- [x] 14. Implement scraping scheduler integration
+  - [x] 14.1 Update scheduler service to use new scraper API
     - Update `services/scheduler/app/jobs/scraping_jobs.py`
     - Change scrape request payload to use `ms_email`/`ms_password` from env
     - Schedule scraping every 6 hours per student
     - Add jitter (±30 minutes) to avoid all students scraping simultaneously
 
-  - [ ] 14.2 Add scraping health check to scheduler
+  - [x] 14.2 Add scraping health check to scheduler
     - After each scraping job, verify data was actually stored
     - If 0 courses returned, trigger re-authentication and retry once
     - Alert admin if scraping fails 3 consecutive times
 
-- [ ] 15. Write end-to-end integration tests
-  - [ ] 15.1 Write full scraping pipeline integration test
+- [-] 15. Write end-to-end integration tests
+  - [x] 15.1 Write full scraping pipeline integration test
     - Test: authenticate → scrape courses → verify at least 1 course returned
     - Test: authenticate → scrape assignments → verify assignment data structure
     - Test: authenticate → scrape grades → verify grade data
     - Mark all as `@pytest.mark.integration` — requires real credentials
     - Add `pytest.ini` with `integration` marker registration
 
-  - [ ] 15.2 Write mock-based unit tests for full pipeline
+  - [-] 15.2 Write mock-based unit tests for full pipeline
     - Mock Playwright browser context with pre-recorded HTML fixtures
     - Test full `perform_scraping()` flow with mocked browser
     - Test error handling: auth failure, scraper timeout, storage failure
     - Achieve >80% code coverage on scraper service
 
-  - [ ] 15.3 Create HTML fixtures from real LMS pages
+  - [x] 15.3 Create HTML fixtures from real LMS pages
     - Save real Moodle page HTML for: dashboard, course page, assignment page, grades page
     - Store in `services/lms-scraper/tests/fixtures/`
     - Use these fixtures in unit tests to avoid hitting real LMS
