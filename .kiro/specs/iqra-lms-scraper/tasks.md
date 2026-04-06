@@ -43,7 +43,7 @@ The scraper uses Playwright to automate the full Microsoft login flow, then scra
     - Document grade report URL pattern (`/grade/report/user/index.php?id=<courseid>`)
     - _Output: append to `services/lms-scraper/docs/moodle-structure.md`_
 
-- [-] 2. Refactor authentication service for Microsoft OIDC
+- [x] 2. Refactor authentication service for Microsoft OIDC
   - [x] 2.1 Replace username/password auth with Microsoft OIDC Playwright flow
     - Rewrite `services/lms-scraper/app/services/lms_auth.py`
     - Navigate to `https://lms.iqra.edu.pk/auth/oidc/?source=loginpage`
@@ -69,14 +69,14 @@ The scraper uses Playwright to automate the full Microsoft login flow, then scra
     - Add config flag `SKIP_MFA_CHECK=true` for accounts without MFA
     - _Note: Use a dedicated service account without MFA for production_
 
-  - [ ] 2.4 Write auth integration test
+  - [x] 2.4 Write auth integration test
     - Test full login flow against real LMS (requires env vars)
     - Assert session cookie `MoodleSession` is present after login
     - Assert dashboard URL is reached
     - Mark test as `@pytest.mark.integration` so it's skipped in CI without credentials
 
-- [ ] 3. Implement Moodle dashboard scraper
-  - [ ] 3.1 Scrape enrolled courses from dashboard
+- [x] 3. Implement Moodle dashboard scraper
+  - [x] 3.1 Scrape enrolled courses from dashboard
     - Navigate to `https://lms.iqra.edu.pk/my/`
     - Extract all course cards: course name, course URL, course ID (from URL `?id=<n>`)
     - Extract course short name / code from the card
@@ -84,26 +84,26 @@ The scraper uses Playwright to automate the full Microsoft login flow, then scra
     - Return list of `CourseData` with real Moodle course IDs
     - _Moodle selector: `.coursebox`, `.course-info-container`, `[data-courseid]`_
 
-  - [ ] 3.2 Scrape course details page
+  - [x] 3.2 Scrape course details page
     - For each course, navigate to `https://lms.iqra.edu.pk/course/view.php?id=<id>`
     - Extract course full name, short name, category, semester info
     - Extract list of sections and activity names
     - Extract enrolled teacher/instructor names from course header
     - Return enriched `CourseData` with all fields populated
 
-  - [ ] 3.3 Write unit tests for dashboard scraper
+  - [x] 3.3 Write unit tests for dashboard scraper
     - Mock Playwright page with sample Moodle HTML fixtures
     - Test course extraction with real Moodle HTML structure
     - Test handling of empty course list
 
 - [ ] 4. Implement assignments scraper
-  - [ ] 4.1 Discover all assignment activities across courses
+  - [x] 4.1 Discover all assignment activities across courses
     - For each enrolled course, navigate to course page
     - Find all assignment links: `a[href*="/mod/assign/view.php"]`
     - Extract assignment name, due date from course page activity list
     - Build list of assignment URLs to scrape
 
-  - [ ] 4.2 Scrape individual assignment details
+  - [x] 4.2 Scrape individual assignment details
     - Navigate to each assignment URL
     - Extract: title, description (`.box.generalbox`), due date (`.submissionstatustable`)
     - Extract: max grade, submission status (submitted/not submitted/late)
