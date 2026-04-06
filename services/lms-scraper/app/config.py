@@ -7,21 +7,30 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 8002
     log_level: str = "info"
-    
+
+    # Microsoft Azure AD credentials (for OIDC login)
+    ms_email: str = ""
+    ms_password: str = ""
+
     # LMS Configuration
-    lms_base_url: str
-    lms_login_url: str
+    lms_base_url: str = "https://lms.iqra.edu.pk"
     lms_timeout: int = 30000
-    
+
+    # Session persistence
+    session_storage_path: str = "/tmp/moodle_session.json"
+
+    # Scraping
+    scrape_interval_hours: int = 6
+
     # API Gateway
-    api_gateway_url: str
-    
+    api_gateway_url: str = "http://api-gateway:8080"
+
     # Database
-    database_url: str
-    
+    database_url: str = ""
+
     # OpenAI
-    openai_api_key: str
-    embedding_model: str = "text-embedding-ada-002"
+    openai_api_key: str = ""
+    embedding_model: str = "text-embedding-3-small"
 
     class Config:
         env_file = ".env"
