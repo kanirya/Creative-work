@@ -1,6 +1,8 @@
 using EduPilot.Application.Features.Students.Commands.SyncStudentData;
+using EduPilot.Application.Features.Students.Queries.ExportStudentData;
 using EduPilot.Application.Features.Students.Queries.GetAssignments;
 using EduPilot.Application.Features.Students.Queries.GetStudentCourses;
+using EduPilot.Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -13,6 +15,13 @@ namespace EduPilot.API.Controllers;
 [Authorize]
 public class StudentsController : BaseApiController
 {
+    private readonly IFerpaAuditService _ferpaAudit;
+
+    public StudentsController(IFerpaAuditService ferpaAudit)
+    {
+        _ferpaAudit = ferpaAudit;
+    }
+
     /// <summary>
     /// Get all courses for the authenticated student
     /// </summary>
@@ -24,6 +33,12 @@ public class StudentsController : BaseApiController
     {
         var studentId = GetStudentId();
         var result = await Mediator.Send(new GetStudentCoursesQuery { StudentId = studentId });
+
+        await _ferpaAudit.LogAccessAsync(
+            studentId, studentId, GetUserEmail(),
+            "Courses", studentId, "READ",
+            GetIpAddress(), GetUserAgent());
+
         return HandleResult(result);
     }
 
@@ -50,6 +65,12 @@ public class StudentsController : BaseApiController
             UpcomingOnly = upcomingOnly,
             DaysAhead = daysAhead
         });
+
+        await _ferpaAudit.LogAccessAsync(
+            studentId, studentId, GetUserEmail(),
+            "Assignments", studentId, "READ",
+            GetIpAddress(), GetUserAgent());
+
         return HandleResult(result);
     }
 
@@ -67,9 +88,49 @@ public class StudentsController : BaseApiController
         return HandleResult(result);
     }
 
+    /// <summary>
+    /// Export all educational records for the authenticated student (FERPA data portability)
+    /// </summary>
+    /// <returns>Complete student data export in JSON format</returns>
+    [HttpGet("export")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ExportData()
+    {
+        var studentId = GetStudentId();
+        var result = await Mediator.Send(new ExportStudentDataQuery { StudentId = studentId });
+
+        if (result.IsSuccess)
+        {
+            await _ferpaAudit.LogAccessAsync(
+                studentId, studentId, GetUserEmail(),
+                "StudentDataExport", studentId, "EXPORT",
+                GetIpAddress(), GetUserAgent(),
+                purpose: "FERPA data export request by student");
+        }
+
+        return HandleResult(result);
+    }
+
     private Guid GetStudentId()
     {
         var studentIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         return Guid.Parse(studentIdClaim ?? throw new UnauthorizedAccessException("Student ID not found in token"));
+    }
+
+    private string GetUserEmail()
+    {
+        return User.FindFirst(ClaimTypes.Email)?.Value ?? "unknown";
+    }
+
+    private string GetIpAddress()
+    {
+        return HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+    }
+
+    private string GetUserAgent()
+    {
+        return HttpContext.Request.Headers["User-Agent"].ToString();
     }
 }

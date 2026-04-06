@@ -1,4 +1,5 @@
 using EduPilot.Infrastructure.Persistence;
+using EduPilot.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,11 +16,16 @@ public class AdminController : BaseApiController
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly ILogger<AdminController> _logger;
+    private readonly DataRetentionService _retentionService;
 
-    public AdminController(ApplicationDbContext dbContext, ILogger<AdminController> logger)
+    public AdminController(
+        ApplicationDbContext dbContext,
+        ILogger<AdminController> logger,
+        DataRetentionService retentionService)
     {
         _dbContext = dbContext;
         _logger = logger;
+        _retentionService = retentionService;
     }
 
     /// <summary>

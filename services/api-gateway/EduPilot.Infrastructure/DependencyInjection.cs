@@ -39,6 +39,8 @@ public static class DependencyInjection
         // Services
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddSingleton<IEncryptionService, EncryptionService>();
+        services.AddScoped<IFerpaAuditService, FerpaAuditService>();
+        services.AddScoped<DataRetentionService>();
 
         // HTTP Clients with Polly retry policies
         services.AddHttpClient<IQueryProcessor, QueryProcessorHttpClient>()
