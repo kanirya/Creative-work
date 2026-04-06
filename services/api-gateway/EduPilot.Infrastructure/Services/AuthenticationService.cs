@@ -21,16 +21,20 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<AuthenticationResult> AuthenticateAsync(Email email, string password, CancellationToken cancellationToken = default)
     {
-        // This method assumes password verification has already been done
-        // Generate JWT tokens
-        var accessToken = GenerateAccessToken(email.Value, Guid.NewGuid());
+        return await AuthenticateAsync(email, password, Guid.NewGuid(), Enumerable.Empty<string>(), cancellationToken);
+    }
+
+    public async Task<AuthenticationResult> AuthenticateAsync(Email email, string password, Guid studentId, IEnumerable<string> roles, CancellationToken cancellationToken = default)
+    {
+        // Generate JWT tokens with role claims
+        var accessToken = GenerateAccessToken(email.Value, studentId, roles);
         var refreshToken = GenerateRefreshToken();
         var expiresAt = DateTime.UtcNow.AddMinutes(GetAccessTokenExpiryMinutes());
 
         // Store refresh token in cache
         await _cacheService.SetAsync(
             $"refresh_token:{refreshToken}",
-            new { Email = email.Value, CreatedAt = DateTime.UtcNow },
+            new { Email = email.Value, StudentId = studentId.ToString(), CreatedAt = DateTime.UtcNow },
             TimeSpan.FromDays(GetRefreshTokenExpiryDays()),
             cancellationToken);
 
@@ -39,7 +43,8 @@ public class AuthenticationService : IAuthenticationService
             Success = true,
             AccessToken = accessToken,
             RefreshToken = refreshToken,
-            ExpiresAt = expiresAt
+            ExpiresAt = expiresAt,
+            StudentId = studentId
         };
     }
 
@@ -143,17 +148,30 @@ public class AuthenticationService : IAuthenticationService
 
     private string GenerateAccessToken(string email, Guid studentId)
     {
+        return GenerateAccessToken(email, studentId, Enumerable.Empty<string>());
+    }
+
+    private string GenerateAccessToken(string email, Guid studentId, IEnumerable<string> roles)
+    {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(GetSecretKey());
 
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Email, email),
+            new Claim(ClaimTypes.NameIdentifier, studentId.ToString()),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
+
+        // Add role claims
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.Email, email),
-                new Claim(ClaimTypes.NameIdentifier, studentId.ToString()),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            }),
+            Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddMinutes(GetAccessTokenExpiryMinutes()),
             Issuer = GetIssuer(),
             Audience = GetAudience(),

@@ -5,6 +5,7 @@ namespace EduPilot.Domain.Interfaces;
 public interface IAuthenticationService
 {
     Task<AuthenticationResult> AuthenticateAsync(Email email, string password, CancellationToken cancellationToken = default);
+    Task<AuthenticationResult> AuthenticateAsync(Email email, string password, Guid studentId, IEnumerable<string> roles, CancellationToken cancellationToken = default);
     Task<bool> ValidateTokenAsync(string token, CancellationToken cancellationToken = default);
     Task<RefreshTokenResult> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default);
     Task RevokeTokenAsync(string refreshToken, CancellationToken cancellationToken = default);

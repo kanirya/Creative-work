@@ -65,8 +65,9 @@ public class AuthenticateStudentCommandHandler : IRequestHandler<AuthenticateStu
                 return Result<LoginResponse>.Failure("Invalid email or password");
             }
 
-            // Authenticate and generate tokens
-            var authResult = await _authenticationService.AuthenticateAsync(email, request.Password, cancellationToken);
+            // Authenticate and generate tokens with role claims
+            var roleNames = student.Roles.Select(r => r.Name).ToList();
+            var authResult = await _authenticationService.AuthenticateAsync(email, request.Password, student.Id, roleNames, cancellationToken);
             
             if (!authResult.Success)
             {

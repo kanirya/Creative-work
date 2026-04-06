@@ -136,6 +136,8 @@ public class SecurityMonitoringMiddleware
         var userAgent = context.Request.Headers["User-Agent"].ToString();
         var requestPath = context.Request.Path.ToString();
         var requestMethod = context.Request.Method;
+        var correlationId = context.Request.Headers["X-Correlation-ID"].FirstOrDefault()
+            ?? context.TraceIdentifier;
 
         // Create security event
         var securityEvent = SecurityEvent.Create(
@@ -161,21 +163,23 @@ public class SecurityMonitoringMiddleware
             _logger.LogError(ex, "Failed to log security event to database");
         }
 
-        // Log to application logs
+        // Log to application logs with correlation ID, IP, path, and matched pattern
         _logger.LogWarning(
-            "Security threat detected and blocked: {EventType} from {IpAddress} - {Details}",
+            "Security threat detected and blocked: {EventType} | CorrelationId: {CorrelationId} | IP: {IpAddress} | Path: {RequestPath} | Pattern: {DetectionRule}",
             eventType,
+            correlationId,
             ipAddress,
+            requestPath,
             detectionRule);
 
-        // Return 403 Forbidden
-        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        // Return 400 Bad Request
+        context.Response.StatusCode = StatusCodes.Status400BadRequest;
         context.Response.ContentType = "application/json";
         await context.Response.WriteAsJsonAsync(new
         {
-            error = "Forbidden",
+            error = "Bad Request",
             message = "Request blocked due to security policy violation",
-            correlationId = context.TraceIdentifier
+            correlationId
         });
     }
 

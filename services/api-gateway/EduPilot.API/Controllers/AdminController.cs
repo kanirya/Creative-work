@@ -1,0 +1,171 @@
+using EduPilot.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace EduPilot.API.Controllers;
+
+/// <summary>
+/// Administrative endpoints protected by role-based access control.
+/// Requires the "Admin" role.
+/// </summary>
+[Authorize(Policy = "AdminPolicy")]
+[Route("api/admin")]
+public class AdminController : BaseApiController
+{
+    private readonly ApplicationDbContext _dbContext;
+    private readonly ILogger<AdminController> _logger;
+
+    public AdminController(ApplicationDbContext dbContext, ILogger<AdminController> logger)
+    {
+        _dbContext = dbContext;
+        _logger = logger;
+    }
+
+    /// <summary>
+    /// Get all students (admin only)
+    /// </summary>
+    [HttpGet("students")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> GetAllStudents()
+    {
+        var students = await _dbContext.Students
+            .Include(s => s.Roles)
+            .Select(s => new
+            {
+                s.Id,
+                Email = s.Email.Value,
+                s.FirstName,
+                s.LastName,
+                UniversityId = s.UniversityId.Value,
+                s.IsActive,
+                s.EnrolledAt,
+                Roles = s.Roles.Select(r => r.Name).ToList()
+            })
+            .ToListAsync();
+
+        return Ok(new ApiResponse<object> { Success = true, Data = students });
+    }
+
+    /// <summary>
+    /// Get all roles (admin only)
+    /// </summary>
+    [HttpGet("roles")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> GetAllRoles()
+    {
+        var roles = await _dbContext.Roles
+            .Include(r => r.Permissions)
+            .Select(r => new
+            {
+                r.Id,
+                r.Name,
+                r.Description,
+                r.CreatedAt,
+                Permissions = r.Permissions.Select(p => new { p.Id, p.Name, p.Resource, p.Action }).ToList()
+            })
+            .ToListAsync();
+
+        return Ok(new ApiResponse<object> { Success = true, Data = roles });
+    }
+
+    /// <summary>
+    /// Get all permissions (admin only)
+    /// </summary>
+    [HttpGet("permissions")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> GetAllPermissions()
+    {
+        var permissions = await _dbContext.Permissions
+            .Select(p => new { p.Id, p.Name, p.Resource, p.Action, p.Description })
+            .ToListAsync();
+
+        return Ok(new ApiResponse<object> { Success = true, Data = permissions });
+    }
+
+    /// <summary>
+    /// Assign a role to a student (admin only)
+    /// </summary>
+    [HttpPost("students/{studentId}/roles/{roleId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> AssignRole(Guid studentId, Guid roleId)
+    {
+        var student = await _dbContext.Students
+            .Include(s => s.Roles)
+            .FirstOrDefaultAsync(s => s.Id == studentId);
+
+        if (student == null)
+            return NotFound(new ApiResponse { Success = false, ErrorMessage = "Student not found" });
+
+        var role = await _dbContext.Roles.FindAsync(roleId);
+        if (role == null)
+            return NotFound(new ApiResponse { Success = false, ErrorMessage = "Role not found" });
+
+        student.AssignRole(role);
+        await _dbContext.SaveChangesAsync();
+
+        _logger.LogInformation("Role {RoleName} assigned to student {StudentId}", role.Name, studentId);
+
+        return Ok(new ApiResponse { Success = true });
+    }
+
+    /// <summary>
+    /// Remove a role from a student (admin only)
+    /// </summary>
+    [HttpDelete("students/{studentId}/roles/{roleId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> RemoveRole(Guid studentId, Guid roleId)
+    {
+        var student = await _dbContext.Students
+            .Include(s => s.Roles)
+            .FirstOrDefaultAsync(s => s.Id == studentId);
+
+        if (student == null)
+            return NotFound(new ApiResponse { Success = false, ErrorMessage = "Student not found" });
+
+        var role = student.Roles.FirstOrDefault(r => r.Id == roleId);
+        if (role == null)
+            return NotFound(new ApiResponse { Success = false, ErrorMessage = "Role not assigned to student" });
+
+        student.RemoveRole(role);
+        await _dbContext.SaveChangesAsync();
+
+        _logger.LogInformation("Role {RoleName} removed from student {StudentId}", role.Name, studentId);
+
+        return Ok(new ApiResponse { Success = true });
+    }
+
+    /// <summary>
+    /// Deactivate a student account (admin only)
+    /// </summary>
+    [HttpPost("students/{studentId}/deactivate")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> DeactivateStudent(Guid studentId)
+    {
+        var student = await _dbContext.Students.FindAsync(studentId);
+        if (student == null)
+            return NotFound(new ApiResponse { Success = false, ErrorMessage = "Student not found" });
+
+        student.Deactivate();
+        await _dbContext.SaveChangesAsync();
+
+        _logger.LogInformation("Student {StudentId} deactivated by admin", studentId);
+
+        return Ok(new ApiResponse { Success = true });
+    }
+}

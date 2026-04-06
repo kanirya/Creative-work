@@ -14,6 +14,8 @@ public class StudentRepository : Repository<Student>, IStudentRepository
     public async Task<Student?> GetByEmailAsync(Email email, CancellationToken cancellationToken = default)
     {
         return await _dbSet
+            .Include(s => s.Roles)
+                .ThenInclude(r => r.Permissions)
             .FirstOrDefaultAsync(s => s.Email == email, cancellationToken);
     }
 

@@ -723,7 +723,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - Encrypt sensitive fields in application layer
     - _Requirements: 16.2, 12.6_
 
-  - [-] 21.3 Implement role-based access control
+  - [x] 21.3 Implement role-based access control
     - Create Role and Permission entities
     - Implement authorization middleware in API Gateway
     - Add role checks to administrative endpoints
@@ -733,7 +733,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - **Property 34: Role-Based Access Control**
     - **Validates: Requirements 16.4**
 
-  - [~] 21.5 Implement security monitoring
+  - [x] 21.5 Implement security monitoring
     - Add detection for SQL injection patterns
     - Add detection for XSS payloads
     - Log security attempts with details
@@ -744,7 +744,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - **Property 35: Security Attempt Logging**
     - **Validates: Requirements 16.5**
 
-  - [~] 21.7 Implement FERPA compliance features
+  - [-] 21.7 Implement FERPA compliance features
     - Add data access logging
     - Implement data retention policies
     - Create data export functionality for students

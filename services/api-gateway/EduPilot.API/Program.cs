@@ -103,7 +103,18 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAuthorization();
+// Configure authorization policies for RBAC
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminPolicy", policy =>
+        policy.RequireRole("Admin"));
+
+    options.AddPolicy("AdminOrInstructor", policy =>
+        policy.RequireRole("Admin", "Instructor"));
+
+    options.AddPolicy("StudentPolicy", policy =>
+        policy.RequireRole("Admin", "Instructor", "Student"));
+});
 
 // Configure CORS
 builder.Services.AddCors(options =>
@@ -150,6 +161,7 @@ app.UseCors("AllowClientApps");
 app.UseHttpMetrics();
 
 app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseMiddleware<SecurityMonitoringMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseSerilogRequestLogging();
@@ -158,6 +170,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseMiddleware<RateLimitingMiddleware>();
+app.UseMiddleware<AuthorizationMiddleware>();
 
 app.MapControllers();
 
