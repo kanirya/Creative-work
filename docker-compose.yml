@@ -78,6 +78,8 @@ services:
       - JwtSettings__Audience=${JWT_AUDIENCE:-EduPilot}
       - JwtSettings__AccessTokenExpiryMinutes=${JWT_ACCESS_TOKEN_EXPIRY_MINUTES:-15}
       - JwtSettings__RefreshTokenExpiryDays=${JWT_REFRESH_TOKEN_EXPIRY_DAYS:-7}
+      - AES_ENCRYPTION_KEY=${AES_ENCRYPTION_KEY}
+      - AES_ENCRYPTION_IV=${AES_ENCRYPTION_IV}
       - ServiceUrls__AIAgentService=http://ai-agent:8001
       - ServiceUrls__LMSScraperService=http://lms-scraper:8002
       - ServiceUrls__TranscriptionService=http://transcription:8003
