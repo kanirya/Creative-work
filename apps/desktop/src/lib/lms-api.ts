@@ -100,9 +100,32 @@ export interface LMSScrapeAll {
 // ── API functions ─────────────────────────────────────────────────────────────
 
 export const lmsApi = {
+  // ── Login ──────────────────────────────────────────────────────────────────
+
+  startLogin: (email: string, password: string) =>
+    lmsFetch<{ status: string; message: string }>('/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    }),
+
+  getLoginStatus: () =>
+    lmsFetch<{
+      status: 'idle' | 'logging_in' | 'mfa_pending' | 'logged_in' | 'failed';
+      mfa_number: string | null;
+      error: string | null;
+      profile: LMSProfile | null;
+    }>('/login/status'),
+
+  clearSession: () =>
+    lmsFetch<{ message: string }>('/login/clear', { method: 'POST' }),
+
+  // ── Data ───────────────────────────────────────────────────────────────────
+
   getProfile: () => lmsFetch<LMSProfile>('/profile'),
 
   getCourses: () => lmsFetch<LMSCourse[]>('/courses'),
+
+  getAllAssignments: () => lmsFetch<LMSAssignment[]>('/assignments/all'),
 
   getAssignments: (courseId: number) =>
     lmsFetch<LMSAssignment[]>(`/assignments/${courseId}`),
