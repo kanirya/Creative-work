@@ -2,40 +2,29 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Input, Card } from '@edupilot/ui';
-import { isValidEmail } from '@edupilot/utils';
-import { apiClient, tokenStorage } from '@/lib/auth';
+import { Card, Button } from '@edupilot/ui';
+import { lmsApi } from '@/lib/lms-api';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-
-    if (!isValidEmail(email)) {
-      setError('Please enter a valid email address');
-      return;
-    }
-    if (!password) {
-      setError('Please enter your password');
-      return;
-    }
-
+  const handleEnter = async () => {
     setLoading(true);
+    setError('');
     try {
-      const response = await apiClient.login({ email, password });
-      tokenStorage.setTokens({
-        accessToken: response.accessToken,
-        refreshToken: response.refreshToken,
-      });
-      router.push('/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Login failed. Please check your credentials.');
+      // Verify LMS scraper is reachable and session is valid
+      const profile = await lmsApi.getProfile();
+      if (profile?.name) {
+        router.push('/dashboard');
+      } else {
+        setError('Could not connect to LMS. Make sure the scraper service is running.');
+      }
+    } catch (e: any) {
+      setError(
+        'Cannot connect to LMS service. Please run: python start_lms_scraper.py'
+      );
     } finally {
       setLoading(false);
     }
@@ -45,62 +34,33 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-900 px-4">
       <Card className="w-full max-w-md p-8">
         <div className="text-center mb-8">
-          <div className="text-4xl mb-3">🎓</div>
+          <div className="text-5xl mb-4">🎓</div>
           <h1 className="text-3xl font-bold text-gray-900">EduPilot</h1>
           <p className="text-gray-500 mt-2 text-sm">Iqra University AI Study Assistant</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5" aria-label="Login form">
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm" role="alert" aria-live="polite">
-              {error}
-            </div>
-          )}
-
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
-              Email Address
-            </label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="student@iqra.edu.pk"
-              required
-              disabled={loading}
-            />
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm mb-6" role="alert">
+            {error}
           </div>
+        )}
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
-              Password
-            </label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              required
-              disabled={loading}
-            />
-          </div>
-
+        <div className="space-y-4">
           <Button
-            type="submit"
             variant="primary"
             className="w-full"
+            onClick={handleEnter}
             disabled={loading}
-            aria-label={loading ? 'Signing in...' : 'Sign in'}
+            aria-label="Enter EduPilot"
           >
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? 'Connecting to LMS...' : 'Enter EduPilot'}
           </Button>
-        </form>
 
-        <p className="mt-6 text-center text-xs text-gray-400">
-          Use your EduPilot account credentials
-        </p>
+          <div className="text-center text-xs text-gray-400 space-y-1">
+            <p>Authenticated as: <span className="font-medium text-gray-600">muhammad.141510.isb@iqra.edu.pk</span></p>
+            <p>LMS service must be running on port 8002</p>
+          </div>
+        </div>
       </Card>
     </div>
   );
