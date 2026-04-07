@@ -21,22 +21,18 @@ export default function LoginPage() {
       setError('Please enter a valid email address');
       return;
     }
-
     if (!password) {
       setError('Please enter your password');
       return;
     }
 
     setLoading(true);
-
     try {
       const response = await apiClient.login({ email, password });
-
       tokenStorage.setTokens({
         accessToken: response.accessToken,
         refreshToken: response.refreshToken,
       });
-
       router.push('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Login failed. Please check your credentials.');
@@ -46,26 +42,23 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 px-4">
       <Card className="w-full max-w-md p-8">
         <div className="text-center mb-8">
+          <div className="text-4xl mb-3">🎓</div>
           <h1 className="text-3xl font-bold text-gray-900">EduPilot</h1>
-          <p className="text-gray-600 mt-2">Sign in to your account</p>
+          <p className="text-gray-500 mt-2 text-sm">Iqra University AI Study Assistant</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6" aria-label="Login form">
+        <form onSubmit={handleSubmit} className="space-y-5" aria-label="Login form">
           {error && (
-            <div
-              className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded"
-              role="alert"
-              aria-live="polite"
-            >
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm" role="alert" aria-live="polite">
               {error}
             </div>
           )}
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
               Email Address
             </label>
             <Input
@@ -80,7 +73,7 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
               Password
             </label>
             <Input
@@ -99,15 +92,15 @@ export default function LoginPage() {
             variant="primary"
             className="w-full"
             disabled={loading}
-            aria-label={loading ? 'Signing in, please wait' : 'Sign in to your account'}
+            aria-label={loading ? 'Signing in...' : 'Sign in'}
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </Button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-gray-600">
-          <p>Use your Iqra University LMS credentials</p>
-        </div>
+        <p className="mt-6 text-center text-xs text-gray-400">
+          Use your EduPilot account credentials
+        </p>
       </Card>
     </div>
   );
