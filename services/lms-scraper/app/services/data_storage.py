@@ -8,9 +8,16 @@ import logging
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
-import psycopg2
-import psycopg2.extras
-from langchain_openai import OpenAIEmbeddings
+try:
+    import psycopg2
+    import psycopg2.extras
+except ImportError:
+    psycopg2 = None  # type: ignore
+
+try:
+    from langchain_openai import OpenAIEmbeddings
+except ImportError:
+    OpenAIEmbeddings = None  # type: ignore
 
 from app.config import get_settings
 from app.models import (
@@ -28,13 +35,18 @@ settings = get_settings()
 
 class DataStorageService:
     def __init__(self):
-        self.embeddings = OpenAIEmbeddings(
-            model=settings.embedding_model,
-            openai_api_key=settings.openai_api_key,
-        )
-        self._conn: Optional[psycopg2.extensions.connection] = None
+        if OpenAIEmbeddings and settings.openai_api_key and not settings.openai_api_key.startswith("sk-placeholder"):
+            self.embeddings = OpenAIEmbeddings(
+                model=settings.embedding_model,
+                openai_api_key=settings.openai_api_key,
+            )
+        else:
+            self.embeddings = None
+        self._conn = None
 
-    def _get_conn(self) -> psycopg2.extensions.connection:
+    def _get_conn(self):
+        if psycopg2 is None:
+            raise RuntimeError("psycopg2 not installed")
         if self._conn is None or self._conn.closed:
             self._conn = psycopg2.connect(
                 settings.database_url,
