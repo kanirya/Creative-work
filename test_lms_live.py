@@ -219,7 +219,8 @@ async def scrape_courses(ctx):
     page = await ctx.new_page()
     courses = []
     try:
-        await page.goto(f"{BASE_URL}/my/", wait_until="domcontentloaded", timeout=30_000)
+        # Use /my/courses.php — the dedicated courses listing page
+        await page.goto(f"{BASE_URL}/my/courses.php", wait_until="networkidle", timeout=30_000)
         await page.wait_for_timeout(2_000)
 
         links = await page.query_selector_all('a[href*="/course/view.php?id="]')
@@ -233,7 +234,12 @@ async def scrape_courses(ctx):
             if cid in seen:
                 continue
             seen.add(cid)
-            name = (await link.inner_text()).strip()
+            # Get clean course name (first line only, strip "Course name\n" prefix)
+            raw = (await link.inner_text()).strip()
+            name = raw.split("\n")[0].strip()
+            # Skip "Course name" label links — use the actual title link
+            if name.lower() == "course name":
+                continue
             if name:
                 courses.append({"id": cid, "name": name, "url": href})
 

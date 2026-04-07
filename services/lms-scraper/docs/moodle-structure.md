@@ -9,7 +9,7 @@
 | Page | URL Pattern |
 |---|---|
 | Dashboard | `/my/` |
-| My Courses | `/my/` (courses block on dashboard) |
+| My Courses | `/my/courses.php` (dedicated courses page — use this, not `/my/`) |
 | Course Page | `/course/view.php?id=<courseid>` |
 | Assignments | `/mod/assign/view.php?id=<cmid>` |
 | Assignment List | `/mod/assign/index.php?id=<courseid>` |

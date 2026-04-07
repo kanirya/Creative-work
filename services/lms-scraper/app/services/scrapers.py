@@ -73,16 +73,16 @@ class MoodleScrapers:
 
     @retry_on_lms_error(max_attempts=3)
     async def scrape_courses(self) -> List[CourseData]:
-        """Scrape enrolled courses from the Moodle dashboard."""
-        logger.info("Scraping courses from dashboard")
+        """Scrape enrolled courses from /my/courses.php — the dedicated courses listing page."""
+        logger.info("Scraping courses from /my/courses.php")
         courses: List[CourseData] = []
 
         page = await self.context.new_page()
         try:
-            await page.goto(f"{BASE_URL}/my/", wait_until="domcontentloaded", timeout=30_000)
+            # /my/courses.php shows all enrolled courses with full JS rendering
+            await page.goto(f"{BASE_URL}/my/courses.php", wait_until="networkidle", timeout=30_000)
             await page.wait_for_timeout(2_000)
 
-            # Try multiple selectors for course cards (Moodle / Academi theme)
             course_links = await page.query_selector_all(
                 'a[href*="/course/view.php?id="]'
             )
@@ -98,6 +98,12 @@ class MoodleScrapers:
                     if course_id in seen_ids:
                         continue
                     seen_ids.add(course_id)
+
+                    # Get clean name — skip "Course name" label links
+                    raw = (await link.inner_text()).strip()
+                    name = raw.split("\n")[0].strip()
+                    if not name or name.lower() == "course name":
+                        continue
 
                     name = (await link.inner_text()).strip()
                     if not name:
