@@ -1,0 +1,57 @@
+{
+  "common": {
+    "appName": "ایڈوپائلٹ",
+    "signIn": "سائن ان کریں",
+    "signOut": "سائن آؤٹ",
+    "loading": "لوڈ ہو رہا ہے...",
+    "error": "ایک خرابی پیش آئی",
+    "save": "محفوظ کریں",
+    "cancel": "منسوخ کریں",
+    "submit": "جمع کریں"
+  },
+  "login": {
+    "title": "اپنے اکاؤنٹ میں سائن ان کریں",
+    "emailLabel": "ای میل پتہ",
+    "emailPlaceholder": "student@iqra.edu.pk",
+    "passwordLabel": "پاس ورڈ",
+    "passwordPlaceholder": "اپنا پاس ورڈ درج کریں",
+    "signingIn": "سائن ان ہو رہا ہے...",
+    "hint": "اپنی اقرا یونیورسٹی LMS اسناد استعمال کریں"
+  },
+  "dashboard": {
+    "title": "ڈیش بورڈ",
+    "welcome": "ایڈوپائلٹ میں خوش آمدید",
+    "myCourses": "میرے کورسز",
+    "upcomingAssignments": "آنے والے اسائنمنٹس",
+    "recentAnnouncements": "حالیہ اعلانات",
+    "noCoursesFound": "کوئی کورس نہیں ملا۔ ڈیٹا جلد ہی آپ کے LMS سے ہم آہنگ ہو جائے گا۔",
+    "noAssignments": "کوئی آنے والا اسائنمنٹ نہیں",
+    "instructor": "استاد"
+  },
+  "query": {
+    "title": "AI سے پوچھیں",
+    "subtitle": "اپنے کورسز، اسائنمنٹس، یا لیکچر مواد کے بارے میں سوالات پوچھیں",
+    "yourQuestion": "آپ کا سوال",
+    "placeholder": "مثلاً، میرے ڈیٹا سٹرکچرز کورس کے اہم موضوعات کیا ہیں؟",
+    "processing": "پروسیسنگ...",
+    "voice": "آواز",
+    "listening": "سن رہا ہے...",
+    "response": "جواب",
+    "confidenceScore": "اعتماد کا اسکور",
+    "sources": "ذرائع",
+    "failed": "آپ کا سوال پروسیس کرنے میں ناکامی۔ دوبارہ کوشش کریں۔"
+  },
+  "lectures": {
+    "title": "لیکچر ریکارڈنگز",
+    "subtitle": "ریکارڈ شدہ لیکچرز دیکھیں اور ٹرانسکرپشنز براؤز کریں",
+    "recordings": "ریکارڈنگز",
+    "transcription": "ٹرانسکرپشن",
+    "selectLecture": "دیکھنے کے لیے ایک لیکچر ریکارڈنگ منتخب کریں"
+  },
+  "nav": {
+    "dashboard": "ڈیش بورڈ",
+    "query": "AI سے پوچھیں",
+    "lectures": "لیکچرز",
+    "settings": "ترتیبات"
+  }
+}

@@ -30,13 +30,62 @@ async def lifespan(app: FastAPI):
     scheduler = get_scheduler()
     scheduler.start()
     logger.info("Scheduler started")
-    
+
+    # Schedule scraping jobs for all active students on startup
+    await _schedule_all_student_scraping_jobs(scheduler)
+
     yield
-    
+
     # Shutdown
     logger.info("Shutting down scheduler service")
     scheduler.shutdown()
     logger.info("Scheduler stopped")
+
+
+async def _schedule_all_student_scraping_jobs(scheduler):
+    """
+    On startup, schedule a scraping job every 6 hours for all active students.
+    Reads student list from the database via the API Gateway.
+    """
+    import httpx
+    from apscheduler.triggers.interval import IntervalTrigger
+    from app.services.job_executor import get_job_executor
+
+    api_gateway_url = settings.lms_scraper_url.replace(":8002", ":8080").replace("lms-scraper", "api-gateway")
+    # Fallback: use env var if available
+    import os
+    api_gateway_url = os.getenv("API_GATEWAY_URL", "http://api-gateway:8080")
+
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.get(f"{api_gateway_url}/api/v1/admin/students/active")
+            if resp.status_code == 200:
+                students = resp.json().get("data", [])
+                executor = get_job_executor()
+                for student in students:
+                    student_id = student.get("id")
+                    if not student_id:
+                        continue
+                    from uuid import UUID
+                    import random
+                    # Add jitter: ±30 minutes to avoid thundering herd
+                    jitter_minutes = random.randint(-30, 30)
+                    interval_seconds = settings.scraping_interval_hours * 3600 + jitter_minutes * 60
+
+                    scheduler.add_job(
+                        func=executor.execute_scraping_job_with_retry,
+                        trigger=IntervalTrigger(seconds=interval_seconds),
+                        job_id=f"scraping_{student_id}",
+                        job_type="scraping",
+                        student_id=UUID(student_id),
+                        kwargs={"job_id": UUID(student_id), "student_id": UUID(student_id)},
+                    )
+                    logger.info(f"Scheduled scraping job for student {student_id} every {interval_seconds}s")
+                logger.info(f"Scheduled scraping jobs for {len(students)} active students")
+            else:
+                logger.warning(f"Could not fetch active students (status {resp.status_code}). Scraping jobs not scheduled.")
+    except Exception as e:
+        logger.warning(f"Could not schedule student scraping jobs on startup: {e}")
 
 
 app = FastAPI(

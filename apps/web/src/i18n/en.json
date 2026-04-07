@@ -1,0 +1,57 @@
+{
+  "common": {
+    "appName": "EduPilot",
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "submit": "Submit"
+  },
+  "login": {
+    "title": "Sign in to your account",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "student@iqra.edu.pk",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "signingIn": "Signing in...",
+    "hint": "Use your Iqra University LMS credentials"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back to EduPilot",
+    "myCourses": "My Courses",
+    "upcomingAssignments": "Upcoming Assignments",
+    "recentAnnouncements": "Recent Announcements",
+    "noCoursesFound": "No courses found. Data will sync from your LMS shortly.",
+    "noAssignments": "No upcoming assignments",
+    "instructor": "Instructor"
+  },
+  "query": {
+    "title": "Ask AI",
+    "subtitle": "Ask questions about your courses, assignments, or lecture content",
+    "yourQuestion": "Your Question",
+    "placeholder": "e.g., What are the key topics in my Data Structures course?",
+    "processing": "Processing...",
+    "voice": "Voice",
+    "listening": "Listening...",
+    "response": "Response",
+    "confidenceScore": "Confidence Score",
+    "sources": "Sources",
+    "failed": "Failed to process your query. Please try again."
+  },
+  "lectures": {
+    "title": "Lecture Recordings",
+    "subtitle": "Watch recorded lectures and browse transcriptions",
+    "recordings": "Recordings",
+    "transcription": "Transcription",
+    "selectLecture": "Select a lecture recording to view"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "query": "Ask AI",
+    "lectures": "Lectures",
+    "settings": "Settings"
+  }
+}
