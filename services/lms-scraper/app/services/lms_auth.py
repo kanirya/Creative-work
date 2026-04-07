@@ -9,6 +9,7 @@ The LMS uses Moodle's Microsoft 365 OIDC plugin. Authentication flow:
   5. Redirected back to https://lms.iqra.edu.pk/my/ (Moodle dashboard)
 """
 
+import asyncio
 import json
 import logging
 import os
@@ -286,7 +287,7 @@ class LMSAuthService:
         except Exception as e:
             # Capture screenshot for debugging
             try:
-                screenshot_path = "/tmp/login_failure.png"
+                screenshot_path = "login_failure_service.png"
                 await page.screenshot(path=screenshot_path)
                 logger.error(f"Login failure screenshot saved to {screenshot_path}")
             except Exception:
@@ -304,6 +305,48 @@ class LMSAuthService:
             raise MFARequiredError(
                 "Microsoft requires MFA. Use a service account without MFA for automated scraping."
             )
+
+        # Handle Microsoft Authenticator number matching (most common MFA type)
+        mfa_number = None
+        for selector in [
+            '[data-testid="displaySign"]',
+            '.display-sign',
+            '#idRichContext_DisplaySign',
+            '#idDiv_SAOTCAS_TD2',
+        ]:
+            el = await page.query_selector(selector)
+            if el:
+                mfa_number = (await el.inner_text()).strip()
+                break
+
+        if mfa_number:
+            # Log prominently so it appears in service output
+            logger.warning("=" * 50)
+            logger.warning(f"MFA REQUIRED — Enter this number in Authenticator: {mfa_number}")
+            logger.warning("=" * 50)
+            print(f"\n{'='*50}")
+            print(f"  MFA NUMBER: {mfa_number}")
+            print(f"  Open Microsoft Authenticator and enter: {mfa_number}")
+            print(f"{'='*50}\n", flush=True)
+
+            # Wait up to 90 seconds for approval
+            approved = False
+            for i in range(90):
+                await asyncio.sleep(1)
+                if "microsoftonline" not in page.url or "kmsi" in page.url or "lms.iqra.edu.pk" in page.url:
+                    approved = True
+                    logger.info(f"MFA approved after {i+1}s")
+                    break
+                still_mfa = await page.query_selector('[data-testid="displaySign"], #idRichContext_DisplaySign')
+                if not still_mfa:
+                    approved = True
+                    break
+
+            if not approved:
+                raise LMSAuthenticationError("MFA approval timed out after 90 seconds")
+
+            await page.wait_for_load_state("domcontentloaded", timeout=15_000)
+            await page.wait_for_timeout(2_000)
 
         # Check for password change prompt
         if await page.query_selector('#ForceSignIn, [data-testid="passwordChangeRequired"]'):
