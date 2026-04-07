@@ -750,8 +750,8 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - Create data export functionality for students
     - _Requirements: 16.6_
 
-- [ ] 22. Implement data synchronization
-  - [ ] 22.1 Implement real-time sync with WebSockets
+- [-] 22. Implement data synchronization
+  - [-] 22.1 Implement real-time sync with WebSockets
     - Add SignalR to API Gateway for real-time updates
     - Create hubs for student data updates
     - Implement client-side SignalR connections

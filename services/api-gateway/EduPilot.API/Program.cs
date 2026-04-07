@@ -8,6 +8,7 @@ using EduPilot.Application;
 using EduPilot.Infrastructure;
 using EduPilot.Infrastructure.Logging;
 using EduPilot.API.Middleware;
+using EduPilot.API.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,6 +79,9 @@ builder.Services.AddSwaggerGen(options =>
 // Add Application and Infrastructure layers
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+
+// Add SignalR for real-time sync
+builder.Services.AddSignalR();
 
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");

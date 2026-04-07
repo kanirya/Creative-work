@@ -288,7 +288,7 @@ The scraper uses Playwright to automate the full Microsoft login flow, then scra
     - Mark all as `@pytest.mark.integration` — requires real credentials
     - Add `pytest.ini` with `integration` marker registration
 
-  - [-] 15.2 Write mock-based unit tests for full pipeline
+  - [ ] 15.2 Write mock-based unit tests for full pipeline
     - Mock Playwright browser context with pre-recorded HTML fixtures
     - Test full `perform_scraping()` flow with mocked browser
     - Test error handling: auth failure, scraper timeout, storage failure
