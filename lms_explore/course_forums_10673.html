@@ -1,0 +1,1518 @@
+<!DOCTYPE html><html dir="ltr" lang="en" xml:lang="en" class="yui3-js-enabled"><head>
+    <title>Course: COMPUTER ARCHITECTURE - IUIC_COURSE_SP26_258 (TUE 02:16 04:20 LR29) | IqraLMS</title>
+    <link rel="shortcut icon" href="//lms.iqra.edu.pk/pluginfile.php/1/theme_academi/favicon/1766671022/favicon.ico">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="keywords" content="moodle, Course: COMPUTER ARCHITECTURE - IUIC_COURSE_SP26_258 (TUE 02:16 04:20 LR29) | IqraLMS">
+<link rel="stylesheet" type="text/css" href="https://lms.iqra.edu.pk/theme/yui_combo.php?rollup/3.18.1/yui-moodlesimple-min.css"><script id="firstthemesheet" type="text/css">/** Required in order to fix style inclusion problems in IE with YUI **/</script><link rel="stylesheet" type="text/css" href="https://lms.iqra.edu.pk/theme/styles.php/academi/1766671022_1/all">
+<script>
+//<![CDATA[
+var M = {}; M.yui = {};
+M.pageloadstarttime = new Date();
+M.cfg = {"wwwroot":"https:\/\/lms.iqra.edu.pk","apibase":"https:\/\/lms.iqra.edu.pk\/r.php\/api","homeurl":{},"sesskey":"CaK23h6VJz","sessiontimeout":"1800","sessiontimeoutwarning":"900","themerev":"1766671022","slasharguments":1,"theme":"academi","iconsystemmodule":"core\/icon_system_fontawesome","jsrev":"1766671023","admin":"admin","svgicons":true,"usertimezone":"Asia\/Karachi","language":"en","courseId":10673,"courseContextId":182457,"contextid":182457,"contextInstanceId":10673,"langrev":1766671023,"templaterev":"1766671023","siteId":1,"userId":43721};var yui1ConfigFn = function(me) {if(/-skin|reset|fonts|grids|base/.test(me.name)){me.type='css';me.path=me.path.replace(/\.js/,'.css');me.path=me.path.replace(/\/yui2-skin/,'/assets/skins/sam/yui2-skin')}};
+var yui2ConfigFn = function(me) {var parts=me.name.replace(/^moodle-/,'').split('-'),component=parts.shift(),module=parts[0],min='-min';if(/-(skin|core)$/.test(me.name)){parts.pop();me.type='css';min=''}
+if(module){var filename=parts.join('-');me.path=component+'/'+module+'/'+filename+min+'.'+me.type}else{me.path=component+'/'+component+'.'+me.type}};
+YUI_config = {"debug":false,"base":"https:\/\/lms.iqra.edu.pk\/lib\/yuilib\/3.18.1\/","comboBase":"https:\/\/lms.iqra.edu.pk\/theme\/yui_combo.php?","combine":true,"filter":null,"insertBefore":"firstthemesheet","groups":{"yui2":{"base":"https:\/\/lms.iqra.edu.pk\/lib\/yuilib\/2in3\/2.9.0\/build\/","comboBase":"https:\/\/lms.iqra.edu.pk\/theme\/yui_combo.php?","combine":true,"ext":false,"root":"2in3\/2.9.0\/build\/","patterns":{"yui2-":{"group":"yui2","configFn":yui1ConfigFn}}},"moodle":{"name":"moodle","base":"https:\/\/lms.iqra.edu.pk\/theme\/yui_combo.php?m\/1766671023\/","combine":true,"comboBase":"https:\/\/lms.iqra.edu.pk\/theme\/yui_combo.php?","ext":false,"root":"m\/1766671023\/","patterns":{"moodle-":{"group":"moodle","configFn":yui2ConfigFn}},"filter":null,"modules":{"moodle-core-actionmenu":{"requires":["base","event","node-event-simulate"]},"moodle-core-blocks":{"requires":["base","node","io","dom","dd","dd-scroll","moodle-core-dragdrop","moodle-core-notification"]},"moodle-core-chooserdialogue":{"requires":["base","panel","moodle-core-notification"]},"moodle-core-dragdrop":{"requires":["base","node","io","dom","dd","event-key","event-focus","moodle-core-notification"]},"moodle-core-event":{"requires":["event-custom"]},"moodle-core-handlebars":{"condition":{"trigger":"handlebars","when":"after"}},"moodle-core-lockscroll":{"requires":["plugin","base-build"]},"moodle-core-maintenancemodetimer":{"requires":["base","node"]},"moodle-core-notification":{"requires":["moodle-core-notification-dialogue","moodle-core-notification-alert","moodle-core-notification-confirm","moodle-core-notification-exception","moodle-core-notification-ajaxexception"]},"moodle-core-notification-dialogue":{"requires":["base","node","panel","escape","event-key","dd-plugin","moodle-core-widget-focusafterclose","moodle-core-lockscroll"]},"moodle-core-notification-alert":{"requires":["moodle-core-notification-dialogue"]},"moodle-core-notification-confirm":{"requires":["moodle-core-notification-dialogue"]},"moodle-core-notification-exception":{"requires":["moodle-core-notification-dialogue"]},"moodle-core-notification-ajaxexception":{"requires":["moodle-core-notification-dialogue"]},"moodle-core_availability-form":{"requires":["base","node","event","event-delegate","panel","moodle-core-notification-dialogue","json"]},"moodle-course-categoryexpander":{"requires":["node","event-key"]},"moodle-course-dragdrop":{"requires":["base","node","io","dom","dd","dd-scroll","moodle-core-dragdrop","moodle-core-notification","moodle-course-coursebase","moodle-course-util"]},"moodle-course-management":{"requires":["base","node","io-base","moodle-core-notification-exception","json-parse","dd-constrain","dd-proxy","dd-drop","dd-delegate","node-event-delegate"]},"moodle-course-util":{"requires":["node"],"use":["moodle-course-util-base"],"submodules":{"moodle-course-util-base":{},"moodle-course-util-section":{"requires":["node","moodle-course-util-base"]},"moodle-course-util-cm":{"requires":["node","moodle-course-util-base"]}}},"moodle-form-dateselector":{"requires":["base","node","overlay","calendar"]},"moodle-form-shortforms":{"requires":["node","base","selector-css3","moodle-core-event"]},"moodle-question-chooser":{"requires":["moodle-core-chooserdialogue"]},"moodle-question-searchform":{"requires":["base","node"]},"moodle-availability_completion-form":{"requires":["base","node","event","moodle-core_availability-form"]},"moodle-availability_date-form":{"requires":["base","node","event","io","moodle-core_availability-form"]},"moodle-availability_grade-form":{"requires":["base","node","event","moodle-core_availability-form"]},"moodle-availability_group-form":{"requires":["base","node","event","moodle-core_availability-form"]},"moodle-availability_grouping-form":{"requires":["base","node","event","moodle-core_availability-form"]},"moodle-availability_profile-form":{"requires":["base","node","event","moodle-core_availability-form"]},"moodle-mod_assign-history":{"requires":["node","transition"]},"moodle-mod_attendance-groupfilter":{"requires":["base","node"]},"moodle-mod_quiz-autosave":{"requires":["base","node","event","event-valuechange","node-event-delegate","io-form","datatype-date-format"]},"moodle-mod_quiz-dragdrop":{"requires":["base","node","io","dom","dd","dd-scroll","moodle-core-dragdrop","moodle-core-notification","moodle-mod_quiz-quizbase","moodle-mod_quiz-util-base","moodle-mod_quiz-util-page","moodle-mod_quiz-util-slot","moodle-course-util"]},"moodle-mod_quiz-modform":{"requires":["base","node","event"]},"moodle-mod_quiz-questionchooser":{"requires":["moodle-core-chooserdialogue","moodle-mod_quiz-util","querystring-parse"]},"moodle-mod_quiz-quizbase":{"requires":["base","node"]},"moodle-mod_quiz-toolboxes":{"requires":["base","node","event","event-key","io","moodle-mod_quiz-quizbase","moodle-mod_quiz-util-slot","moodle-core-notification-ajaxexception"]},"moodle-mod_quiz-util":{"requires":["node","moodle-core-actionmenu"],"use":["moodle-mod_quiz-util-base"],"submodules":{"moodle-mod_quiz-util-base":{},"moodle-mod_quiz-util-slot":{"requires":["node","moodle-mod_quiz-util-base"]},"moodle-mod_quiz-util-page":{"requires":["node","moodle-mod_quiz-util-base"]}}},"moodle-message_airnotifier-toolboxes":{"requires":["base","node","io"]},"moodle-block_xp-filters":{"requires":["base","node","moodle-core-dragdrop","moodle-core-notification-confirm","moodle-block_xp-rulepicker"]},"moodle-block_xp-notification":{"requires":["base","node","handlebars","button-plugin","moodle-core-notification-dialogue"]},"moodle-block_xp-rulepicker":{"requires":["base","node","handlebars","moodle-core-notification-dialogue"]},"moodle-report_eventlist-eventfilter":{"requires":["base","event","node","node-event-delegate","datatable","autocomplete","autocomplete-filters"]},"moodle-report_loglive-fetchlogs":{"requires":["base","event","node","io","node-event-delegate"]},"moodle-gradereport_history-userselector":{"requires":["escape","event-delegate","event-key","handlebars","io-base","json-parse","moodle-core-notification-dialogue"]},"moodle-qbank_editquestion-chooser":{"requires":["moodle-core-chooserdialogue"]},"moodle-tool_lp-dragdrop-reorder":{"requires":["moodle-core-dragdrop"]},"moodle-assignfeedback_editpdf-editor":{"requires":["base","event","node","io","graphics","json","event-move","event-resize","transition","querystring-stringify-simple","moodle-core-notification-dialog","moodle-core-notification-alert","moodle-core-notification-warning","moodle-core-notification-exception","moodle-core-notification-ajaxexception"]}}},"gallery":{"name":"gallery","base":"https:\/\/lms.iqra.edu.pk\/lib\/yuilib\/gallery\/","combine":true,"comboBase":"https:\/\/lms.iqra.edu.pk\/theme\/yui_combo.php?","ext":false,"root":"gallery\/1766671023\/","patterns":{"gallery-":{"group":"gallery"}}}},"modules":{"core_filepicker":{"name":"core_filepicker","fullpath":"https:\/\/lms.iqra.edu.pk\/lib\/javascript.php\/1766671023\/repository\/filepicker.js","requires":["base","node","node-event-simulate","json","async-queue","io-base","io-upload-iframe","io-form","yui2-treeview","panel","cookie","datatable","datatable-sort","resize-plugin","dd-plugin","escape","moodle-core_filepicker","moodle-core-notification-dialogue"]},"core_comment":{"name":"core_comment","fullpath":"https:\/\/lms.iqra.edu.pk\/lib\/javascript.php\/1766671023\/comment\/comment.js","requires":["base","io-base","node","json","yui2-animation","overlay","escape"]}},"logInclude":[],"logExclude":[],"logLevel":null};
+M.yui.loader = {modules: {}};
+
+//]]>
+</script>
+
+<!-- Google tag (gtag.js) -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-0W77XLBC5N"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-0W77XLBC5N');
+</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="core/first" src="https://lms.iqra.edu.pk/lib/requirejs.php/1766671023/core/first.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="jqueryprivate" src="https://lms.iqra.edu.pk/lib/javascript.php/1766671023/lib/requirejs/jquery-private.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="jquery" src="https://lms.iqra.edu.pk/lib/javascript.php/1766671023/lib/jquery/jquery-3.7.1.min.js"></script><script type="text/javascript">
+                require(['core_courseformat/local/courseindex/cm'], function(component) {
+                    component.init('#course-index-cm-47433');
+                });
+                ;
+
+                require(['core_courseformat/local/courseindex/cm'], function(component) {
+                    component.init('#course-index-cm-52541');
+                });
+                ;
+
+                require(['core_courseformat/local/courseindex/cm'], function(component) {
+                    component.init('#course-index-cm-61349');
+                });
+                ;
+
+    require(['core_courseformat/local/courseindex/section'], function(component) {
+        component.init('#course-index-section-60441');
+    });
+    ;
+
+                require(['core_courseformat/local/courseindex/cm'], function(component) {
+                    component.init('#course-index-cm-49044');
+                });
+                ;
+
+                require(['core_courseformat/local/courseindex/cm'], function(component) {
+                    component.init('#course-index-cm-52526');
+                });
+                ;
+
+                require(['core_courseformat/local/courseindex/cm'], function(component) {
+                    component.init('#course-index-cm-55864');
+                });
+                ;
+
+                require(['core_courseformat/local/courseindex/cm'], function(component) {
+                    component.init('#course-index-cm-65334');
+                });
+                ;
+
+    require(['core_courseformat/local/courseindex/section'], function(component) {
+        component.init('#course-index-section-60442');
+    });
+    ;
+
+    require(['core_courseformat/local/courseindex/section'], function(component) {
+        component.init('#course-index-section-60443');
+    });
+    ;
+
+    require(['core_courseformat/local/courseindex/section'], function(component) {
+        component.init('#course-index-section-60444');
+    });
+    ;
+
+    require(['core_courseformat/local/courseindex/section'], function(component) {
+        component.init('#course-index-section-60445');
+    });
+    ;
+
+require(['core_courseformat/local/courseindex/courseindex'], function(component) {
+    component.init('#course-index');
+});
+</script></head><body id="page-course-view-topics" class="format-topics limitedwidth  path-course path-course-view chrome dir-ltr lang-en yui-skin-sam yui3-skin-sam lms-iqra-edu-pk pagelayout-course course-10673 context-182457 category-53 theme uses-drawers moodle-based-header default-container jsenabled">
+    <div class="toast-wrapper mx-auto py-0 fixed-top" role="status" aria-live="polite"></div>
+    <div id="page-wrapper" class="d-print-block">
+        <div>
+    <a class="visually-hidden-focusable" href="#maincontent">Skip to main content</a>
+</div><script src="https://lms.iqra.edu.pk/lib/javascript.php/1766671023/lib/polyfills/polyfill.js"></script>
+<script src="https://lms.iqra.edu.pk/theme/yui_combo.php?rollup/3.18.1/yui-moodlesimple-min.js"></script><script src="https://lms.iqra.edu.pk/lib/javascript.php/1766671023/lib/javascript-static.js"></script>
+<script>
+//<![CDATA[
+document.body.className += ' jsenabled';
+//]]>
+</script>
+
+
+        
+<nav id="header" class=" moodle-based-header  fixed-top navbar navbar-light bg-faded navbar-static-top navbar-expand moodle-has-zindex" aria-label="Site navigation">
+    <div class="container-fluid navbar-nav">
+             
+                <button class="navbar-toggler aabtn d-block d-md-none px-1 my-1 border-0" data-toggler="drawers" data-action="toggle" data-target="theme_boost-drawers-primary">
+                    <span class="navbar-toggler-icon"></span>
+                    <span class="sr-only">Side panel</span>
+                </button>
+                <a href="https://lms.iqra.edu.pk/?redirect=0" class="navbar-brand has-logo
+                        ">
+                            <span class="logo">
+                                <img src="//lms.iqra.edu.pk/pluginfile.php/1/theme_academi/logo/1766671022/logo.jpg" alt="Iqra University LMS">
+                            </span>
+                </a>
+
+
+             
+                    <div class="primary-navigation">
+                        <nav class="moremenu navigation observed">
+                            <ul id="moremenu-69d5078c45356-navbar-nav" role="menubar" class="nav more-nav navbar-nav">
+                                        <li data-key="home" class="nav-item" role="none" data-forceintomoremenu="false">
+                                                    <a role="menuitem" class="nav-link  " href="https://lms.iqra.edu.pk/?redirect=0" data-disableactive="true" tabindex="0" aria-current="true">
+                                                        Home
+                                                    </a>
+                                        </li>
+                                        <li data-key="myhome" class="nav-item" role="none" data-forceintomoremenu="false">
+                                                    <a role="menuitem" class="nav-link  " href="https://lms.iqra.edu.pk/my/" data-disableactive="true" tabindex="-1">
+                                                        Dashboard
+                                                    </a>
+                                        </li>
+                                        <li data-key="mycourses" class="nav-item" role="none" data-forceintomoremenu="false">
+                                                    <a role="menuitem" class="nav-link  " href="https://lms.iqra.edu.pk/my/courses.php" data-disableactive="true" tabindex="-1">
+                                                        My courses
+                                                    </a>
+                                        </li>
+                                        <li data-key="" class="nav-item" role="none" data-forceintomoremenu="false">
+                                                    <a role="menuitem" class="nav-link  " href="https://lms.iqra.edu.pk/my/faculty_nominations.php" data-disableactive="true" tabindex="-1">
+                                                        Survey
+                                                    </a>
+                                        </li>
+                                        <li data-key="" class="nav-item" role="none" data-forceintomoremenu="false">
+                                                    <a role="menuitem" class="nav-link  " href="https://lms.iqra.edu.pk/my/zakat_application/" data-disableactive="true" tabindex="-1">
+                                                        Zakat Form
+                                                    </a>
+                                        </li>
+                                <li role="none" class="nav-item dropdown dropdownmoremenu d-none" data-region="morebutton">
+                                    <a class="dropdown-toggle nav-link " href="#" id="moremenu-dropdown-69d5078c45356" role="menuitem" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" tabindex="-1">
+                                        More
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-start" data-region="moredropdown" aria-labelledby="moremenu-dropdown-69d5078c45356" role="menu">
+                                    </ul>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+
+                <ul class="navbar-nav d-none d-md-flex my-1 px-1">
+                    <!-- page_heading_menu -->
+                    
+                </ul>
+
+        <div id="usernavigation" class="navbar-nav">
+            
+            <div class="popover-region collapsed popover-region-notifications" id="nav-notification-popover-container" data-userid="43721" data-region="popover-region">
+    <div class="popover-region-toggle nav-link icon-no-margin" data-region="popover-region-toggle" aria-controls="popover-region-container-69d5078c465b969d5078c456fb2" aria-haspopup="true" aria-expanded="false" aria-label="  Show notification window with 24 new notifications  " title="  Show notification window with 24 new notifications  " tabindex="0" role="button">
+                <i class="icon fa fa-bell fa-fw " aria-hidden="true"></i>
+        <div class="count-container " data-region="count-container" aria-hidden="true">
+            24
+        </div>
+
+    </div>
+    <div aria-modal="true" tabindex="-1" id="popover-region-container-69d5078c465b969d5078c456fb2" class="popover-region-container" data-region="popover-region-container" aria-hidden="true" aria-label="Notification window" role="dialog">
+        <div class="popover-region-header-container">
+            <h3 class="popover-region-header-text" data-region="popover-region-header-text">Notifications</h3>
+            <div class="popover-region-header-actions" data-region="popover-region-header-actions">        <a class="mark-all-read-button btn btn-sm btn-link m-0 py-0 icon-no-margin" href="#" title="Mark all as read" data-action="mark-all-read" role="button" aria-label="Mark all as read">
+            <span class="normal-icon"><i class="icon fa fa-check fa-fw " aria-hidden="true"></i></span>
+            <span class="loading-icon icon-no-margin"><i class="icon fa fa-spinner fa-spin fa-fw " title="Loading" role="img" aria-label="Loading"></i></span>
+            <span aria-live="polite" class="visually-hidden" data-region="notification-read-feedback"></span>
+        </a>
+            <a href="https://lms.iqra.edu.pk/message/notificationpreferences.php" title="Notification preferences" aria-label="Notification preferences" class="btn btn-sm btn-link m-0 py-0 icon-no-margin">
+                <i class="icon fa fa-gear fa-fw " aria-hidden="true"></i></a>
+        <button type="button" class="btn btn-sm btn-link m-0 py-0 icon-no-margin" aria-label="Close" title="Close" data-action="close-notification-popover">
+            <i class="icon fa fa-xmark fa-fw " aria-hidden="true"></i>
+        </button>
+</div>
+        </div>
+        <div class="popover-region-content-container" data-region="popover-region-content-container">
+            <div class="popover-region-content" data-region="popover-region-content">
+                        <div class="all-notifications" data-region="all-notifications" role="log" aria-busy="false" aria-atomic="false" aria-relevant="additions"></div>
+        <div class="empty-message" tabindex="0" data-region="empty-message">You have no notifications</div>
+
+            </div>
+            <span class="loading-icon icon-no-margin"><i class="icon fa fa-spinner fa-spin fa-fw " title="Loading" role="img" aria-label="Loading"></i></span>
+        </div>
+                <a class="see-all-link" href="https://lms.iqra.edu.pk/message/output/popup/notifications.php">
+                    <div class="popover-region-footer-container">
+                        <div class="popover-region-seeall-text">See all</div>
+                    </div>
+                </a>
+    </div>
+</div>
+            <div class="d-flex align-items-stretch usermenu-container" data-region="usermenu">
+                    <div class="usermenu">
+                            <div class="dropdown show">
+                                <a href="#" role="button" id="user-menu-toggle" data-bs-toggle="dropdown" aria-label="User menu" aria-haspopup="true" aria-controls="user-action-menu" class="btn dropdown-toggle">
+                                    <span class="userbutton">
+                                        <span class="avatars">
+                                                <span class="avatar current">
+                                                    <img src="https://lms.iqra.edu.pk/pluginfile.php/43852/user/icon/academi/f2?rev=5305080" class="userpicture" width="35" height="35" alt="">
+                                                </span>
+                                        </span>
+                                    </span>
+                                </a>
+                                <div id="user-action-menu" class="dropdown-menu dropdown-menu-end">
+                                    <div id="usermenu-carousel" class="carousel slide" data-touch="false" data-interval="false" data-keyboard="false">
+                                        <div class="carousel-inner">
+                                            <div id="carousel-item-main" class="carousel-item active" role="menu" tabindex="-1" aria-label="User">
+                                                        <a href="https://lms.iqra.edu.pk/user/profile.php" class="dropdown-item" role="menuitem" tabindex="-1">
+                                                                
+                                                            Profile
+                                                        </a>
+                                                    
+                                                        <a href="https://lms.iqra.edu.pk/grade/report/overview/index.php" class="dropdown-item" role="menuitem" tabindex="-1">
+                                                                
+                                                            Grades
+                                                        </a>
+                                                    
+                                                        <a href="https://lms.iqra.edu.pk/calendar/view.php?view=month" class="dropdown-item" role="menuitem" tabindex="-1">
+                                                                
+                                                            Calendar
+                                                        </a>
+                                                    
+                                                        <a href="https://lms.iqra.edu.pk/user/files.php" class="dropdown-item" role="menuitem" tabindex="-1">
+                                                                
+                                                            Private files
+                                                        </a>
+                                                    
+                                                        <a href="https://lms.iqra.edu.pk/reportbuilder/index.php" class="dropdown-item" role="menuitem" tabindex="-1">
+                                                                
+                                                            Reports
+                                                        </a>
+                                                    
+                                                    <div class="dropdown-divider"></div>
+                                                        <a href="https://lms.iqra.edu.pk/user/preferences.php" class="dropdown-item" role="menuitem" tabindex="-1">
+                                                                
+                                                            Preferences
+                                                        </a>
+                                                    <div class="dropdown-divider"></div>
+                                                        <a href="https://lms.iqra.edu.pk/login/logout.php?sesskey=CaK23h6VJz" class="dropdown-item" role="menuitem" tabindex="-1">
+                                                                
+                                                            Log out
+                                                        </a>
+                                                    
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+            </div>
+            
+        </div>
+        <!-- search_box -->
+    </div>
+</nav>
+
+<div class="drawer drawer-left drawer-primary d-print-none" data-region="fixed-drawer" id="theme_boost-drawers-primary" data-preference="" data-state="show-drawer-primary" data-forceopen="0" data-close-on-resize="1" aria-hidden="true">
+    <div class="drawerheader">
+        <button class="btn btn-icon drawertoggle hidden" data-toggler="drawers" data-action="closedrawer" data-target="theme_boost-drawers-primary" data-bs-toggle="tooltip" data-bs-placement="right" data-aria-hidden-tab-index="" tabindex="-1" aria-label="Close drawer" data-bs-original-title="Close drawer">
+            <i class="icon fa fa-xmark fa-fw " aria-hidden="true"></i>
+        </button>
+                <a href="https://lms.iqra.edu.pk/my/" title="Iqra University LMS" data-region="site-home-link" class="aabtn text-reset d-flex align-items-center py-1 h-100" data-aria-hidden-tab-index="" tabindex="-1">
+                <img src="https://lms.iqra.edu.pk/pluginfile.php/1/core_admin/logocompact/300x300/1766671022/logo-blue.png" class="logo py-1 h-100" alt="Iqra University LMS">
+        </a>
+
+        <div class="drawerheadercontent hidden">
+            
+        </div>
+    </div>
+    <div class="drawercontent drag-container" data-usertour="scroller">
+                <div class="list-group">
+                <a href="https://lms.iqra.edu.pk/?redirect=0" class="list-group-item list-group-item-action  " data-aria-hidden-tab-index="" tabindex="-1">
+                    Home
+                </a>
+                <a href="https://lms.iqra.edu.pk/my/" class="list-group-item list-group-item-action  " data-aria-hidden-tab-index="" tabindex="-1">
+                    Dashboard
+                </a>
+                <a href="https://lms.iqra.edu.pk/my/courses.php" class="list-group-item list-group-item-action  " data-aria-hidden-tab-index="" tabindex="-1">
+                    My courses
+                </a>
+                <a href="https://lms.iqra.edu.pk/my/faculty_nominations.php" class="list-group-item list-group-item-action  " data-aria-hidden-tab-index="" tabindex="-1">
+                    Survey
+                </a>
+                <a href="https://lms.iqra.edu.pk/my/zakat_application/" class="list-group-item list-group-item-action  " data-aria-hidden-tab-index="" tabindex="-1">
+                    Zakat Form
+                </a>
+        </div>
+
+    </div>
+</div>
+        
+            <div class="drawer drawer-left d-print-none" data-region="fixed-drawer" id="theme_boost-drawers-courseindex" data-preference="drawer-open-index" data-state="show-drawer-left" data-forceopen="0" data-close-on-resize="0" aria-hidden="true">
+    <div class="drawerheader">
+        <button class="btn btn-icon drawertoggle hidden" data-toggler="drawers" data-action="closedrawer" data-target="theme_boost-drawers-courseindex" data-bs-toggle="tooltip" data-bs-placement="right" data-aria-hidden-tab-index="" tabindex="-1" aria-label="Close course index" data-bs-original-title="Close course index">
+            <i class="icon fa fa-xmark fa-fw " aria-hidden="true"></i>
+        </button>
+        
+        <div class="drawerheadercontent hidden">
+                                <div id="courseindexdrawercontrols" class="dropdown">
+                        <button class="btn btn-icon mx-2" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Course index options" data-aria-hidden-tab-index="" tabindex="-1">
+                            <i class="icon fa fa-ellipsis-v fa-fw m-0" aria-hidden="true"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <a class="dropdown-item" href="#" data-action="expandallcourseindexsections" data-aria-hidden-tab-index="" tabindex="-1">
+                                <i class="icon fa fa-angles-down fa-fw " aria-hidden="true"></i>
+                                Expand all
+                            </a>
+                            <a class="dropdown-item" href="#" data-action="collapseallcourseindexsections" data-aria-hidden-tab-index="" tabindex="-1">
+                                <span class="dir-rtl-hide"><i class="icon fa fa-angles-right fa-fw " aria-hidden="true"></i></span>
+                                <span class="dir-ltr-hide"><i class="icon fa fa-angles-left fa-fw " aria-hidden="true"></i></span>
+                                Collapse all
+                            </a>
+                        </div>
+                    </div>
+
+        </div>
+    </div>
+    <div class="drawercontent drag-container" data-usertour="scroller">
+                            <nav id="courseindex" class="courseindex">
+    <div id="courseindex-content">
+        <div id="course-index" class="courseindex " role="tree">
+
+
+    <div class="courseindex-section  " id="course-index-section-60441" data-for="section" data-id="60441" data-number="0" role="treeitem" aria-owns="courseindexcollapse0" tabindex="-1" aria-selected="true" data-aria-hidden-tab-index="0">
+        <div class="courseindex-item d-flex
+                
+                
+                courseindex-section-title" id="courseindexsection0" data-for="section_item" tabindex="-1">
+            <a data-bs-toggle="collapse" href="#courseindexcollapse0" class="courseindex-chevron icons-collapse-expand " aria-expanded="true" aria-controls="courseindexcollapse0" tabindex="-1">
+                <span class="collapsed-icon icon-no-margin me-1" title="Expand" tabindex="-1">
+                    <span class="dir-rtl-hide" tabindex="-1"><i class="icon fa fa-chevron-right fa-fw " aria-hidden="true" tabindex="-1"></i></span>
+                    <span class="dir-ltr-hide" tabindex="-1"><i class="icon fa fa-chevron-left fa-fw " aria-hidden="true" tabindex="-1"></i></span>
+                    <span class="visually-hidden" tabindex="-1">Expand</span>
+                </span>
+                <span class="expanded-icon icon-no-margin me-1" title="Collapse" tabindex="-1">
+                    <i class="icon fa fa-chevron-down fa-fw " aria-hidden="true" tabindex="-1"></i>
+                    <span class="visually-hidden" tabindex="-1">Collapse</span>
+                </span>
+            </a>
+            <a href="https://lms.iqra.edu.pk/course/section.php?id=60441" class="courseindex-link text-truncate" data-action="togglecourseindexsection" data-for="section_title" tabindex="-1">
+                General
+            </a>
+            <span class="current-badge badge bg-primary text-white ms-2 px-2 rounded-pill" tabindex="-1">
+                Highlighted
+            </span>
+            <span class="courseindex-locked ms-1" data-for="cm_name" tabindex="-1">
+                <i class="icon fa fa-lock fa-fw " aria-hidden="true" tabindex="-1"></i>
+            </span>
+        </div>
+        <div id="courseindexcollapse0" class="courseindex-item-content collapse show" aria-labelledby="courseindexsection0" role="group" tabindex="-1">
+            <ul class="courseindex-sectioncontent unlist" data-for="cmlist" data-id="60441" role="group" tabindex="-1">
+
+
+                <li class="courseindex-item
+                        
+                        
+                        
+                        d-flex
+                        
+                        " id="course-index-cm-47433" data-for="cm" data-id="47433" role="treeitem" tabindex="-1" aria-selected="false">
+                        <span class="completioninfo completion_none" data-for="cm_completion" data-value="NaN"></span>
+                            <a class="courseindex-link text-truncate" href="https://lms.iqra.edu.pk/mod/forum/view.php?id=47433" data-for="cm_name" tabindex="-1">
+                                Announcements
+                            </a>
+                        <span class="courseindex-locked ms-1" data-for="cm_name" tabindex="-1">
+                            <i class="icon fa fa-lock fa-fw " aria-hidden="true" tabindex="-1"></i>
+                        </span>
+                </li>
+
+
+                <li class="courseindex-item
+                        
+                        
+                        
+                        d-flex
+                        
+                        " id="course-index-cm-52541" data-for="cm" data-id="52541" role="treeitem" tabindex="-1" aria-selected="false">
+                        <span class="completioninfo completion_none" data-for="cm_completion" data-value="NaN"></span>
+                            <a class="courseindex-link text-truncate" href="https://lms.iqra.edu.pk/mod/assign/view.php?id=52541" data-for="cm_name" tabindex="-1">
+                                lecture 2 numerical slide 4 and 5
+                            </a>
+                        <span class="courseindex-locked ms-1" data-for="cm_name" tabindex="-1">
+                            <i class="icon fa fa-lock fa-fw " aria-hidden="true" tabindex="-1"></i>
+                        </span>
+                </li>
+
+
+                <li class="courseindex-item
+                        
+                        
+                        
+                        d-flex
+                        
+                        " id="course-index-cm-61349" data-for="cm" data-id="61349" role="treeitem" tabindex="-1" aria-selected="false">
+                        <span class="completioninfo completion_none" data-for="cm_completion" data-value="NaN"></span>
+                            <a class="courseindex-link text-truncate" href="https://lms.iqra.edu.pk/mod/assign/view.php?id=61349" data-for="cm_name" tabindex="-1">
+                                Assignment # 1
+                            </a>
+                        <span class="courseindex-locked ms-1" data-for="cm_name" tabindex="-1">
+                            <i class="icon fa fa-lock fa-fw " aria-hidden="true" tabindex="-1"></i>
+                        </span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
+    <div class="courseindex-section  " id="course-index-section-60442" data-for="section" data-id="60442" data-number="1" role="treeitem" aria-owns="courseindexcollapse1" tabindex="-1" aria-selected="false">
+        <div class="courseindex-item d-flex
+                
+                
+                courseindex-section-title" id="courseindexsection1" data-for="section_item" tabindex="-1">
+            <a data-bs-toggle="collapse" href="#courseindexcollapse1" class="courseindex-chevron icons-collapse-expand " aria-expanded="true" aria-controls="courseindexcollapse1" tabindex="-1">
+                <span class="collapsed-icon icon-no-margin me-1" title="Expand" tabindex="-1">
+                    <span class="dir-rtl-hide" tabindex="-1"><i class="icon fa fa-chevron-right fa-fw " aria-hidden="true" tabindex="-1"></i></span>
+                    <span class="dir-ltr-hide" tabindex="-1"><i class="icon fa fa-chevron-left fa-fw " aria-hidden="true" tabindex="-1"></i></span>
+                    <span class="visually-hidden" tabindex="-1">Expand</span>
+                </span>
+                <span class="expanded-icon icon-no-margin me-1" title="Collapse" tabindex="-1">
+                    <i class="icon fa fa-chevron-down fa-fw " aria-hidden="true" tabindex="-1"></i>
+                    <span class="visually-hidden" tabindex="-1">Collapse</span>
+                </span>
+            </a>
+            <a href="https://lms.iqra.edu.pk/course/section.php?id=60442" class="courseindex-link text-truncate" data-action="togglecourseindexsection" data-for="section_title" tabindex="-1">
+                New section
+            </a>
+            <span class="current-badge badge bg-primary text-white ms-2 px-2 rounded-pill" tabindex="-1">
+                Highlighted
+            </span>
+            <span class="courseindex-locked ms-1" data-for="cm_name" tabindex="-1">
+                <i class="icon fa fa-lock fa-fw " aria-hidden="true" tabindex="-1"></i>
+            </span>
+        </div>
+        <div id="courseindexcollapse1" class="courseindex-item-content collapse show" aria-labelledby="courseindexsection1" role="group" tabindex="-1">
+            <ul class="courseindex-sectioncontent unlist" data-for="cmlist" data-id="60442" role="group" tabindex="-1">
+
+
+                <li class="courseindex-item
+                        
+                        
+                        
+                        d-flex
+                        
+                        " id="course-index-cm-49044" data-for="cm" data-id="49044" role="treeitem" tabindex="-1" aria-selected="false">
+                        <span class="completioninfo completion_none" data-for="cm_completion" data-value="NaN"></span>
+                            <a class="courseindex-link text-truncate" href="https://lms.iqra.edu.pk/mod/attendance/view.php?id=49044" data-for="cm_name" tabindex="-1">
+                                Attendance
+                            </a>
+                        <span class="courseindex-locked ms-1" data-for="cm_name" tabindex="-1">
+                            <i class="icon fa fa-lock fa-fw " aria-hidden="true" tabindex="-1"></i>
+                        </span>
+                </li>
+
+
+                <li class="courseindex-item
+                        
+                        
+                        
+                        d-flex
+                        
+                        " id="course-index-cm-52526" data-for="cm" data-id="52526" role="treeitem" tabindex="-1" aria-selected="false">
+                        <span class="completioninfo completion_none" data-for="cm_completion" data-value="NaN"></span>
+                            <a class="courseindex-link text-truncate" href="https://lms.iqra.edu.pk/mod/lti/view.php?id=52526" data-for="cm_name" tabindex="-1">
+                                online class 10-march-2026
+                            </a>
+                        <span class="courseindex-locked ms-1" data-for="cm_name" tabindex="-1">
+                            <i class="icon fa fa-lock fa-fw " aria-hidden="true" tabindex="-1"></i>
+                        </span>
+                </li>
+
+
+                <li class="courseindex-item
+                        
+                        
+                        
+                        d-flex
+                        
+                        " id="course-index-cm-55864" data-for="cm" data-id="55864" role="treeitem" tabindex="-1" aria-selected="false">
+                        <span class="completioninfo completion_none" data-for="cm_completion" data-value="NaN"></span>
+                            <a class="courseindex-link text-truncate" href="https://lms.iqra.edu.pk/mod/lti/view.php?id=55864" data-for="cm_name" tabindex="-1">
+                                online class 24 march
+                            </a>
+                        <span class="courseindex-locked ms-1" data-for="cm_name" tabindex="-1">
+                            <i class="icon fa fa-lock fa-fw " aria-hidden="true" tabindex="-1"></i>
+                        </span>
+                </li>
+
+
+                <li class="courseindex-item
+                        
+                        
+                        
+                        d-flex
+                        
+                        " id="course-index-cm-65334" data-for="cm" data-id="65334" role="treeitem" tabindex="-1" aria-selected="false">
+                        <span class="completioninfo completion_none" data-for="cm_completion" data-value="NaN"></span>
+                            <a class="courseindex-link text-truncate" href="https://lms.iqra.edu.pk/mod/lti/view.php?id=65334" data-for="cm_name" tabindex="-1">
+                                ONLINE CLASS 31ST MARCH
+                            </a>
+                        <span class="courseindex-locked ms-1" data-for="cm_name" tabindex="-1">
+                            <i class="icon fa fa-lock fa-fw " aria-hidden="true" tabindex="-1"></i>
+                        </span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
+    <div class="courseindex-section  " id="course-index-section-60443" data-for="section" data-id="60443" data-number="2" role="treeitem" aria-owns="courseindexcollapse2" tabindex="-1" aria-selected="false">
+        <div class="courseindex-item d-flex
+                
+                
+                courseindex-section-title" id="courseindexsection2" data-for="section_item" tabindex="-1">
+            <a data-bs-toggle="collapse" href="#courseindexcollapse2" class="courseindex-chevron icons-collapse-expand " aria-expanded="true" aria-controls="courseindexcollapse2" tabindex="-1">
+                <span class="collapsed-icon icon-no-margin me-1" title="Expand" tabindex="-1">
+                    <span class="dir-rtl-hide" tabindex="-1"><i class="icon fa fa-chevron-right fa-fw " aria-hidden="true" tabindex="-1"></i></span>
+                    <span class="dir-ltr-hide" tabindex="-1"><i class="icon fa fa-chevron-left fa-fw " aria-hidden="true" tabindex="-1"></i></span>
+                    <span class="visually-hidden" tabindex="-1">Expand</span>
+                </span>
+                <span class="expanded-icon icon-no-margin me-1" title="Collapse" tabindex="-1">
+                    <i class="icon fa fa-chevron-down fa-fw " aria-hidden="true" tabindex="-1"></i>
+                    <span class="visually-hidden" tabindex="-1">Collapse</span>
+                </span>
+            </a>
+            <a href="https://lms.iqra.edu.pk/course/section.php?id=60443" class="courseindex-link text-truncate" data-action="togglecourseindexsection" data-for="section_title" tabindex="-1">
+                New section
+            </a>
+            <span class="current-badge badge bg-primary text-white ms-2 px-2 rounded-pill" tabindex="-1">
+                Highlighted
+            </span>
+            <span class="courseindex-locked ms-1" data-for="cm_name" tabindex="-1">
+                <i class="icon fa fa-lock fa-fw " aria-hidden="true" tabindex="-1"></i>
+            </span>
+        </div>
+        <div id="courseindexcollapse2" class="courseindex-item-content collapse show" aria-labelledby="courseindexsection2" role="group" tabindex="-1">
+            <ul class="courseindex-sectioncontent unlist" data-for="cmlist" data-id="60443" role="group" tabindex="-1">
+            </ul>
+        </div>
+    </div>
+
+
+    <div class="courseindex-section  " id="course-index-section-60444" data-for="section" data-id="60444" data-number="3" role="treeitem" aria-owns="courseindexcollapse3" tabindex="-1" aria-selected="false">
+        <div class="courseindex-item d-flex
+                
+                
+                courseindex-section-title" id="courseindexsection3" data-for="section_item" tabindex="-1">
+            <a data-bs-toggle="collapse" href="#courseindexcollapse3" class="courseindex-chevron icons-collapse-expand " aria-expanded="true" aria-controls="courseindexcollapse3" tabindex="-1">
+                <span class="collapsed-icon icon-no-margin me-1" title="Expand" tabindex="-1">
+                    <span class="dir-rtl-hide" tabindex="-1"><i class="icon fa fa-chevron-right fa-fw " aria-hidden="true" tabindex="-1"></i></span>
+                    <span class="dir-ltr-hide" tabindex="-1"><i class="icon fa fa-chevron-left fa-fw " aria-hidden="true" tabindex="-1"></i></span>
+                    <span class="visually-hidden" tabindex="-1">Expand</span>
+                </span>
+                <span class="expanded-icon icon-no-margin me-1" title="Collapse" tabindex="-1">
+                    <i class="icon fa fa-chevron-down fa-fw " aria-hidden="true" tabindex="-1"></i>
+                    <span class="visually-hidden" tabindex="-1">Collapse</span>
+                </span>
+            </a>
+            <a href="https://lms.iqra.edu.pk/course/section.php?id=60444" class="courseindex-link text-truncate" data-action="togglecourseindexsection" data-for="section_title" tabindex="-1">
+                New section
+            </a>
+            <span class="current-badge badge bg-primary text-white ms-2 px-2 rounded-pill" tabindex="-1">
+                Highlighted
+            </span>
+            <span class="courseindex-locked ms-1" data-for="cm_name" tabindex="-1">
+                <i class="icon fa fa-lock fa-fw " aria-hidden="true" tabindex="-1"></i>
+            </span>
+        </div>
+        <div id="courseindexcollapse3" class="courseindex-item-content collapse show" aria-labelledby="courseindexsection3" role="group" tabindex="-1">
+            <ul class="courseindex-sectioncontent unlist" data-for="cmlist" data-id="60444" role="group" tabindex="-1">
+            </ul>
+        </div>
+    </div>
+
+
+    <div class="courseindex-section  " id="course-index-section-60445" data-for="section" data-id="60445" data-number="4" role="treeitem" aria-owns="courseindexcollapse4" tabindex="-1" aria-selected="false">
+        <div class="courseindex-item d-flex
+                
+                
+                courseindex-section-title" id="courseindexsection4" data-for="section_item" tabindex="-1">
+            <a data-bs-toggle="collapse" href="#courseindexcollapse4" class="courseindex-chevron icons-collapse-expand " aria-expanded="true" aria-controls="courseindexcollapse4" tabindex="-1">
+                <span class="collapsed-icon icon-no-margin me-1" title="Expand" tabindex="-1">
+                    <span class="dir-rtl-hide" tabindex="-1"><i class="icon fa fa-chevron-right fa-fw " aria-hidden="true" tabindex="-1"></i></span>
+                    <span class="dir-ltr-hide" tabindex="-1"><i class="icon fa fa-chevron-left fa-fw " aria-hidden="true" tabindex="-1"></i></span>
+                    <span class="visually-hidden" tabindex="-1">Expand</span>
+                </span>
+                <span class="expanded-icon icon-no-margin me-1" title="Collapse" tabindex="-1">
+                    <i class="icon fa fa-chevron-down fa-fw " aria-hidden="true" tabindex="-1"></i>
+                    <span class="visually-hidden" tabindex="-1">Collapse</span>
+                </span>
+            </a>
+            <a href="https://lms.iqra.edu.pk/course/section.php?id=60445" class="courseindex-link text-truncate" data-action="togglecourseindexsection" data-for="section_title" tabindex="-1">
+                New section
+            </a>
+            <span class="current-badge badge bg-primary text-white ms-2 px-2 rounded-pill" tabindex="-1">
+                Highlighted
+            </span>
+            <span class="courseindex-locked ms-1" data-for="cm_name" tabindex="-1">
+                <i class="icon fa fa-lock fa-fw " aria-hidden="true" tabindex="-1"></i>
+            </span>
+        </div>
+        <div id="courseindexcollapse4" class="courseindex-item-content collapse show" aria-labelledby="courseindexsection4" role="group" tabindex="-1">
+            <ul class="courseindex-sectioncontent unlist" data-for="cmlist" data-id="60445" role="group" tabindex="-1">
+            </ul>
+        </div>
+    </div>
+</div>
+    </div>
+</nav>
+
+    </div>
+</div>
+        <div id="page" data-region="mainpage" data-usertour="scroller" class="drawers drag-container stateready">
+            <div id="topofscroll" class="main-inner">
+                <div class="drawer-toggles d-flex">
+                        <div class="drawer-toggler drawer-left-toggle open-nav d-print-none">
+                            <button class="btn icon-no-margin" data-toggler="drawers" data-action="toggle" data-target="theme_boost-drawers-courseindex" data-toggle="tooltip" data-placement="right" title="Open course index">
+                                <span class="sr-only">Open course index</span>
+                                <i class="icon fa fa-list fa-fw " aria-hidden="true"></i>
+                            </button>
+                        </div>
+                </div>
+                <header id="page-header" class="header-maxwidth d-print-none">
+    <div class="w-100">
+        <div class="d-flex flex-wrap">
+            <div id="page-navbar">
+                <nav aria-label="Navigation bar">
+    <ol class="breadcrumb"></ol>
+</nav>
+            </div>
+            <div class="ms-auto d-flex">
+                
+            </div>
+            <div id="course-header">
+                
+            </div>
+        </div>
+        <div class="d-flex align-items-center">
+                    <div class="me-auto">
+                        <div class="page-context-header d-flex flex-wrap align-items-center mb-2">
+    <div class="page-header-headings">
+        <h1 class="h2 mb-0">COMPUTER ARCHITECTURE - IUIC_COURSE_SP26_258 (TUE 02:16 04:20 LR29)</h1>
+    </div>
+</div>
+                    </div>
+            <div class="header-actions-container ms-auto" data-region="header-actions-container">
+            </div>
+        </div>
+    </div>
+</header>
+                    <div class="secondary-navigation d-print-none">
+                        <nav class="moremenu navigation observed">
+                            <ul id="moremenu-69d5078c45261-nav-tabs" role="menubar" class="nav more-nav nav-tabs">
+                                            <li data-key="coursehome" class="nav-item" role="none" data-forceintomoremenu="false">
+                                                        <a role="menuitem" class="nav-link active active_tree_node " href="https://lms.iqra.edu.pk/course/view.php?id=10673" aria-current="true" data-disableactive="true">
+                                                            Course
+                                                        </a>
+                                            </li>
+                                            <li data-key="grades" class="nav-item" role="none" data-forceintomoremenu="false">
+                                                        <a role="menuitem" class="nav-link  " href="https://lms.iqra.edu.pk/grade/report/index.php?id=10673" data-disableactive="true" tabindex="-1">
+                                                            Grades
+                                                        </a>
+                                            </li>
+                                            <li data-key="courseoverview" class="nav-item" role="none" data-forceintomoremenu="false">
+                                                        <a role="menuitem" class="nav-link  " href="https://lms.iqra.edu.pk/course/overview.php?id=10673" data-disableactive="true" tabindex="-1">
+                                                            Activities
+                                                        </a>
+                                            </li>
+                                            <li data-key="competencies" class="nav-item" role="none" data-forceintomoremenu="false">
+                                                        <a role="menuitem" class="nav-link  " href="https://lms.iqra.edu.pk/admin/tool/lp/coursecompetencies.php?courseid=10673" data-disableactive="true" tabindex="-1">
+                                                            Competencies
+                                                        </a>
+                                            </li>
+                                <li role="none" class="nav-item dropdown dropdownmoremenu d-none" data-region="morebutton">
+                                    <a class="dropdown-toggle nav-link " href="#" id="moremenu-dropdown-69d5078c45261" role="menuitem" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" tabindex="-1">
+                                        More
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-start" data-region="moredropdown" aria-labelledby="moremenu-dropdown-69d5078c45261" role="menu">
+                                    </ul>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                <div id="page-content" class="pb-3 d-print-block">
+                    <div id="region-main-box">
+                        <section id="region-main" aria-label="Content">
+
+                            <span class="notifications" id="user-notifications"></span>
+                            <div role="main"><span id="maincontent"></span><div class="course-content"><div id="course-format-69d5078c4af8069d5078c456fb3">
+    <h2 class="accesshide">Section outline</h2>
+    
+    <ul class="topics section-list" data-for="course_sectionlist">
+                <li id="section-0" class="section course-section main  clearfix
+                             
+                            " data-sectionid="0" data-sectionreturnnum="" data-for="section" data-id="60441" data-number="0" data-sectionname="General" data-indexed="true">
+                    <div class="section-item">
+                            <div class="course-section-header d-flex" data-for="section_title" data-id="60441" data-number="0">
+                                            <div class="bulkselect align-self-center d-none" data-for="sectionBulkSelect">
+                                                <input id="sectionCheckbox60441" type="checkbox" data-id="60441" data-action="toggleSelectionSection" data-bulkcheckbox="1">
+                                                <label class="visually-hidden" for="sectionCheckbox60441">
+                                                     Select section General 
+                                                </label>
+                                            </div>
+                                                    <div class="d-flex align-items-center position-relative">
+                                                        <a role="button" data-bs-toggle="collapse" data-for="sectiontoggler" href="#coursecontentcollapseid60441" id="collapsesectionid60441" aria-expanded="true" aria-controls="coursecontentcollapseid60441" class="btn btn-icon me-3 icons-collapse-expand
+                                                                " aria-label="General">
+                                                        <span class="expanded-icon icon-no-margin p-2" title="Collapse">
+                                                            <i class="icon fa fa-chevron-down fa-fw " aria-hidden="true"></i>
+                                                            <span class="visually-hidden">Collapse</span>
+                                                        </span>
+                                                        <span class="collapsed-icon icon-no-margin p-2" title="Expand">
+                                                            <span class="dir-rtl-hide"><i class="icon fa fa-chevron-right fa-fw " aria-hidden="true"></i></span>
+                                                            <span class="dir-ltr-hide"><i class="icon fa fa-chevron-left fa-fw " aria-hidden="true"></i></span>
+                                                            <span class="visually-hidden">Expand</span>
+                                                        </span>
+                                                        </a>
+                                                        <h3 class="h4 sectionname course-content-item d-flex align-self-stretch align-items-center mb-0" id="sectionid-60441-title" data-for="section_title" data-id="60441" data-number="0">
+                                                            <a href="https://lms.iqra.edu.pk/course/section.php?id=60441">General</a>
+                                                        </h3>
+                                                    </div>
+                                <div data-region="sectionbadges" class="sectionbadges d-flex align-items-center">
+                                </div>
+                                        <div class="flex-fill d-flex justify-content-end me-2 align-self-start mt-2">
+                                            <a id="collapsesections" class="section-collapsemenu" href="#" aria-expanded="true" role="button" data-toggle="toggleall" aria-controls="collapsesectionid60441 collapsesectionid60442 collapsesectionid60443 collapsesectionid60444 collapsesectionid60445">
+                                                <span class="collapseall text-nowrap">Collapse all</span>
+                                                <span class="expandall text-nowrap">Expand all</span>
+                                            </a>
+                                        </div>
+                            </div>
+                            <div id="coursecontentcollapseid60441" class="content course-content-item-content collapse show">
+                                <div class=" my-3" data-for="sectioninfo">
+                                            <div class="section_availability">
+                                            </div>
+                                </div>
+                                        <ul class="section m-0 p-0 img-text  d-block " data-for="cmlist">
+                                                    <li class="activity forum modtype_forum  hasinfo " id="module-47433" data-for="cmitem" data-id="47433" data-indexed="true">
+                                                            <div class="activity-item focus-control " data-activityname="Announcements" data-region="activity-card">
+                                                                        <div class="bulkselect d-none" data-for="cmBulkSelect">
+                                                                            <input id="cmCheckbox47433" type="checkbox" data-id="47433" data-action="toggleSelectionCm" data-bulkcheckbox="1" disabled="">
+                                                                            <label class="visually-hidden" for="cmCheckbox47433">
+                                                                                Select activity Announcements
+                                                                            </label>
+                                                                        </div>
+
+                                                                    <div class="activity-grid ">
+                                                                    
+                                                                                                <div class="activity-icon activityiconcontainer smaller collaboration  courseicon align-self-start me-2">
+                                                                                                    <img src="https://lms.iqra.edu.pk/theme/image.php/academi/forum/1766671022/monologo?filtericon=1" class="activityicon " data-region="activity-icon" data-id="47433" alt="">
+                                                                                                </div>
+                                                                                    
+                                                                                        <div class="activity-name-area activity-instance d-flex flex-column me-2">
+                                                                                            <div class="activitytitle  modtype_forum position-relative align-self-start">
+                                                                                                <div class="activityname">
+                                                                                                                <a href="https://lms.iqra.edu.pk/mod/forum/view.php?id=47433" class=" aalink stretched-link" onclick="">        <span class="instancename">Announcements <span class="accesshide "> Forum</span></span>    </a>
+                                                                                                            
+                                                                                                            <span class="ms-1">
+                                                                                                                <span class="activitybadge badge rounded-pill ">
+                                                                                                                        
+                                                                                                                </span>
+                                                                                                            </span>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    </div>
+                                                            </div>
+                                                    </li>
+                                                    <li class="activity assign modtype_assign  hasinfo " id="module-52541" data-for="cmitem" data-id="52541" data-indexed="true">
+                                                            <div class="activity-item focus-control " data-activityname="lecture 2 numerical slide 4 and 5" data-region="activity-card">
+                                                                        <div class="bulkselect d-none" data-for="cmBulkSelect">
+                                                                            <input id="cmCheckbox52541" type="checkbox" data-id="52541" data-action="toggleSelectionCm" data-bulkcheckbox="1" disabled="">
+                                                                            <label class="visually-hidden" for="cmCheckbox52541">
+                                                                                Select activity lecture 2 numerical slide 4 and 5
+                                                                            </label>
+                                                                        </div>
+
+                                                                    <div class="activity-grid ">
+                                                                    
+                                                                                                <div class="activity-icon activityiconcontainer smaller assessment  courseicon align-self-start me-2">
+                                                                                                    <img src="https://lms.iqra.edu.pk/theme/image.php/academi/assign/1766671022/monologo?filtericon=1" class="activityicon " data-region="activity-icon" data-id="52541" alt="">
+                                                                                                </div>
+                                                                                    
+                                                                                        <div class="activity-name-area activity-instance d-flex flex-column me-2">
+                                                                                            <div class="activitytitle  modtype_assign position-relative align-self-start">
+                                                                                                <div class="activityname">
+                                                                                                                <a href="https://lms.iqra.edu.pk/mod/assign/view.php?id=52541" class=" aalink stretched-link" onclick="">        <span class="instancename">lecture 2 numerical slide 4 and 5 <span class="accesshide "> Assignment</span></span>    </a>
+                                                                                                            
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    
+                                                                    
+                                                                                <div data-region="activity-dates" class="activity-dates me-sm-2">
+                                                                                            <div>
+                                                                                                <strong>Opened:</strong> Tuesday, 10 March 2026, 12:00 AM
+                                                                                            </div>
+                                                                                            <div>
+                                                                                                <strong>Due:</strong> Tuesday, 17 March 2026, 12:00 AM
+                                                                                            </div>
+                                                                                </div>
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    </div>
+                                                            </div>
+                                                    </li>
+                                                    <li class="activity assign modtype_assign  hasinfo " id="module-61349" data-for="cmitem" data-id="61349" data-indexed="true">
+                                                            <div class="activity-item focus-control " data-activityname="Assignment # 1" data-region="activity-card">
+                                                                        <div class="bulkselect d-none" data-for="cmBulkSelect">
+                                                                            <input id="cmCheckbox61349" type="checkbox" data-id="61349" data-action="toggleSelectionCm" data-bulkcheckbox="1" disabled="">
+                                                                            <label class="visually-hidden" for="cmCheckbox61349">
+                                                                                Select activity Assignment # 1
+                                                                            </label>
+                                                                        </div>
+
+                                                                    <div class="activity-grid ">
+                                                                    
+                                                                                                <div class="activity-icon activityiconcontainer smaller assessment  courseicon align-self-start me-2">
+                                                                                                    <img src="https://lms.iqra.edu.pk/theme/image.php/academi/assign/1766671022/monologo?filtericon=1" class="activityicon " data-region="activity-icon" data-id="61349" alt="">
+                                                                                                </div>
+                                                                                    
+                                                                                        <div class="activity-name-area activity-instance d-flex flex-column me-2">
+                                                                                            <div class="activitytitle  modtype_assign position-relative align-self-start">
+                                                                                                <div class="activityname">
+                                                                                                                <a href="https://lms.iqra.edu.pk/mod/assign/view.php?id=61349" class=" aalink stretched-link" onclick="">        <span class="instancename">Assignment # 1 </span>    </a>
+                                                                                                            
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    
+                                                                    
+                                                                                <div data-region="activity-dates" class="activity-dates me-sm-2">
+                                                                                            <div>
+                                                                                                <strong>Opened:</strong> Friday, 27 March 2026, 12:00 AM
+                                                                                            </div>
+                                                                                            <div>
+                                                                                                <strong>Due:</strong> Saturday, 4 April 2026, 11:59 PM
+                                                                                            </div>
+                                                                                </div>
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    </div>
+                                                            </div>
+                                                    </li>
+                                            </ul>
+                                
+                            </div>
+                    </div>
+                
+                </li>
+                <li id="section-1" class="section course-section main  clearfix
+                             
+                            " data-sectionid="1" data-sectionreturnnum="" data-for="section" data-id="60442" data-number="1" data-sectionname="New section" data-indexed="true">
+                    <div class="section-item">
+                            <div class="course-section-header d-flex" data-for="section_title" data-id="60442" data-number="1">
+                                            <div class="bulkselect align-self-center d-none" data-for="sectionBulkSelect">
+                                                <input id="sectionCheckbox60442" type="checkbox" data-id="60442" data-action="toggleSelectionSection" data-bulkcheckbox="1">
+                                                <label class="visually-hidden" for="sectionCheckbox60442">
+                                                     Select section New section 
+                                                </label>
+                                            </div>
+                                                    <div class="d-flex align-items-center position-relative">
+                                                        <a role="button" data-bs-toggle="collapse" data-for="sectiontoggler" href="#coursecontentcollapseid60442" id="collapsesectionid60442" aria-expanded="true" aria-controls="coursecontentcollapseid60442" class="btn btn-icon me-3 icons-collapse-expand
+                                                                " aria-label="New section">
+                                                        <span class="expanded-icon icon-no-margin p-2" title="Collapse">
+                                                            <i class="icon fa fa-chevron-down fa-fw " aria-hidden="true"></i>
+                                                            <span class="visually-hidden">Collapse</span>
+                                                        </span>
+                                                        <span class="collapsed-icon icon-no-margin p-2" title="Expand">
+                                                            <span class="dir-rtl-hide"><i class="icon fa fa-chevron-right fa-fw " aria-hidden="true"></i></span>
+                                                            <span class="dir-ltr-hide"><i class="icon fa fa-chevron-left fa-fw " aria-hidden="true"></i></span>
+                                                            <span class="visually-hidden">Expand</span>
+                                                        </span>
+                                                        </a>
+                                                        <h3 class="h4 sectionname course-content-item d-flex align-self-stretch align-items-center mb-0" id="sectionid-60442-title" data-for="section_title" data-id="60442" data-number="1">
+                                                            <a href="https://lms.iqra.edu.pk/course/section.php?id=60442">New section</a>
+                                                        </h3>
+                                                    </div>
+                                <div data-region="sectionbadges" class="sectionbadges d-flex align-items-center">
+                                </div>
+                            </div>
+                            <div id="coursecontentcollapseid60442" class="content course-content-item-content collapse show">
+                                <div class=" my-3" data-for="sectioninfo">
+                                            <div class="section_availability">
+                                            </div>
+                                </div>
+                                        <ul class="section m-0 p-0 img-text  d-block " data-for="cmlist">
+                                                    <li class="activity attendance modtype_attendance  hasinfo " id="module-49044" data-for="cmitem" data-id="49044" data-indexed="true">
+                                                            <div class="activity-item focus-control " data-activityname="Attendance" data-region="activity-card">
+                                                                        <div class="bulkselect d-none" data-for="cmBulkSelect">
+                                                                            <input id="cmCheckbox49044" type="checkbox" data-id="49044" data-action="toggleSelectionCm" data-bulkcheckbox="1" disabled="">
+                                                                            <label class="visually-hidden" for="cmCheckbox49044">
+                                                                                Select activity Attendance
+                                                                            </label>
+                                                                        </div>
+
+                                                                    <div class="activity-grid ">
+                                                                    
+                                                                                                <div class="activity-icon activityiconcontainer smaller administration  courseicon align-self-start me-2">
+                                                                                                    <img src="https://lms.iqra.edu.pk/theme/image.php/academi/attendance/1766671022/monologo?filtericon=1" class="activityicon " data-region="activity-icon" data-id="49044" alt="">
+                                                                                                </div>
+                                                                                    
+                                                                                        <div class="activity-name-area activity-instance d-flex flex-column me-2">
+                                                                                            <div class="activitytitle  modtype_attendance position-relative align-self-start">
+                                                                                                <div class="activityname">
+                                                                                                                <a href="https://lms.iqra.edu.pk/mod/attendance/view.php?id=49044" class=" aalink stretched-link" onclick="">        <span class="instancename">Attendance </span>    </a>
+                                                                                                            
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    </div>
+                                                            </div>
+                                                    </li>
+                                                    <li class="activity lti modtype_lti  hasinfo " id="module-52526" data-for="cmitem" data-id="52526" data-indexed="true">
+                                                            <div class="activity-item focus-control " data-activityname="online class 10-march-2026" data-region="activity-card">
+                                                                        <div class="bulkselect d-none" data-for="cmBulkSelect">
+                                                                            <input id="cmCheckbox52526" type="checkbox" data-id="52526" data-action="toggleSelectionCm" data-bulkcheckbox="1" disabled="">
+                                                                            <label class="visually-hidden" for="cmCheckbox52526">
+                                                                                Select activity online class 10-march-2026
+                                                                            </label>
+                                                                        </div>
+
+                                                                    <div class="activity-grid ">
+                                                                    
+                                                                                                <div class="activity-icon activityiconcontainer smaller other  courseicon align-self-start me-2">
+                                                                                                    <img src="https://res.cdn.office.net/onedrivelti/public/favicon-32x32.png" class="activityicon nofilter" data-region="activity-icon" data-id="52526" alt="">
+                                                                                                </div>
+                                                                                    
+                                                                                        <div class="activity-name-area activity-instance d-flex flex-column me-2">
+                                                                                            <div class="activitytitle  modtype_lti position-relative align-self-start">
+                                                                                                <div class="activityname">
+                                                                                                                <a href="https://lms.iqra.edu.pk/mod/lti/view.php?id=52526" class=" aalink stretched-link" onclick="">        <span class="instancename">online class 10-march-2026 <span class="accesshide "> External tool</span></span>    </a>
+                                                                                                            
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    </div>
+                                                            </div>
+                                                    </li>
+                                                    <li class="activity lti modtype_lti  hasinfo " id="module-55864" data-for="cmitem" data-id="55864" data-indexed="true">
+                                                            <div class="activity-item focus-control " data-activityname="online class 24 march" data-region="activity-card">
+                                                                        <div class="bulkselect d-none" data-for="cmBulkSelect">
+                                                                            <input id="cmCheckbox55864" type="checkbox" data-id="55864" data-action="toggleSelectionCm" data-bulkcheckbox="1" disabled="">
+                                                                            <label class="visually-hidden" for="cmCheckbox55864">
+                                                                                Select activity online class 24 march
+                                                                            </label>
+                                                                        </div>
+
+                                                                    <div class="activity-grid ">
+                                                                    
+                                                                                                <div class="activity-icon activityiconcontainer smaller other  courseicon align-self-start me-2">
+                                                                                                    <img src="https://res.cdn.office.net/onedrivelti/public/favicon-32x32.png" class="activityicon nofilter" data-region="activity-icon" data-id="55864" alt="">
+                                                                                                </div>
+                                                                                    
+                                                                                        <div class="activity-name-area activity-instance d-flex flex-column me-2">
+                                                                                            <div class="activitytitle  modtype_lti position-relative align-self-start">
+                                                                                                <div class="activityname">
+                                                                                                                <a href="https://lms.iqra.edu.pk/mod/lti/view.php?id=55864" class=" aalink stretched-link" onclick="">        <span class="instancename">online class 24 march <span class="accesshide "> External tool</span></span>    </a>
+                                                                                                            
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    </div>
+                                                            </div>
+                                                    </li>
+                                                    <li class="activity lti modtype_lti  hasinfo " id="module-65334" data-for="cmitem" data-id="65334" data-indexed="true">
+                                                            <div class="activity-item focus-control " data-activityname="ONLINE CLASS 31ST MARCH" data-region="activity-card">
+                                                                        <div class="bulkselect d-none" data-for="cmBulkSelect">
+                                                                            <input id="cmCheckbox65334" type="checkbox" data-id="65334" data-action="toggleSelectionCm" data-bulkcheckbox="1" disabled="">
+                                                                            <label class="visually-hidden" for="cmCheckbox65334">
+                                                                                Select activity ONLINE CLASS 31ST MARCH
+                                                                            </label>
+                                                                        </div>
+
+                                                                    <div class="activity-grid ">
+                                                                    
+                                                                                                <div class="activity-icon activityiconcontainer smaller other  courseicon align-self-start me-2">
+                                                                                                    <img src="https://res.cdn.office.net/onedrivelti/public/favicon-32x32.png" class="activityicon nofilter" data-region="activity-icon" data-id="65334" alt="">
+                                                                                                </div>
+                                                                                    
+                                                                                        <div class="activity-name-area activity-instance d-flex flex-column me-2">
+                                                                                            <div class="activitytitle  modtype_lti position-relative align-self-start">
+                                                                                                <div class="activityname">
+                                                                                                                <a href="https://lms.iqra.edu.pk/mod/lti/view.php?id=65334" class=" aalink stretched-link" onclick="">        <span class="instancename">ONLINE CLASS 31ST MARCH <span class="accesshide "> External tool</span></span>    </a>
+                                                                                                            
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    </div>
+                                                            </div>
+                                                    </li>
+                                            </ul>
+                                
+                            </div>
+                    </div>
+                
+                </li>
+                <li id="section-2" class="section course-section main  clearfix
+                             
+                            " data-sectionid="2" data-sectionreturnnum="" data-for="section" data-id="60443" data-number="2" data-sectionname="New section" data-indexed="true">
+                    <div class="section-item">
+                            <div class="course-section-header d-flex" data-for="section_title" data-id="60443" data-number="2">
+                                            <div class="bulkselect align-self-center d-none" data-for="sectionBulkSelect">
+                                                <input id="sectionCheckbox60443" type="checkbox" data-id="60443" data-action="toggleSelectionSection" data-bulkcheckbox="1">
+                                                <label class="visually-hidden" for="sectionCheckbox60443">
+                                                     Select section New section 
+                                                </label>
+                                            </div>
+                                                    <div class="d-flex align-items-center position-relative">
+                                                        <a role="button" data-bs-toggle="collapse" data-for="sectiontoggler" href="#coursecontentcollapseid60443" id="collapsesectionid60443" aria-expanded="true" aria-controls="coursecontentcollapseid60443" class="btn btn-icon me-3 icons-collapse-expand
+                                                                " aria-label="New section">
+                                                        <span class="expanded-icon icon-no-margin p-2" title="Collapse">
+                                                            <i class="icon fa fa-chevron-down fa-fw " aria-hidden="true"></i>
+                                                            <span class="visually-hidden">Collapse</span>
+                                                        </span>
+                                                        <span class="collapsed-icon icon-no-margin p-2" title="Expand">
+                                                            <span class="dir-rtl-hide"><i class="icon fa fa-chevron-right fa-fw " aria-hidden="true"></i></span>
+                                                            <span class="dir-ltr-hide"><i class="icon fa fa-chevron-left fa-fw " aria-hidden="true"></i></span>
+                                                            <span class="visually-hidden">Expand</span>
+                                                        </span>
+                                                        </a>
+                                                        <h3 class="h4 sectionname course-content-item d-flex align-self-stretch align-items-center mb-0" id="sectionid-60443-title" data-for="section_title" data-id="60443" data-number="2">
+                                                            <a href="https://lms.iqra.edu.pk/course/section.php?id=60443">New section</a>
+                                                        </h3>
+                                                    </div>
+                                <div data-region="sectionbadges" class="sectionbadges d-flex align-items-center">
+                                </div>
+                            </div>
+                            <div id="coursecontentcollapseid60443" class="content course-content-item-content collapse show">
+                                <div class=" my-3" data-for="sectioninfo">
+                                            <div class="section_availability">
+                                            </div>
+                                </div>
+                                        <ul class="section m-0 p-0 img-text " data-for="cmlist">
+                                            </ul>
+                                
+                            </div>
+                    </div>
+                
+                </li>
+                <li id="section-3" class="section course-section main  clearfix
+                             
+                            " data-sectionid="3" data-sectionreturnnum="" data-for="section" data-id="60444" data-number="3" data-sectionname="New section" data-indexed="true">
+                    <div class="section-item">
+                            <div class="course-section-header d-flex" data-for="section_title" data-id="60444" data-number="3">
+                                            <div class="bulkselect align-self-center d-none" data-for="sectionBulkSelect">
+                                                <input id="sectionCheckbox60444" type="checkbox" data-id="60444" data-action="toggleSelectionSection" data-bulkcheckbox="1">
+                                                <label class="visually-hidden" for="sectionCheckbox60444">
+                                                     Select section New section 
+                                                </label>
+                                            </div>
+                                                    <div class="d-flex align-items-center position-relative">
+                                                        <a role="button" data-bs-toggle="collapse" data-for="sectiontoggler" href="#coursecontentcollapseid60444" id="collapsesectionid60444" aria-expanded="true" aria-controls="coursecontentcollapseid60444" class="btn btn-icon me-3 icons-collapse-expand
+                                                                " aria-label="New section">
+                                                        <span class="expanded-icon icon-no-margin p-2" title="Collapse">
+                                                            <i class="icon fa fa-chevron-down fa-fw " aria-hidden="true"></i>
+                                                            <span class="visually-hidden">Collapse</span>
+                                                        </span>
+                                                        <span class="collapsed-icon icon-no-margin p-2" title="Expand">
+                                                            <span class="dir-rtl-hide"><i class="icon fa fa-chevron-right fa-fw " aria-hidden="true"></i></span>
+                                                            <span class="dir-ltr-hide"><i class="icon fa fa-chevron-left fa-fw " aria-hidden="true"></i></span>
+                                                            <span class="visually-hidden">Expand</span>
+                                                        </span>
+                                                        </a>
+                                                        <h3 class="h4 sectionname course-content-item d-flex align-self-stretch align-items-center mb-0" id="sectionid-60444-title" data-for="section_title" data-id="60444" data-number="3">
+                                                            <a href="https://lms.iqra.edu.pk/course/section.php?id=60444">New section</a>
+                                                        </h3>
+                                                    </div>
+                                <div data-region="sectionbadges" class="sectionbadges d-flex align-items-center">
+                                </div>
+                            </div>
+                            <div id="coursecontentcollapseid60444" class="content course-content-item-content collapse show">
+                                <div class=" my-3" data-for="sectioninfo">
+                                            <div class="section_availability">
+                                            </div>
+                                </div>
+                                        <ul class="section m-0 p-0 img-text " data-for="cmlist">
+                                            </ul>
+                                
+                            </div>
+                    </div>
+                
+                </li>
+                <li id="section-4" class="section course-section main  clearfix
+                             
+                            " data-sectionid="4" data-sectionreturnnum="" data-for="section" data-id="60445" data-number="4" data-sectionname="New section" data-indexed="true">
+                    <div class="section-item">
+                            <div class="course-section-header d-flex" data-for="section_title" data-id="60445" data-number="4">
+                                            <div class="bulkselect align-self-center d-none" data-for="sectionBulkSelect">
+                                                <input id="sectionCheckbox60445" type="checkbox" data-id="60445" data-action="toggleSelectionSection" data-bulkcheckbox="1">
+                                                <label class="visually-hidden" for="sectionCheckbox60445">
+                                                     Select section New section 
+                                                </label>
+                                            </div>
+                                                    <div class="d-flex align-items-center position-relative">
+                                                        <a role="button" data-bs-toggle="collapse" data-for="sectiontoggler" href="#coursecontentcollapseid60445" id="collapsesectionid60445" aria-expanded="true" aria-controls="coursecontentcollapseid60445" class="btn btn-icon me-3 icons-collapse-expand
+                                                                " aria-label="New section">
+                                                        <span class="expanded-icon icon-no-margin p-2" title="Collapse">
+                                                            <i class="icon fa fa-chevron-down fa-fw " aria-hidden="true"></i>
+                                                            <span class="visually-hidden">Collapse</span>
+                                                        </span>
+                                                        <span class="collapsed-icon icon-no-margin p-2" title="Expand">
+                                                            <span class="dir-rtl-hide"><i class="icon fa fa-chevron-right fa-fw " aria-hidden="true"></i></span>
+                                                            <span class="dir-ltr-hide"><i class="icon fa fa-chevron-left fa-fw " aria-hidden="true"></i></span>
+                                                            <span class="visually-hidden">Expand</span>
+                                                        </span>
+                                                        </a>
+                                                        <h3 class="h4 sectionname course-content-item d-flex align-self-stretch align-items-center mb-0" id="sectionid-60445-title" data-for="section_title" data-id="60445" data-number="4">
+                                                            <a href="https://lms.iqra.edu.pk/course/section.php?id=60445">New section</a>
+                                                        </h3>
+                                                    </div>
+                                <div data-region="sectionbadges" class="sectionbadges d-flex align-items-center">
+                                </div>
+                            </div>
+                            <div id="coursecontentcollapseid60445" class="content course-content-item-content collapse show">
+                                <div class=" my-3" data-for="sectioninfo">
+                                            <div class="section_availability">
+                                            </div>
+                                </div>
+                                        <ul class="section m-0 p-0 img-text " data-for="cmlist">
+                                            </ul>
+                                
+                            </div>
+                    </div>
+                
+                </li>
+    </ul>
+</div></div><div id="geniai-chat" style="">
+    <input type="hidden" id="local_geniai_message_01" value="Hello, MUHAMMAD DANISH! 🌟">
+    <input type="hidden" id="local_geniai_message_02" value="Welcome to the course COMPUTER ARCHITECTURE - IUIC_COURSE_SP26_258 (TUE 02:16 04:20 LR29) on Moodle Iqra University LMS!
+I am AI Assistant, and I am here to make your learning journey as amazing as possible.
+How can I assist you today? 🌟📚">
+
+    <div class="geniai-popup">
+        <div id="geniai-scrollarea" style="max-height: 915px;">
+            <div class="geniai-header">
+                <div class="geniai-info">
+                    <img class="icon" src="https://lms.iqra.edu.pk/pluginfile.php/1/local_geniai/agentphoto/0//4829581.png" alt="Teacher photo">
+                    <div class="geniai-infoname">
+                        <span class="geniai-name">AI Assistant</span>
+                        <span class="geniai-status">Online</span>
+                    </div>
+                </div>
+                <div class="right-icons">
+                    <a id="geniai-clear-history" title="Clear all history" href="#">
+                        <img class="icon " alt="" aria-hidden="true" src="https://lms.iqra.edu.pk/theme/image.php/academi/local_geniai/1766671022/icons/clear">
+                    </a>
+                    <a id="geniai-icon-close" title="Close chat" href="#">
+                        <img class="icon " alt="" aria-hidden="true" src="https://lms.iqra.edu.pk/theme/image.php/academi/local_geniai/1766671022/icons/close">
+                    </a>
+                </div>
+            </div>
+            <div id="geniai-area-mensagens"></div>
+        </div>
+        <div id="geniai-sendarea">
+            <textarea id="geniai-textarea" contenteditable="true" placeholder="Write a message..."></textarea>
+
+            <div id="geniai-icon-stop" style="display: none">
+                <img class="icon " alt="" aria-hidden="true" src="https://lms.iqra.edu.pk/theme/image.php/academi/local_geniai/1766671022/icons/stop">
+            </div>
+
+            <div id="geniai-icon-mic" title="Send Message">
+                <img class="icon " alt="" aria-hidden="true" src="https://lms.iqra.edu.pk/theme/image.php/academi/local_geniai/1766671022/icons/mic">
+            </div>
+            <div id="geniai-icon-send" title="Send Message">
+                <img class="icon " alt="" aria-hidden="true" src="https://lms.iqra.edu.pk/theme/image.php/academi/local_geniai/1766671022/icons/send">
+            </div>
+        </div>
+    </div>
+
+    <div id="geniai-chat-btn">
+        <span id="geniai-count-icon" data-count="0">0</span>
+        <div class="balloon">Talk to AI Assistant here</div>
+        <span class="geniai-icon geniai-open-icon">
+            <img class="icon" src="https://lms.iqra.edu.pk/pluginfile.php/1/local_geniai/agentphoto/0//4829581.png" alt="Teacher photo">
+        </span>
+        <span class="geniai-icon geniai-close-icon">
+            <img class="icon " alt="" aria-hidden="true" src="https://lms.iqra.edu.pk/theme/image.php/academi/local_geniai/1766671022/chat/close">
+        </span>
+    </div>
+</div></div>
+                            
+                            
+
+                        </section>
+                    </div>
+                </div>
+            </div>
+            
+                <footer id="page-footer" class="footer-popover footer-dark text-light">
+                    <div id="footer">
+                            <div class="footer-main">
+                                <div class="container-fluid">
+                                    <div id="course-footer">
+                                        
+                                    </div>
+                                    <div class="row">
+                                                <div class="col-lg-3 col-md-6">
+                                                    <div class="infoarea">
+                                                                <div class="footer-logo">
+                                                                    <a href="#"><img src="//lms.iqra.edu.pk/pluginfile.php/1/theme_academi/footerlogo/1766671022/37x250%20pixels.jpg" width="100" height="100" alt="Academi"></a>
+                                                                </div>
+                                                            <p>Leading education institute in Karachi and Islamabad since 1998. Diverse programs, accredited facilities, affordable education.<br><a title="Read More »" href="https://iqra.edu.pk/about-iu/" target="_blank" rel="noopener">Read More »</a></p>
+                                                    </div>
+                                                </div>
+            
+                                                <div class="col-lg-3 col-md-6 footer-links-block">
+                                                    <div class="foot-links">
+                                                            <h2>Info</h2>
+                                                            <ul>
+                                                                <a class="nav-item nav-link" href="https://iqra.edu.pk/academic-calendar/">Academic Calendar</a><a class="nav-item nav-link" href="https://iqra.edu.pk/help-center/category/iqralms-teacher-guide/">IqraLMS - Teacher Guide</a><a class="nav-item nav-link" href="https://iqra.edu.pk/help-center/category/iqralms-student-guide/">IqraLMS - Student Guide</a>
+                                                            </ul>
+                                                    </div>
+                                                </div>
+            
+                                                <div class="col-lg-3 col-md-6">
+                                                    <div class="contact-info">
+                                                            <h2>Contact Us</h2>
+                                                            <p>Iqra University Main Campus, Defence View</p>
+                                                            <p><i class="fa fa-phone-square"></i> Phone : (021) 111 264 264</p>
+                                                            <p><i class="fa fa-envelope"></i> Email : <a class="mail-link" href="mailto:dlic@iqra.edu.pk">dlic@iqra.edu.pk</a></p>
+                                                    </div>
+                                                </div>
+            
+                                                <div class="col-lg-3 col-md-6">
+                                                    <div class="social-media">
+                                                            <h2>Follow Us</h2>
+                                                        <ul>
+                                                                    <li class="smedia-1">
+                                                                        <a href="https://twitter.com/IqraUniOfficial" target="_blank" style="background-color: #47caf6">
+                                                                            <span class="media-icon">
+                                                                                <i class="fa fa-x-twitter"></i>
+                                                                            </span>
+                                                                        </a>
+                                                                    </li>
+                                                                    <li class="smedia-2">
+                                                                        <a href="https://www.linkedin.com/school/iqra-university-official/" target="_blank" style="background-color: #0A66C2">
+                                                                            <span class="media-icon">
+                                                                                <i class="fa fa-linkedin"></i>
+                                                                            </span>
+                                                                        </a>
+                                                                    </li>
+                                                                    <li class="smedia-3">
+                                                                        <a href="https://www.facebook.com/IUMainCampus/" target="_blank" style="background-color: #3598dc">
+                                                                            <span class="media-icon">
+                                                                                <i class="fa fa-facebook-f"></i>
+                                                                            </span>
+                                                                        </a>
+                                                                    </li>
+                                                                    <li class="smedia-4">
+                                                                        <a href="https://www.youtube.com/channel/UCeu0uTN42AVuVsVvCNizBxw" target="_blank" style="background-color: #cd2129">
+                                                                            <span class="media-icon">
+                                                                                <i class="fa fa-youtube"></i>
+                                                                            </span>
+                                                                        </a>
+                                                                    </li>
+                                                                    <li class="smedia-5">
+                                                                        <a href="https://www.instagram.com/iqra_university/" target="_blank" style="background-color: #f131b8">
+                                                                            <span class="media-icon">
+                                                                                <i class="fa fa-instagram"></i>
+                                                                            </span>
+                                                                        </a>
+                                                                    </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="footer-bottom">
+                                    <p>Copyright © 2025 <a href="https://iqra.edu.pk/" target="_blank">Iqra University</a> - Developed by <a href="#">DLIC</a></p>
+                                <div class="footer-content-debugging">
+                                    <div class="container"></div>
+                                </div>
+                            </div>
+                        <div data-region="footer-container-popover">
+                            <button class="btn btn-icon bg-secondary icon-no-margin btn-footer-popover" data-action="footer-popover" aria-label="Show footer">
+                                <i class="icon fa fa-question fa-fw " aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <div class="footer-content-popover container" data-region="footer-content-popover">
+                                <div class="footer-section p-3 border-bottom">
+            
+            
+                                        <div><a href="https://lms.iqra.edu.pk/user/contactsitesupport.php"><i class="icon fa-regular fa-envelope fa-fw " aria-hidden="true"></i>Contact site support</a></div>
+                                </div>
+            
+                            <div class="footer-section p-3 border-bottom">
+                                <div class="logininfo">
+                                    <div class="logininfo">You are logged in as <a href="https://lms.iqra.edu.pk/user/profile.php?id=43721" title="View profile">MUHAMMAD DANISH</a> (<a href="https://lms.iqra.edu.pk/login/logout.php?sesskey=CaK23h6VJz">Log out</a>)</div>
+                                </div>
+                                <div class="tool_usertours-resettourcontainer">
+                                </div>
+                                <div><a class="mobilelink" href="https://download.moodle.org/mobile?version=2025041402&amp;lang=en&amp;iosappid=633359593&amp;androidappid=com.moodle.moodlemobile&amp;siteurl=https%3A%2F%2Flms.iqra.edu.pk">Get the mobile app</a></div>
+                                <script>
+//<![CDATA[
+var require = {
+    baseUrl : 'https://lms.iqra.edu.pk/lib/requirejs.php/1766671023/',
+    // We only support AMD modules with an explicit define() statement.
+    enforceDefine: true,
+    skipDataMain: true,
+    waitSeconds : 0,
+
+    paths: {
+        jquery: 'https://lms.iqra.edu.pk/lib/javascript.php/1766671023/lib/jquery/jquery-3.7.1.min',
+        jqueryui: 'https://lms.iqra.edu.pk/lib/javascript.php/1766671023/lib/jquery/ui-1.14.1/jquery-ui.min',
+        jqueryprivate: 'https://lms.iqra.edu.pk/lib/javascript.php/1766671023/lib/requirejs/jquery-private'
+    },
+
+    // Custom jquery config map.
+    map: {
+      // '*' means all modules will get 'jqueryprivate'
+      // for their 'jquery' dependency.
+      '*': { jquery: 'jqueryprivate' },
+
+      // 'jquery-private' wants the real jQuery module
+      // though. If this line was not here, there would
+      // be an unresolvable cyclic dependency.
+      jqueryprivate: { jquery: 'jquery' }
+    }
+};
+
+//]]>
+</script>
+<script src="https://lms.iqra.edu.pk/lib/javascript.php/1766671023/lib/requirejs/require.min.js"></script>
+<script>
+//<![CDATA[
+M.util.js_pending("core/first");
+require(['core/first'], function() {
+require(['core/prefetch'])
+;
+M.util.js_pending('filter_mathjaxloader/loader'); require(['filter_mathjaxloader/loader'], function(amd) {amd.configure({"mathjaxurl":"https:\/\/cdn.jsdelivr.net\/npm\/mathjax@3.2.2\/es5\/tex-mml-chtml.js","mathjaxconfig":"","lang":"en"}); M.util.js_complete('filter_mathjaxloader/loader');});;
+require(["media_videojs/loader"], function(loader) {
+    loader.setUp('en');
+});;
+M.util.js_pending('core_courseformat/courseeditor'); require(['core_courseformat/courseeditor'], function(amd) {amd.setViewFormat("10673", {"editing":false,"supportscomponents":true,"statekey":"1774950819_1775568397","overriddenStrings":[]}); M.util.js_complete('core_courseformat/courseeditor');});;
+M.util.js_pending('theme_academi/theme'); require(['theme_academi/theme'], function(amd) {amd.init(); M.util.js_complete('theme_academi/theme');});;
+M.util.js_pending('core_courseformat/courseeditor'); require(['core_courseformat/courseeditor'], function(amd) {amd.setViewFormat("10673", {"editing":false,"supportscomponents":true,"statekey":"1774950819_1775568397","overriddenStrings":[]}); M.util.js_complete('core_courseformat/courseeditor');});;
+
+require(['core_courseformat/local/courseindex/placeholder'], function(component) {
+    component.init('#course-index-placeholder');
+});
+;
+
+require(['core_courseformat/local/courseindex/drawer'], function(component) {
+    component.init('#courseindex');
+});
+;
+
+    require(['core/moremenu'], function(moremenu) {
+        moremenu(document.querySelector('#moremenu-69d5078c45356-navbar-nav'));
+    });
+;
+
+require(['jquery', 'message_popup/notification_popover_controller'], function($, Controller) {
+    var container = $('#nav-notification-popover-container');
+    var controller = new Controller(container);
+    controller.registerEventListeners();
+    controller.registerListNavigationEventListeners();
+});
+;
+
+    require(['core/usermenu'], function(UserMenu) {
+        UserMenu.init();
+    });
+;
+
+M.util.js_pending('theme_boost/drawers:load');
+require(['theme_boost/drawers'], function() {
+    M.util.js_complete('theme_boost/drawers:load');
+});
+;
+
+    require(['theme_boost/courseindexdrawercontrols'], function(component) {
+    component.init('courseindexdrawercontrols');
+    });
+;
+
+M.util.js_pending('theme_boost/drawers:load');
+require(['theme_boost/drawers'], function() {
+    M.util.js_complete('theme_boost/drawers:load');
+});
+;
+
+    require(['core/moremenu'], function(moremenu) {
+        moremenu(document.querySelector('#moremenu-69d5078c45261-nav-tabs'));
+    });
+;
+
+M.util.js_pending('theme_boost/loader');
+require(['theme_boost/loader', 'theme_boost/drawer'], function(Loader, Drawer) {
+    Drawer.init();
+    M.util.js_complete('theme_boost/loader');
+});
+;
+
+require(['theme_boost/footer-popover'], function(FooterPopover) {
+    FooterPopover.init();
+});
+;
+M.util.js_pending('format_topics/mutations'); require(['format_topics/mutations'], function(amd) {amd.init(); M.util.js_complete('format_topics/mutations');});;
+M.util.js_pending('format_topics/section'); require(['format_topics/section'], function(amd) {amd.init(); M.util.js_complete('format_topics/section');});;
+
+require(['core_courseformat/local/content'], function(component) {
+    component.init('#page', {}, );
+});
+;
+M.util.js_pending('core_course/view'); require(['core_course/view'], function(amd) {amd.init(); M.util.js_complete('core_course/view');});;
+M.util.js_pending('local_geniai/chat'); require(['local_geniai/chat'], function(amd) {amd.init("10673", 5); M.util.js_complete('local_geniai/chat');});;
+M.util.js_pending('core/notification'); require(['core/notification'], function(amd) {amd.init(182457, []); M.util.js_complete('core/notification');});;
+M.util.js_pending('core/log'); require(['core/log'], function(amd) {amd.setConfig({"level":"warn"}); M.util.js_complete('core/log');});;
+M.util.js_pending('core/page_global'); require(['core/page_global'], function(amd) {amd.init(); M.util.js_complete('core/page_global');});;
+M.util.js_pending('core/utility'); require(['core/utility'], function(amd) {M.util.js_complete('core/utility');});;
+M.util.js_pending('core/storage_validation'); require(['core/storage_validation'], function(amd) {amd.init(1775568068); M.util.js_complete('core/storage_validation');});
+    M.util.js_complete("core/first");
+});
+//]]>
+</script>
+<script>
+//<![CDATA[
+M.str = {"moodle":{"lastmodified":"Last modified","name":"Name","error":"Error","info":"Information","yes":"Yes","no":"No","cancel":"Cancel","confirm":"Confirm","areyousure":"Are you sure?","closebuttontitle":"Close","unknownerror":"Unknown error","file":"File","url":"URL","collapseall":"Collapse all","expandall":"Expand all"},"repository":{"type":"Type","size":"Size","invalidjson":"Invalid JSON string","nofilesattached":"No files attached","filepicker":"File picker","logout":"Logout","nofilesavailable":"No files available","norepositoriesavailable":"Sorry, none of your current repositories can return files in the required format.","fileexistsdialogheader":"File exists","fileexistsdialog_editor":"A file with that name has already been attached to the text you are editing.","fileexistsdialog_filemanager":"A file with that name has already been attached","renameto":"Rename to \"{$a}\"","referencesexist":"There are {$a} links to this file","select":"Select"},"admin":{"confirmdeletecomments":"Are you sure you want to delete the selected comment(s)?","confirmation":"Confirmation"},"debug":{"debuginfo":"Debug info","line":"Line","stacktrace":"Stack trace"},"langconfig":{"labelsep":": "}};
+//]]>
+</script>
+<script>
+//<![CDATA[
+(function() {M.util.help_popups.setup(Y);
+ M.util.js_pending('random69d5078c456fb4'); Y.on('domready', function() { M.util.js_complete("init");  M.util.js_complete('random69d5078c456fb4'); });
+})();
+//]]>
+</script>
+
+                            </div>
+            
+                            <div class="footer-section p-3">
+                                <div>Powered by <a href="https://moodle.com">Moodle</a></div>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            
+                <a id="backToTop" href="#" class="btn btn-primary btn-lg back-to-top " role="button"><span class="fa fa-angle-up"></span></a>
+            
+            
+            
+        </div>
+        
+    </div><div id="yui3-css-stamp" style="position: absolute !important; visibility: hidden !important" class=""></div>
+
+</body></html>
