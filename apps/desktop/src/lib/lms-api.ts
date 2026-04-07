@@ -100,29 +100,29 @@ export interface LMSScrapeAll {
 // ── API functions ─────────────────────────────────────────────────────────────
 
 export const lmsApi = {
-  getProfile: () => lmsFetch<LMSProfile>('/api/lms/profile'),
+  getProfile: () => lmsFetch<LMSProfile>('/profile'),
 
-  getCourses: () => lmsFetch<LMSCourse[]>('/api/lms/courses'),
+  getCourses: () => lmsFetch<LMSCourse[]>('/courses'),
 
   getAssignments: (courseId: number) =>
-    lmsFetch<LMSAssignment[]>(`/api/lms/assignments/${courseId}`),
+    lmsFetch<LMSAssignment[]>(`/assignments/${courseId}`),
 
-  getGrades: () => lmsFetch<LMSGrade[]>('/api/lms/grades'),
+  getGrades: () => lmsFetch<LMSGrade[]>('/grades'),
 
   getCourseGrades: (courseId: number) =>
-    lmsFetch<LMSCourseGrade[]>(`/api/lms/grades/${courseId}`),
+    lmsFetch<LMSCourseGrade[]>(`/grades/${courseId}`),
 
-  getEvents: () => lmsFetch<LMSEvent[]>('/api/lms/events'),
+  getEvents: () => lmsFetch<LMSEvent[]>('/events'),
 
   getAnnouncements: (courseId: number) =>
-    lmsFetch<LMSAnnouncement[]>(`/api/lms/announcements/${courseId}`),
+    lmsFetch<LMSAnnouncement[]>(`/announcements/${courseId}`),
 
   getAttendance: (courseId: number) =>
     lmsFetch<{ course_id: number; records: any[]; summary: any }>(
-      `/api/lms/attendance/${courseId}`
+      `/attendance/${courseId}`
     ),
 
-  scrapeAll: () => lmsFetch<LMSScrapeAll>('/api/lms/scrape/all'),
+  scrapeAll: () => lmsFetch<LMSScrapeAll>('/scrape/all'),
 
   submitAssignment: async (
     assignmentId: number,
