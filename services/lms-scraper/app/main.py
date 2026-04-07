@@ -7,6 +7,7 @@ import uuid
 
 from app.config import get_settings
 from app.routers import scraper
+from app.routers import lms as lms_router
 from app.models import HealthResponse
 from app.middleware.metrics import prometheus_middleware, metrics_endpoint
 
@@ -78,6 +79,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 # Include routers
 app.include_router(scraper.router, prefix="/api/scrape", tags=["LMS Scraping"])
+app.include_router(lms_router.router, prefix="/api/lms", tags=["LMS Operations"])
 
 
 @app.get("/health", response_model=HealthResponse)
