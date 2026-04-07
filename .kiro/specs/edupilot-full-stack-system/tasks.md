@@ -909,7 +909,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - _Requirements: 20.5_
 
 
-- [ ] 27. Integration and end-to-end wiring
+- [x] 27. Integration and end-to-end wiring
   - [x] 27.1 Wire API Gateway to microservices
     - Configure service discovery and routing
     - Test request flow from gateway to each microservice
@@ -961,7 +961,7 @@ This implementation plan breaks down the EduPilot system into discrete coding ta
     - Test cross-service error handling
     - _Requirements: 1.1, 2.1, 4.1, 5.1_
 
-- [ ] 28. Final system testing and validation
+- [x] 28. Final system testing and validation
   - [x] 28.1 Run all property-based tests
     - Execute all 51 property tests across all services
     - Verify minimum 100 iterations per test

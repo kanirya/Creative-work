@@ -280,7 +280,7 @@ The scraper uses Playwright to automate the full Microsoft login flow, then scra
     - If 0 courses returned, trigger re-authentication and retry once
     - Alert admin if scraping fails 3 consecutive times
 
-- [-] 15. Write end-to-end integration tests
+- [x] 15. Write end-to-end integration tests
   - [x] 15.1 Write full scraping pipeline integration test
     - Test: authenticate → scrape courses → verify at least 1 course returned
     - Test: authenticate → scrape assignments → verify assignment data structure
@@ -299,7 +299,7 @@ The scraper uses Playwright to automate the full Microsoft login flow, then scra
     - Store in `services/lms-scraper/tests/fixtures/`
     - Use these fixtures in unit tests to avoid hitting real LMS
 
-- [ ] 16. Update requirements and Dockerfile
+- [x] 16. Update requirements and Dockerfile
   - [x] 16.1 Update `requirements.txt`
     - Add `msal==1.28.0` — Microsoft Authentication Library (for token-based fallback)
     - Add `pytest==7.4.0`, `pytest-asyncio==0.23.0`, `pytest-mock==3.12.0`
@@ -312,8 +312,8 @@ The scraper uses Playwright to automate the full Microsoft login flow, then scra
     - Add `--no-sandbox` flag support for containerized environments
     - Verify Dockerfile builds successfully
 
-- [ ] 17. Documentation
-  - [ ] 17.1 Write `services/lms-scraper/README.md`
+- [x] 17. Documentation
+  - [x] 17.1 Write `services/lms-scraper/README.md`
     - Document Microsoft OIDC auth flow
     - Document all environment variables
     - Document API endpoints
