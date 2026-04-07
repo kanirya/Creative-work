@@ -390,6 +390,28 @@ class DataStorageService:
         except Exception as e:
             logger.error(f"Error storing embedding for {source_type}/{source_id}: {e}")
 
+    async def get_embedding_counts(self, student_id: UUID) -> Dict[str, int]:
+        """Return embedding counts per source_type for a student."""
+        conn = self._get_conn()
+        cursor = conn.cursor()
+        try:
+            cursor.execute(
+                """
+                SELECT source_type, COUNT(*) AS cnt
+                FROM document_embeddings
+                WHERE student_id = %s
+                GROUP BY source_type
+                """,
+                (str(student_id),),
+            )
+            rows = cursor.fetchall()
+            return {row["source_type"]: row["cnt"] for row in rows}
+        except Exception as e:
+            logger.error(f"Error fetching embedding counts for student {student_id}: {e}")
+            return {}
+        finally:
+            cursor.close()
+
     def close(self):
         if self._conn and not self._conn.closed:
             self._conn.close()

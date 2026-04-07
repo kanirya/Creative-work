@@ -3,9 +3,16 @@ Mock-based unit tests for the full scraping pipeline (_perform_scraping).
 These tests do NOT require real LMS credentials or a browser.
 """
 
+import sys
+from unittest.mock import MagicMock
+
+# Stub out heavy dependencies before any app imports
+for mod in ["psycopg2", "psycopg2.extras", "langchain_openai", "prometheus_client"]:
+    sys.modules.setdefault(mod, MagicMock())
+
 import pytest
 from datetime import datetime
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 from uuid import UUID
 
 from app.models import ScrapingStatus

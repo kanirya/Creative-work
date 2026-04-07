@@ -195,3 +195,28 @@ async def get_scraping_results(student_id: UUID):
         "grades_count": data.get("grades_count", 0),
         "error_message": data.get("error_message"),
     }
+
+
+@router.get("/verify/{student_id}")
+async def verify_student_embeddings(student_id: UUID):
+    """
+    Verify that embeddings exist for a student in the vector DB.
+    Returns embedding counts by source type.
+    """
+    storage = get_data_storage_service()
+    try:
+        counts = await storage.get_embedding_counts(student_id)
+        has_embeddings = sum(counts.values()) > 0
+        return {
+            "student_id": str(student_id),
+            "has_embeddings": has_embeddings,
+            "embedding_counts": counts,
+        }
+    except Exception as e:
+        logger.error(f"Error verifying embeddings for student {student_id}: {e}")
+        return {
+            "student_id": str(student_id),
+            "has_embeddings": False,
+            "embedding_counts": {},
+            "error": str(e),
+        }

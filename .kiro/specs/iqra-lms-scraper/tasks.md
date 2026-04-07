@@ -288,7 +288,7 @@ The scraper uses Playwright to automate the full Microsoft login flow, then scra
     - Mark all as `@pytest.mark.integration` — requires real credentials
     - Add `pytest.ini` with `integration` marker registration
 
-  - [ ] 15.2 Write mock-based unit tests for full pipeline
+  - [x] 15.2 Write mock-based unit tests for full pipeline
     - Mock Playwright browser context with pre-recorded HTML fixtures
     - Test full `perform_scraping()` flow with mocked browser
     - Test error handling: auth failure, scraper timeout, storage failure
@@ -300,13 +300,13 @@ The scraper uses Playwright to automate the full Microsoft login flow, then scra
     - Use these fixtures in unit tests to avoid hitting real LMS
 
 - [ ] 16. Update requirements and Dockerfile
-  - [ ] 16.1 Update `requirements.txt`
+  - [x] 16.1 Update `requirements.txt`
     - Add `msal==1.28.0` — Microsoft Authentication Library (for token-based fallback)
     - Add `pytest==7.4.0`, `pytest-asyncio==0.23.0`, `pytest-mock==3.12.0`
     - Add `pytest-playwright==0.4.4` — for Playwright-based tests
     - Ensure `playwright==1.41.0` is present (already in requirements)
 
-  - [ ] 16.2 Update `Dockerfile` for Playwright browser dependencies
+  - [x] 16.2 Update `Dockerfile` for Playwright browser dependencies
     - Ensure Chromium browser is installed: `RUN playwright install chromium`
     - Install system dependencies: `RUN playwright install-deps chromium`
     - Add `--no-sandbox` flag support for containerized environments
@@ -320,7 +320,7 @@ The scraper uses Playwright to automate the full Microsoft login flow, then scra
     - Document how to run integration tests
     - Document known limitations (MFA, session expiry)
 
-  - [ ] 17.2 Write troubleshooting guide
+  - [x] 17.2 Write troubleshooting guide
     - Common issue: Microsoft blocks automated login → solution: use `--disable-blink-features`
     - Common issue: Session expired → solution: delete session file and re-authenticate
     - Common issue: Moodle selectors changed → solution: update selectors in `scrapers.py`
