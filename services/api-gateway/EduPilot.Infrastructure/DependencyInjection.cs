@@ -59,6 +59,10 @@ public static class DependencyInjection
             .AddPolicyHandler(GetRetryPolicy())
             .AddPolicyHandler(GetCircuitBreakerPolicy());
 
+        // Sync retry queue background service
+        services.AddSingleton<SyncRetryQueue>();
+        services.AddHostedService(sp => sp.GetRequiredService<SyncRetryQueue>());
+
         return services;
     }
 

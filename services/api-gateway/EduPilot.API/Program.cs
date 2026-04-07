@@ -180,6 +180,9 @@ app.MapControllers();
 
 app.MapHealthChecks("/health");
 
+// SignalR hub endpoint
+app.MapHub<StudentDataHub>("/hubs/student-data");
+
 // Prometheus metrics endpoint
 app.MapMetrics();
 

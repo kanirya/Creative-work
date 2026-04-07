@@ -36,10 +36,11 @@ public class ExceptionHandlingMiddleware
         
         var (statusCode, message) = exception switch
         {
-            UnauthorizedAccessException => (HttpStatusCode.Unauthorized, "Unauthorized access"),
+            UnauthorizedAccessException => (HttpStatusCode.Unauthorized, "You are not authorized to access this resource. Please sign in and try again."),
             ArgumentException => (HttpStatusCode.BadRequest, exception.Message),
-            KeyNotFoundException => (HttpStatusCode.NotFound, "Resource not found"),
-            _ => (HttpStatusCode.InternalServerError, "An internal server error occurred")
+            KeyNotFoundException => (HttpStatusCode.NotFound, "The requested resource was not found."),
+            InvalidOperationException => (HttpStatusCode.UnprocessableEntity, exception.Message),
+            _ => (HttpStatusCode.InternalServerError, "An unexpected error occurred. Please try again later.")
         };
 
         context.Response.StatusCode = (int)statusCode;
