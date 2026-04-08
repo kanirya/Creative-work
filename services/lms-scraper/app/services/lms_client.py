@@ -140,6 +140,11 @@ class IqraLMSClient:
 
             assign_links = await page.query_selector_all('a[href*="/mod/assign/view.php"]')
             seen = set()
+
+            # Get course name from page title
+            title_el = await page.query_selector("h1, .page-header-headings h1")
+            course_name = (await title_el.inner_text()).strip() if title_el else f"Course {course_id}"
+
             for link in assign_links:
                 href = await link.get_attribute("href") or ""
                 m = re.search(r"id=(\d+)", href)
@@ -155,6 +160,7 @@ class IqraLMSClient:
                         "id": aid,
                         "name": name,
                         "course_id": course_id,
+                        "course_name": course_name,
                         "url": href if href.startswith("http") else f"{BASE_URL}{href}",
                     })
 
