@@ -127,28 +127,35 @@ class IqraLMSClient:
     # ── Assignments ───────────────────────────────────────────────────────────
 
     async def get_assignments(self, course_id: int) -> List[Dict]:
-        """Get all assignments for a course with full details."""
+        """Get all assignments for a course — fast, no per-assignment page visits."""
         page = await self.ctx.new_page()
         assignments = []
         try:
             url = f"{BASE_URL}/course/view.php?id={course_id}"
             logger.info(f"Loading course page: {url}")
-            await page.goto(url, wait_until="domcontentloaded", timeout=20_000)
-            await page.wait_for_timeout(2_000)  # increased wait
+            await page.goto(url, wait_until="networkidle", timeout=30_000)
+            await page.wait_for_timeout(2_000)
 
             current_url = page.url
-            logger.info(f"Course page URL: {current_url}")
+            logger.info(f"Course page URL after load: {current_url}")
+            page_title = await page.title()
+            logger.info(f"Page title: {page_title}")
 
-            # Check if redirected to login
             if "login" in current_url or "microsoftonline" in current_url:
                 logger.warning(f"Session expired — redirected to {current_url}")
                 return []
 
             assign_links = await page.query_selector_all('a[href*="/mod/assign/view.php"]')
             logger.info(f"Found {len(assign_links)} assignment links for course {course_id}")
+
+            # Also try alternative selector
+            if len(assign_links) == 0:
+                alt_links = await page.query_selector_all('li.modtype_assign a.aalink')
+                logger.info(f"Alt selector found {len(alt_links)} links")
+                if alt_links:
+                    assign_links = alt_links
             seen = set()
 
-            # Get course name from page title
             title_el = await page.query_selector("h1, .page-header-headings h1")
             course_name = (await title_el.inner_text()).strip() if title_el else f"Course {course_id}"
 
@@ -161,27 +168,33 @@ class IqraLMSClient:
                 if aid in seen:
                     continue
                 seen.add(aid)
-                name = (await link.inner_text()).strip().split("\n")[0]
-                if name:
-                    assignments.append({
-                        "id": aid,
-                        "name": name,
-                        "course_id": course_id,
-                        "course_name": course_name,
-                        "url": href if href.startswith("http") else f"{BASE_URL}{href}",
-                    })
+                raw = (await link.inner_text()).strip()
+                name = raw.split("\n")[0].strip()
+                if not name:
+                    continue
 
-            # Enrich each assignment with details
-            enriched = []
-            for a in assignments:
-                try:
-                    detail = await self._get_assignment_detail(page, a)
-                    enriched.append(detail)
-                except Exception as e:
-                    logger.warning(f"Could not get detail for assignment {a['id']}: {e}")
-                    enriched.append(a)
+                assignments.append({
+                    "id": aid,
+                    "name": name,
+                    "course_id": course_id,
+                    "course_name": course_name,
+                    "url": href if href.startswith("http") else f"{BASE_URL}{href}",
+                    "due_date": None,
+                    "submission_status": "unknown",
+                    "grading_status": "unknown",
+                    "grade": None,
+                    "time_remaining": "",
+                    "submitted_files": [],
+                    "can_submit": True,
+                    "description": "",
+                })
 
-            return enriched
+            logger.info(f"Returning {len(assignments)} assignments for course {course_id}")
+            return assignments
+
+        except Exception as e:
+            logger.error(f"Error getting assignments for course {course_id}: {e}", exc_info=True)
+            return []
         finally:
             await page.close()
 
