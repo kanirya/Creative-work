@@ -131,14 +131,21 @@ class IqraLMSClient:
         page = await self.ctx.new_page()
         assignments = []
         try:
-            await page.goto(
-                f"{BASE_URL}/course/view.php?id={course_id}",
-                wait_until="domcontentloaded",
-                timeout=20_000,
-            )
-            await page.wait_for_timeout(1_000)
+            url = f"{BASE_URL}/course/view.php?id={course_id}"
+            logger.info(f"Loading course page: {url}")
+            await page.goto(url, wait_until="domcontentloaded", timeout=20_000)
+            await page.wait_for_timeout(2_000)  # increased wait
+
+            current_url = page.url
+            logger.info(f"Course page URL: {current_url}")
+
+            # Check if redirected to login
+            if "login" in current_url or "microsoftonline" in current_url:
+                logger.warning(f"Session expired — redirected to {current_url}")
+                return []
 
             assign_links = await page.query_selector_all('a[href*="/mod/assign/view.php"]')
+            logger.info(f"Found {len(assign_links)} assignment links for course {course_id}")
             seen = set()
 
             # Get course name from page title
