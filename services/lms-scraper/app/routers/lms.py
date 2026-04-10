@@ -51,12 +51,53 @@ class LoginRequest(BaseModel):
 
 
 async def get_client() -> IqraLMSClient:
-    auth = get_lms_auth_service()
+    """Get a fresh browser context for each request using the saved session."""
+    import json
+    import os
+    from pathlib import Path
+    from playwright.async_api import async_playwright
+
+    session_path = Path(os.environ.get("SESSION_STORAGE_PATH", "lms_session_test.json"))
+    if not session_path.exists():
+        raise HTTPException(status_code=401, detail="No LMS session found. Please login first.")
+
     try:
-        ctx = await auth.get_authenticated_context()
-        return IqraLMSClient(ctx)
-    except LMSAuthenticationError as e:
-        raise HTTPException(status_code=401, detail=f"LMS authentication failed: {e}")
+        storage_state = json.loads(session_path.read_text())
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Invalid session file: {e}")
+
+    # Create a fresh playwright instance and context for this request
+    pw = await async_playwright().start()
+    browser = await pw.chromium.launch(
+        headless=True,
+        args=["--no-sandbox", "--disable-blink-features=AutomationControlled", "--disable-dev-shm-usage"],
+    )
+    ctx = await browser.new_context(
+        storage_state=storage_state,
+        user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        viewport={"width": 1920, "height": 1080},
+    )
+    await ctx.add_init_script(
+        "Object.defineProperty(navigator,'webdriver',{get:()=>undefined})"
+    )
+
+    # Store browser/pw for cleanup
+    ctx._pw_instance = pw
+    ctx._browser_instance = browser
+
+    return IqraLMSClient(ctx)
+
+
+async def close_client_resources(ctx):
+    """Close browser resources after request."""
+    try:
+        await ctx.close()
+        if hasattr(ctx, '_browser_instance'):
+            await ctx._browser_instance.close()
+        if hasattr(ctx, '_pw_instance'):
+            await ctx._pw_instance.stop()
+    except Exception:
+        pass
 
 
 def serialize(obj):
@@ -244,6 +285,8 @@ async def get_profile():
         return serialize(await client.get_profile())
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        await close_client_resources(client.ctx)
 
 
 @router.get("/courses")
@@ -253,6 +296,8 @@ async def get_courses():
         return serialize(await client.get_courses())
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        await close_client_resources(client.ctx)
 
 
 @router.get("/assignments/all")
@@ -271,6 +316,8 @@ async def get_all_assignments():
         return serialize(all_assignments)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        await close_client_resources(client.ctx)
 
 
 @router.get("/assignments/{course_id}")
@@ -281,6 +328,8 @@ async def get_assignments(course_id: int):
         return serialize(await client.get_assignments(course_id))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        await close_client_resources(client.ctx)
 
 
 @router.get("/grades")
@@ -290,6 +339,8 @@ async def get_grades_overview():
         return serialize(await client.get_grades_overview())
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        await close_client_resources(client.ctx)
 
 
 @router.get("/grades/{course_id}")
@@ -299,6 +350,8 @@ async def get_course_grades(course_id: int):
         return serialize(await client.get_course_grades(course_id))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        await close_client_resources(client.ctx)
 
 
 @router.get("/events")
@@ -308,6 +361,8 @@ async def get_upcoming_events():
         return serialize(await client.get_upcoming_events())
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        await close_client_resources(client.ctx)
 
 
 @router.get("/announcements/{course_id}")
@@ -317,6 +372,8 @@ async def get_announcements(course_id: int):
         return serialize(await client.get_announcements(course_id))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        await close_client_resources(client.ctx)
 
 
 @router.get("/attendance/{course_id}")
@@ -326,6 +383,8 @@ async def get_attendance(course_id: int):
         return serialize(await client.get_attendance(course_id))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        await close_client_resources(client.ctx)
 
 
 @router.post("/assignments/{assignment_id}/submit")
