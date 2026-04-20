@@ -1,6 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Sidebar } from './Sidebar';
 
 // Pages that don't use the sidebar (login)
@@ -28,9 +29,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="relative flex min-h-screen">
         <Sidebar />
         <main className="flex-1 overflow-auto" role="main">
-          <div className="mx-auto min-h-screen w-full max-w-[1600px]">
-            {children}
-          </div>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={pathname}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+              className="mx-auto min-h-screen w-full max-w-[1440px]"
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
     </div>
