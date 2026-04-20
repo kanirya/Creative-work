@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card } from '@edupilot/ui';
 import { lmsApi, LMSGrade, LMSCourseGrade } from '@/lib/lms-api';
+import { GradesSkeleton } from '@/components/loading-skeletons';
 
 function GradesContent() {
   const router = useRouter();
@@ -47,7 +48,7 @@ function GradesContent() {
   };
 
   if (loading) {
-    return <div className="app-page text-sm text-slate-500">Loading grade reports...</div>;
+    return <GradesSkeleton />;
   }
 
   if (error) {
@@ -123,7 +124,7 @@ function GradesContent() {
 
 export default function GradesPage() {
   return (
-    <Suspense fallback={<div className="app-page text-sm text-slate-500">Loading grade reports...</div>}>
+    <Suspense fallback={<GradesSkeleton />}>
       <GradesContent />
     </Suspense>
   );

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Card } from '@edupilot/ui';
 import { lmsApi, LMSCourse } from '@/lib/lms-api';
+import { CoursesSkeleton } from '@/components/loading-skeletons';
 
 export default function CoursesPage() {
   const router = useRouter();
@@ -26,7 +27,7 @@ export default function CoursesPage() {
   }, [router]);
 
   if (loading) {
-    return <div className="app-page text-sm text-slate-500">Loading your course spaces...</div>;
+    return <CoursesSkeleton />;
   }
 
   if (error) {

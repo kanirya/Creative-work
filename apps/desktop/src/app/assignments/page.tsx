@@ -4,6 +4,7 @@ import { Suspense, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, Button } from '@edupilot/ui';
 import { lmsApi, LMSAssignment, LMSCourse } from '@/lib/lms-api';
+import { AssignmentsSkeleton } from '@/components/loading-skeletons';
 
 const LMS_FILE_DOWNLOAD_BASE =
   `${process.env.NEXT_PUBLIC_LMS_SCRAPER_URL || 'http://localhost:8002'}/api/lms/files/download?url=`;
@@ -131,6 +132,10 @@ function AssignmentsContent() {
     }
   };
 
+  if (loading) {
+    return <AssignmentsSkeleton />;
+  }
+
   return (
     <div className="app-page space-y-8">
       <div className="page-header">
@@ -160,10 +165,6 @@ function AssignmentsContent() {
           </select>
         </div>
       </div>
-
-      {loading && (
-        <div className="text-sm text-slate-500">Loading assignments...</div>
-      )}
 
       {error && (
         <div className="rounded-[24px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -294,7 +295,7 @@ function AssignmentsContent() {
 
 export default function AssignmentsPage() {
   return (
-    <Suspense fallback={<div className="app-page text-sm text-slate-500">Loading assignments...</div>}>
+    <Suspense fallback={<AssignmentsSkeleton />}>
       <AssignmentsContent />
     </Suspense>
   );

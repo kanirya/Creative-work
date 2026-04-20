@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { Card, Button } from '@edupilot/ui';
 import { lmsApi, LMSCourse, LMSGrade, LMSEvent } from '@/lib/lms-api';
 import { useOffline } from '@/lib/offline';
+import { DashboardSkeleton } from '@/components/loading-skeletons';
 
 const staggerContainer = {
   hidden: { opacity: 0 },
@@ -108,16 +109,7 @@ export default function DashboardPage() {
   };
 
   if (loading) {
-    return (
-      <div className="app-page flex min-h-screen items-center">
-        <div className="section-card w-full max-w-lg p-7">
-          <div className="flex items-center gap-3 text-sm text-slate-500">
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-slate-900" />
-            Loading your LMS workspace...
-          </div>
-        </div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (

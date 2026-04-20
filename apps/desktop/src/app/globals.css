@@ -38,6 +38,15 @@ a {
   text-decoration: none;
 }
 
+@keyframes skeleton-shimmer {
+  0% {
+    transform: translateX(-140%);
+  }
+  100% {
+    transform: translateX(140%);
+  }
+}
+
 ::selection {
   background: rgba(15, 23, 42, 0.12);
 }
@@ -101,5 +110,22 @@ a {
 
   .pill {
     @apply inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600;
+  }
+
+  .skeleton-surface {
+    @apply relative overflow-hidden rounded-[20px] border border-slate-200/70 bg-slate-100/90;
+  }
+
+  .skeleton-surface::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.72) 40%,
+      transparent 60%
+    );
+    animation: skeleton-shimmer 1.45s ease-in-out infinite;
   }
 }

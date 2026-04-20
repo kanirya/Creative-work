@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card } from '@edupilot/ui';
 import { lmsApi, LMSEvent } from '@/lib/lms-api';
+import { EventsSkeleton } from '@/components/loading-skeletons';
 
 const EVENT_SHORT: Record<string, string> = {
   assignment_due: 'AS',
@@ -44,7 +45,7 @@ export default function EventsPage() {
   };
 
   if (loading) {
-    return <div className="app-page text-sm text-slate-500">Loading upcoming events...</div>;
+    return <EventsSkeleton />;
   }
 
   if (error) {
