@@ -29,6 +29,7 @@ from fastapi.responses import Response
 from pydantic import BaseModel
 
 from app.services.lms_auth import LMSAuthenticationError, get_lms_auth_service
+from app.services.cache_store import get_cache_store
 from app.services.lms_client import IqraLMSClient
 
 router = APIRouter()
@@ -116,6 +117,27 @@ def handle_lms_error(e: Exception) -> None:
     if isinstance(e, LMSAuthenticationError):
         raise HTTPException(status_code=401, detail=str(e))
     raise HTTPException(status_code=500, detail=str(e))
+
+
+async def get_cached_or_live(cache_key: str, fetcher, force_refresh: bool = False):
+    cache = get_cache_store()
+
+    if not force_refresh:
+        cached = await cache.get_json(cache_key)
+        if cached is not None:
+            return cached
+
+    try:
+        payload = await fetcher()
+        serialized = serialize(payload)
+        await cache.set_json(cache_key, serialized)
+        return serialized
+    except Exception as e:
+        cached = await cache.get_json(cache_key)
+        if cached is not None:
+            logger.warning("Serving cached LMS payload for %s after live fetch failed: %s", cache_key, e)
+            return cached
+        handle_lms_error(e)
 
 
 # ── Login endpoints ───────────────────────────────────────────────────────────
@@ -287,10 +309,10 @@ async def clear_session():
 
 
 @router.get("/profile")
-async def get_profile():
+async def get_profile(force_refresh: bool = Query(False, description="Bypass cache and fetch live data")):
     client = await get_client()
     try:
-        return serialize(await client.get_profile())
+        return await get_cached_or_live("lms:current:profile", client.get_profile, force_refresh)
     except Exception as e:
         handle_lms_error(e)
     finally:
@@ -298,10 +320,10 @@ async def get_profile():
 
 
 @router.get("/courses")
-async def get_courses():
+async def get_courses(force_refresh: bool = Query(False, description="Bypass cache and fetch live data")):
     client = await get_client()
     try:
-        return serialize(await client.get_courses())
+        return await get_cached_or_live("lms:current:courses", client.get_courses, force_refresh)
     except Exception as e:
         handle_lms_error(e)
     finally:
@@ -309,19 +331,22 @@ async def get_courses():
 
 
 @router.get("/assignments/all")
-async def get_all_assignments():
+async def get_all_assignments(force_refresh: bool = Query(False, description="Bypass cache and fetch live data")):
     """Get all assignments across all enrolled courses."""
     client = await get_client()
     try:
-        courses = await client.get_courses()
-        all_assignments = []
-        for course in courses:
-            try:
-                assigns = await client.get_assignments(course["id"])
-                all_assignments.extend(assigns)
-            except Exception as e:
-                logger.warning(f"Could not get assignments for course {course['id']}: {e}")
-        return serialize(all_assignments)
+        async def fetch_all():
+            courses = await client.get_courses()
+            all_assignments = []
+            for course in courses:
+                try:
+                    assigns = await client.get_assignments(course["id"])
+                    all_assignments.extend(assigns)
+                except Exception as inner_error:
+                    logger.warning(f"Could not get assignments for course {course['id']}: {inner_error}")
+            return all_assignments
+
+        return await get_cached_or_live("lms:current:assignments:all", fetch_all, force_refresh)
     except Exception as e:
         handle_lms_error(e)
     finally:
@@ -329,11 +354,15 @@ async def get_all_assignments():
 
 
 @router.get("/assignments/{course_id}")
-async def get_assignments(course_id: int):
+async def get_assignments(course_id: int, force_refresh: bool = Query(False, description="Bypass cache and fetch live data")):
     """Get all assignments for a specific course."""
     client = await get_client()
     try:
-        return serialize(await client.get_assignments(course_id))
+        return await get_cached_or_live(
+            f"lms:current:assignments:{course_id}",
+            lambda: client.get_assignments(course_id),
+            force_refresh,
+        )
     except Exception as e:
         handle_lms_error(e)
     finally:
@@ -341,10 +370,10 @@ async def get_assignments(course_id: int):
 
 
 @router.get("/grades")
-async def get_grades_overview():
+async def get_grades_overview(force_refresh: bool = Query(False, description="Bypass cache and fetch live data")):
     client = await get_client()
     try:
-        return serialize(await client.get_grades_overview())
+        return await get_cached_or_live("lms:current:grades", client.get_grades_overview, force_refresh)
     except Exception as e:
         handle_lms_error(e)
     finally:
@@ -352,10 +381,14 @@ async def get_grades_overview():
 
 
 @router.get("/grades/{course_id}")
-async def get_course_grades(course_id: int):
+async def get_course_grades(course_id: int, force_refresh: bool = Query(False, description="Bypass cache and fetch live data")):
     client = await get_client()
     try:
-        return serialize(await client.get_course_grades(course_id))
+        return await get_cached_or_live(
+            f"lms:current:course-grades:{course_id}",
+            lambda: client.get_course_grades(course_id),
+            force_refresh,
+        )
     except Exception as e:
         handle_lms_error(e)
     finally:
@@ -363,10 +396,10 @@ async def get_course_grades(course_id: int):
 
 
 @router.get("/events")
-async def get_upcoming_events():
+async def get_upcoming_events(force_refresh: bool = Query(False, description="Bypass cache and fetch live data")):
     client = await get_client()
     try:
-        return serialize(await client.get_upcoming_events())
+        return await get_cached_or_live("lms:current:events", client.get_upcoming_events, force_refresh)
     except Exception as e:
         handle_lms_error(e)
     finally:
@@ -374,10 +407,14 @@ async def get_upcoming_events():
 
 
 @router.get("/announcements/{course_id}")
-async def get_announcements(course_id: int):
+async def get_announcements(course_id: int, force_refresh: bool = Query(False, description="Bypass cache and fetch live data")):
     client = await get_client()
     try:
-        return serialize(await client.get_announcements(course_id))
+        return await get_cached_or_live(
+            f"lms:current:announcements:{course_id}",
+            lambda: client.get_announcements(course_id),
+            force_refresh,
+        )
     except Exception as e:
         handle_lms_error(e)
     finally:
@@ -385,10 +422,14 @@ async def get_announcements(course_id: int):
 
 
 @router.get("/attendance/{course_id}")
-async def get_attendance(course_id: int):
+async def get_attendance(course_id: int, force_refresh: bool = Query(False, description="Bypass cache and fetch live data")):
     client = await get_client()
     try:
-        return serialize(await client.get_attendance(course_id))
+        return await get_cached_or_live(
+            f"lms:current:attendance:{course_id}",
+            lambda: client.get_attendance(course_id),
+            force_refresh,
+        )
     except Exception as e:
         handle_lms_error(e)
     finally:
@@ -462,7 +503,14 @@ async def scrape_all():
     client = await get_client()
     try:
         data = await client.scrape_all()
-        return serialize(data)
+        serialized = serialize(data)
+        cache = get_cache_store()
+        await cache.set_json("lms:current:profile", serialized.get("profile"))
+        await cache.set_json("lms:current:courses", serialized.get("courses", []))
+        await cache.set_json("lms:current:grades", serialized.get("grades_overview", []))
+        await cache.set_json("lms:current:events", serialized.get("upcoming_events", []))
+        await cache.set_json("lms:current:assignments:all", serialized.get("assignments", []))
+        return serialized
     except Exception as e:
         logger.error(f"Full scrape error: {e}", exc_info=True)
         handle_lms_error(e)
