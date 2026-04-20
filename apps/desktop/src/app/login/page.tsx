@@ -17,14 +17,13 @@ export default function LoginPage() {
   const [studentName, setStudentName] = useState('');
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Check if already logged in on mount
   useEffect(() => {
     lmsApi.getProfile()
       .then((p) => {
-        if (p?.name) router.push('/dashboard');
+        if (p?.name && p?.userid) router.push('/dashboard');
       })
-      .catch(() => {/* not logged in */});
-  }, []);
+      .catch(() => {});
+  }, [router]);
 
   const stopPolling = () => {
     if (pollRef.current) {
@@ -47,7 +46,7 @@ export default function LoginPage() {
         if (s.status === 'logged_in') {
           stopPolling();
           if (s.profile?.name) setStudentName(s.profile.name);
-          setTimeout(() => router.push('/dashboard'), 1000);
+          setTimeout(() => router.push('/dashboard'), 900);
         }
 
         if (s.status === 'failed') {
@@ -55,14 +54,18 @@ export default function LoginPage() {
           setError(s.error || 'Login failed');
         }
       } catch {
-        // ignore poll errors
+        // Ignore polling glitches while the login flow is in progress.
       }
     }, 1500);
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) { setError('Email and password are required'); return; }
+
+    if (!email || !password) {
+      setError('Email and password are required');
+      return;
+    }
 
     setError('');
     setMfaNumber(null);
@@ -79,106 +82,122 @@ export default function LoginPage() {
 
   useEffect(() => () => stopPolling(), []);
 
-  const statusMessages: Record<LoginStatus, string> = {
-    idle: '',
-    logging_in: 'Connecting to Microsoft login...',
-    mfa_pending: '',
-    logged_in: `Welcome, ${studentName || 'student'}! Redirecting...`,
-    failed: '',
-  };
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 px-4">
-      <Card className="w-full max-w-md p-8">
-        <div className="text-center mb-8">
-          <div className="text-5xl mb-4">🎓</div>
-          <h1 className="text-3xl font-bold text-gray-900">EduPilot</h1>
-          <p className="text-gray-500 mt-1 text-sm">Iqra University LMS</p>
-        </div>
+    <div className="relative min-h-screen overflow-hidden px-4 py-5 md:px-6 md:py-6 lg:px-10 lg:py-10">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-[-8rem] top-[-10rem] h-80 w-80 rounded-full bg-white blur-3xl" />
+        <div className="absolute right-[-7rem] top-24 h-72 w-72 rounded-full bg-slate-200/55 blur-3xl" />
+      </div>
 
-        {/* MFA prompt */}
-        {status === 'mfa_pending' && mfaNumber && (
-          <div className="mb-6 bg-blue-50 border-2 border-blue-400 rounded-xl p-5 text-center">
-            <p className="text-blue-800 font-semibold text-sm mb-2">
-              Microsoft Authenticator — Number Matching
+      <div className="relative mx-auto grid min-h-[calc(100vh-2.5rem)] max-w-7xl items-center gap-6 lg:min-h-[calc(100vh-5rem)] lg:grid-cols-[1.05fr_0.95fr] lg:gap-8">
+        <section className="hidden rounded-[40px] border border-white/70 bg-white/72 p-8 shadow-[0_20px_70px_rgba(15,23,42,0.08)] backdrop-blur-2xl lg:flex lg:flex-col lg:justify-between lg:p-10 xl:p-12">
+          <div>
+            <div className="inline-flex items-center rounded-full border border-slate-200 bg-white/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
+              EduPilot desktop
+            </div>
+
+            <h1 className="mt-8 max-w-xl text-5xl font-semibold leading-[1.02] tracking-tight text-slate-950">
+              Professional academic workspace for Iqra LMS.
+            </h1>
+
+            <p className="mt-6 max-w-xl text-base leading-8 text-slate-600">
+              One clean place for courses, assignments, grades, submissions, and AI-assisted study workflows.
+              The new direction is intentionally minimal, bright, and distraction-light.
             </p>
-            <div className="text-5xl font-bold text-blue-700 my-3">{mfaNumber}</div>
-            <p className="text-blue-600 text-sm">
-              Open your Authenticator app and enter this number
-            </p>
-            <div className="mt-3 flex items-center justify-center gap-2 text-blue-500 text-xs">
-              <div className="animate-spin w-3 h-3 border-2 border-blue-500 border-t-transparent rounded-full" />
-              Waiting for approval...
-            </div>
           </div>
-        )}
 
-        {/* Success */}
-        {status === 'logged_in' && (
-          <div className="mb-6 bg-green-50 border border-green-300 rounded-lg p-4 text-center text-green-700 text-sm font-medium">
-            ✓ {statusMessages.logged_in}
+          <div className="mt-10 grid gap-4 xl:grid-cols-3">
+            {[
+              ['Direct LMS Sync', 'Connect courses and assignments through the live Iqra LMS session.'],
+              ['Submission Ready', 'Upload assignment files and review submitted documents from the same workspace.'],
+              ['AI Study Layer', 'Move from admin work to academic focus without switching tools.'],
+            ].map(([title, text]) => (
+              <div key={title} className="rounded-[28px] border border-slate-200/80 bg-slate-50/85 p-5">
+                <p className="text-sm font-semibold tracking-tight text-slate-900">{title}</p>
+                <p className="mt-2 text-sm leading-6 text-slate-500">{text}</p>
+              </div>
+            ))}
           </div>
-        )}
+        </section>
 
-        {/* Error */}
-        {error && (
-          <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm" role="alert">
-            {error}
-          </div>
-        )}
+        <div className="flex items-center justify-center">
+          <Card className="w-full max-w-2xl rounded-[30px] border-white/80 bg-white/88 shadow-[0_18px_60px_rgba(15,23,42,0.09)] md:rounded-[36px]">
+            <div className="space-y-6 md:space-y-7">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Sign in</p>
+                <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-950 md:text-3xl">Connect your LMS</h2>
+                <p className="mt-2 text-sm leading-7 text-slate-500">
+                  Use your Microsoft 365 university account to start a live LMS session.
+                </p>
+              </div>
 
-        {/* Login form — hide during MFA/success */}
-        {status !== 'mfa_pending' && status !== 'logged_in' && (
-          <form onSubmit={handleLogin} className="space-y-4" aria-label="LMS login">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
-                Microsoft 365 Email
-              </label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="student@iqra.edu.pk"
-                disabled={status === 'logging_in'}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
-                Password
-              </label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Your Microsoft password"
-                disabled={status === 'logging_in'}
-              />
-            </div>
-
-            <Button
-              type="submit"
-              variant="primary"
-              className="w-full"
-              disabled={status === 'logging_in'}
-            >
-              {status === 'logging_in' ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
-                  {statusMessages.logging_in}
-                </span>
-              ) : (
-                'Connect to Iqra LMS'
+              {status === 'mfa_pending' && mfaNumber && (
+                <div className="rounded-[28px] border border-slate-200 bg-slate-50 p-6 text-center">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Authenticator step</p>
+                  <div className="mt-4 text-6xl font-semibold tracking-tight text-slate-950">{mfaNumber}</div>
+                  <p className="mt-4 text-sm leading-7 text-slate-500">
+                    Open Microsoft Authenticator and enter the number above to approve the sign-in.
+                  </p>
+                  <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-xs font-medium text-slate-500">
+                    <span className="h-2 w-2 animate-pulse rounded-full bg-slate-900" />
+                    Waiting for approval
+                  </div>
+                </div>
               )}
-            </Button>
-          </form>
-        )}
 
-        <p className="mt-5 text-center text-xs text-gray-400">
-          Uses your Microsoft 365 / Iqra University credentials
-        </p>
-      </Card>
+              {status === 'logged_in' && (
+                <div className="rounded-[24px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+                  Connected successfully. Welcome{studentName ? `, ${studentName}` : ''}.
+                </div>
+              )}
+
+              {error && (
+                <div className="rounded-[24px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+                  {error}
+                </div>
+              )}
+
+              {status !== 'mfa_pending' && status !== 'logged_in' && (
+                <form onSubmit={handleLogin} className="space-y-4" aria-label="LMS login">
+                  <Input
+                    id="email"
+                    type="email"
+                    label="Microsoft 365 Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="student@iqra.edu.pk"
+                    disabled={status === 'logging_in'}
+                  />
+
+                  <Input
+                    id="password"
+                    type="password"
+                    label="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Your university password"
+                    disabled={status === 'logging_in'}
+                  />
+
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    className="mt-1 w-full justify-center"
+                    disabled={status === 'logging_in'}
+                  >
+                    {status === 'logging_in' ? 'Connecting to Microsoft...' : 'Connect to Iqra LMS'}
+                  </Button>
+                </form>
+              )}
+
+              <div className="flex flex-col gap-2 rounded-[24px] border border-slate-200/80 bg-slate-50/80 px-4 py-3 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+                <span>Secure browser-based Microsoft flow</span>
+                <span className="font-medium text-slate-700">White minimal UI refresh in progress</span>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }

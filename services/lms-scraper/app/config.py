@@ -27,6 +27,8 @@ class Settings(BaseSettings):
 
     # Database
     database_url: str = ""
+    redis_url: str = ""
+    cache_ttl_seconds: int = 300
 
     # OpenAI
     openai_api_key: str = ""

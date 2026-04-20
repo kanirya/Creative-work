@@ -1,14 +1,11 @@
 /**
  * LMS API client for the desktop app.
- * Uses Next.js proxy (/proxy/lms/*) to avoid CORS issues in the browser.
- * The proxy forwards to http://localhost:8002/api/lms/*
+ * Call the scraper service directly from the browser; it already allows CORS.
+ * This avoids flaky long-running responses through the Next.js rewrite proxy.
  */
 
-// In browser: use the Next.js proxy. In Node/Electron: call directly.
 const LMS_BASE =
-  typeof window !== 'undefined'
-    ? '/proxy/lms'
-    : (process.env.NEXT_PUBLIC_LMS_SCRAPER_URL || 'http://localhost:8002') + '/api/lms';
+  (process.env.NEXT_PUBLIC_LMS_SCRAPER_URL || 'http://localhost:8002') + '/api/lms';
 
 async function lmsFetch<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${LMS_BASE}${path}`, {
@@ -41,13 +38,17 @@ export interface LMSAssignment {
   id: number;
   name: string;
   course_id: number;
+  course_name?: string;
   due_date: string | null;
   submission_status: string;
   grading_status: string;
   grade: number | null;
   max_grade?: number;
   time_remaining: string;
-  submitted_files: string[];
+  submitted_files: Array<{
+    name: string;
+    url: string;
+  }>;
   can_submit: boolean;
   submit_btn_text?: string;
   description: string;
@@ -156,9 +157,8 @@ export const lmsApi = {
     if (file) form.append('file', file);
     if (onlineText) form.append('online_text', onlineText);
 
-    const base = typeof window !== 'undefined'
-      ? '/proxy/lms'
-      : (process.env.NEXT_PUBLIC_LMS_SCRAPER_URL || 'http://localhost:8002') + '/api/lms';
+    const base =
+      (process.env.NEXT_PUBLIC_LMS_SCRAPER_URL || 'http://localhost:8002') + '/api/lms';
 
     const res = await fetch(
       `${base}/assignments/${assignmentId}/submit`,

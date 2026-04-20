@@ -18,8 +18,8 @@ export const Card: React.FC<CardProps> = ({
   return (
     <div
       className={`
-        bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden
-        ${isClickable ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''}
+        overflow-hidden rounded-[28px] border border-slate-200/80 bg-white/92 shadow-sm backdrop-blur
+        ${isClickable ? 'cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg' : ''}
         ${className}
       `}
       onClick={onClick}
@@ -33,11 +33,11 @@ export const Card: React.FC<CardProps> = ({
       } : undefined}
     >
       {title && (
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+        <div className="border-b border-slate-200/80 px-6 py-5">
+          <h3 className="text-lg font-semibold tracking-tight text-slate-950">{title}</h3>
         </div>
       )}
-      <div className="px-6 py-4">
+      <div className="px-6 py-5">
         {children}
       </div>
     </div>

@@ -1,11 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Card } from '@edupilot/ui';
 import { lmsApi, LMSCourse } from '@/lib/lms-api';
-import Link from 'next/link';
+import { CoursesSkeleton } from '@/components/loading-skeletons';
 
 export default function CoursesPage() {
+  const router = useRouter();
   const [courses, setCourses] = useState<LMSCourse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -13,38 +16,64 @@ export default function CoursesPage() {
   useEffect(() => {
     lmsApi.getCourses()
       .then(setCourses)
-      .catch((e) => setError(e.message))
+      .catch((e) => {
+        if (e?.message?.includes('Please log in again')) {
+          router.push('/login');
+          return;
+        }
+        setError(e.message);
+      })
       .finally(() => setLoading(false));
-  }, []);
+  }, [router]);
 
-  if (loading) return <div className="p-8 text-gray-600">Loading courses from LMS...</div>;
-  if (error) return <div className="p-8 text-red-600">Error: {error}</div>;
+  if (loading) {
+    return <CoursesSkeleton />;
+  }
+
+  if (error) {
+    return <div className="app-page text-sm text-red-600">Error: {error}</div>;
+  }
 
   return (
-    <div className="p-8 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">My Courses</h1>
-        <p className="text-gray-600 mt-1">{courses.length} enrolled courses</p>
+    <div className="app-page space-y-8">
+      <div className="page-header">
+        <div>
+          <h1 className="page-title">Courses</h1>
+          <p className="page-subtitle">{courses.length} enrolled course spaces connected to your LMS session.</p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {courses.map((course) => (
-          <Card key={course.id} className="p-5 hover:shadow-lg transition-shadow">
-            <h3 className="font-semibold text-gray-900 text-sm leading-tight">{course.name}</h3>
-            <p className="text-xs text-gray-500 mt-1">{course.code}</p>
-            <div className="flex gap-3 mt-4">
-              <Link
-                href={`/assignments?course=${course.id}&name=${encodeURIComponent(course.name)}`}
-                className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700"
-              >
-                Assignments
-              </Link>
-              <Link
-                href={`/grades?course=${course.id}&name=${encodeURIComponent(course.name)}`}
-                className="text-xs bg-gray-100 text-gray-700 px-3 py-1.5 rounded hover:bg-gray-200"
-              >
-                Grades
-              </Link>
+      <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
+        {courses.map((course, index) => (
+          <Card key={course.id} className="section-card">
+            <div className="flex h-full flex-col">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                    Course {String(index + 1).padStart(2, '0')}
+                  </p>
+                  <h3 className="mt-3 text-lg font-semibold tracking-tight text-slate-950">{course.name}</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-500">{course.code || 'Iqra University course workspace'}</p>
+                </div>
+                <div className="rounded-2xl bg-slate-100 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                  CR
+                </div>
+              </div>
+
+              <div className="mt-6 flex gap-3">
+                <Link
+                  href={`/assignments?course=${course.id}&name=${encodeURIComponent(course.name)}`}
+                  className="inline-flex rounded-2xl bg-slate-950 px-4 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-800"
+                >
+                  Assignments
+                </Link>
+                <Link
+                  href={`/grades?course=${course.id}&name=${encodeURIComponent(course.name)}`}
+                  className="inline-flex rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
+                >
+                  Grades
+                </Link>
+              </div>
             </div>
           </Card>
         ))}

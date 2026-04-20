@@ -1,18 +1,14 @@
-import { render, screen } from '@testing-library/react';
 import Home from './page';
 
-// Mock components
-jest.mock('@/components/OfflineIndicator', () => ({
-  OfflineIndicator: () => <div>Offline Indicator</div>,
-}));
-
-jest.mock('@/components/UpdateNotification', () => ({
-  UpdateNotification: () => <div>Update Notification</div>,
+jest.mock('next/navigation', () => ({
+  redirect: jest.fn(),
 }));
 
 describe('Desktop Home Page', () => {
-  it('renders without crashing', () => {
-    render(<Home />);
-    expect(screen.getByText(/EduPilot Desktop/i)).toBeInTheDocument();
+  it('redirects visitors to the login page', () => {
+    Home();
+
+    const { redirect } = jest.requireMock('next/navigation');
+    expect(redirect).toHaveBeenCalledWith('/login');
   });
 });
