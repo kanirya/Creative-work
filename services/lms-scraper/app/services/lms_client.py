@@ -15,8 +15,12 @@ import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+from urllib.parse import unquote, urlparse
 
+import httpx
 from playwright.async_api import BrowserContext, Page
+
+from app.services.lms_auth import LMSAuthenticationError
 
 logger = logging.getLogger(__name__)
 
@@ -59,6 +63,57 @@ class IqraLMSClient:
     def __init__(self, context: BrowserContext):
         self.ctx = context
 
+    async def _ensure_authenticated_page(self, page: Page, action: str) -> None:
+        """Reject redirects to Microsoft or LMS login pages instead of returning fake empty data."""
+        current_url = page.url.lower()
+        page_title = (await page.title()).strip().lower()
+
+        if "microsoftonline" in current_url or "/auth/oidc/" in current_url:
+            raise LMSAuthenticationError(
+                f"LMS session expired while trying to {action}. Please log in again."
+            )
+
+        if "log in to iqra university lms" in page_title or "sign in to your account" in page_title:
+            raise LMSAuthenticationError(
+                f"LMS session expired while trying to {action}. Please log in again."
+            )
+
+        login_form = await page.query_selector(
+            'input[name="loginfmt"], input[name="passwd"], form[action*="login"], button[type="submit"]'
+        )
+        if login_form:
+            heading = (await page.locator("h1").first.inner_text()).strip().lower() if await page.locator("h1").count() else ""
+            if "log in" in heading or "sign in" in heading:
+                raise LMSAuthenticationError(
+                    f"LMS session expired while trying to {action}. Please log in again."
+                )
+
+    async def download_file(self, file_url: str) -> Dict[str, Any]:
+        """Download a file from LMS using the authenticated browser session cookies."""
+        cookies = await self.ctx.cookies()
+        cookie_jar = {cookie["name"]: cookie["value"] for cookie in cookies}
+
+        async with httpx.AsyncClient(
+            follow_redirects=True,
+            cookies=cookie_jar,
+            timeout=60.0,
+        ) as client:
+            response = await client.get(file_url)
+            response.raise_for_status()
+
+        parsed = urlparse(str(response.url))
+        filename = Path(unquote(parsed.path)).name or "download"
+        content_disposition = response.headers.get("content-disposition", "")
+        match = re.search(r'filename="?([^"]+)"?', content_disposition)
+        if match:
+            filename = match.group(1)
+
+        return {
+            "content": response.content,
+            "content_type": response.headers.get("content-type", "application/octet-stream"),
+            "filename": filename,
+        }
+
     # ── Student Profile ───────────────────────────────────────────────────────
 
     async def get_profile(self) -> Dict[str, str]:
@@ -67,6 +122,7 @@ class IqraLMSClient:
         try:
             await page.goto(f"{BASE_URL}/user/profile.php", wait_until="domcontentloaded", timeout=20_000)
             await page.wait_for_timeout(500)
+            await self._ensure_authenticated_page(page, "load the profile")
 
             name_el = await page.query_selector("h1, .page-header-headings h1")
             name = (await name_el.inner_text()).strip() if name_el else ""
@@ -91,6 +147,7 @@ class IqraLMSClient:
         try:
             await page.goto(f"{BASE_URL}/my/courses.php", wait_until="networkidle", timeout=30_000)
             await page.wait_for_timeout(2_000)
+            await self._ensure_authenticated_page(page, "load courses")
 
             links = await page.query_selector_all('a[href*="/course/view.php?id="]')
             seen = set()
@@ -127,7 +184,7 @@ class IqraLMSClient:
     # ── Assignments ───────────────────────────────────────────────────────────
 
     async def get_assignments(self, course_id: int) -> List[Dict]:
-        """Get all assignments for a course — fast, no per-assignment page visits."""
+        """Get all assignments for a course with detailed submission metadata."""
         page = await self.ctx.new_page()
         assignments = []
         try:
@@ -135,6 +192,7 @@ class IqraLMSClient:
             logger.info(f"Loading course page: {url}")
             await page.goto(url, wait_until="networkidle", timeout=30_000)
             await page.wait_for_timeout(2_000)
+            await self._ensure_authenticated_page(page, f"load assignments for course {course_id}")
 
             current_url = page.url
             logger.info(f"Course page URL after load: {current_url}")
@@ -159,21 +217,22 @@ class IqraLMSClient:
             title_el = await page.query_selector("h1, .page-header-headings h1")
             course_name = (await title_el.inner_text()).strip() if title_el else f"Course {course_id}"
 
+            assignment_summaries = []
             for link in assign_links:
                 href = await link.get_attribute("href") or ""
                 m = re.search(r"id=(\d+)", href)
                 if not m:
                     continue
                 aid = int(m.group(1))
-                if aid in seen:
-                    continue
-                seen.add(aid)
                 raw = (await link.inner_text()).strip()
                 name = raw.split("\n")[0].strip()
                 if not name:
                     continue
+                if aid in seen:
+                    continue
+                seen.add(aid)
 
-                assignments.append({
+                assignment_summaries.append({
                     "id": aid,
                     "name": name,
                     "course_id": course_id,
@@ -189,6 +248,24 @@ class IqraLMSClient:
                     "description": "",
                 })
 
+            detail_page = await self.ctx.new_page()
+            try:
+                for assignment in assignment_summaries:
+                    detailed_assignment = assignment
+                    try:
+                        detailed_assignment = await self._get_assignment_detail(detail_page, assignment)
+                    except Exception as detail_error:
+                        logger.warning(
+                            "Could not load assignment detail for assignment %s in course %s: %s",
+                            assignment["id"],
+                            course_id,
+                            detail_error,
+                        )
+
+                    assignments.append(detailed_assignment)
+            finally:
+                await detail_page.close()
+
             logger.info(f"Returning {len(assignments)} assignments for course {course_id}")
             return assignments
 
@@ -202,6 +279,7 @@ class IqraLMSClient:
         """Get full details of a single assignment."""
         await page.goto(assignment["url"], wait_until="domcontentloaded", timeout=20_000)
         await page.wait_for_timeout(800)
+        await self._ensure_authenticated_page(page, f"load assignment {assignment['id']}")
 
         result = dict(assignment)
         result.update({
@@ -242,8 +320,12 @@ class IqraLMSClient:
                 file_links = await cells[1].query_selector_all("a")
                 for fl in file_links:
                     fname = (await fl.inner_text()).strip()
+                    href = await fl.get_attribute("href") or ""
                     if fname:
-                        result["submitted_files"].append(fname)
+                        result["submitted_files"].append({
+                            "name": fname,
+                            "url": href if href.startswith("http") else f"{BASE_URL}{href}",
+                        })
 
         # Description
         desc_el = await page.query_selector(".box.generalbox .no-overflow, .box.generalbox p")
@@ -259,6 +341,8 @@ class IqraLMSClient:
         result["can_submit"] = add_btn is not None
         if add_btn:
             result["submit_btn_text"] = (await add_btn.inner_text()).strip()
+        else:
+            result["submit_btn_text"] = ""
 
         return result
 
@@ -445,6 +529,7 @@ class IqraLMSClient:
                 timeout=20_000,
             )
             await page.wait_for_timeout(1_000)
+            await self._ensure_authenticated_page(page, "load grades overview")
 
             rows = await page.query_selector_all("table.generaltable tbody tr")
             for row in rows:
@@ -486,6 +571,7 @@ class IqraLMSClient:
                 timeout=20_000,
             )
             await page.wait_for_timeout(1_000)
+            await self._ensure_authenticated_page(page, f"load grades for course {course_id}")
 
             rows = await page.query_selector_all("table tr")
             for row in rows:
@@ -529,6 +615,7 @@ class IqraLMSClient:
                 timeout=20_000,
             )
             await page.wait_for_timeout(1_500)
+            await self._ensure_authenticated_page(page, "load events")
 
             event_els = await page.query_selector_all(".event")
             for el in event_els:
@@ -588,6 +675,7 @@ class IqraLMSClient:
                 timeout=20_000,
             )
             await page.wait_for_timeout(800)
+            await self._ensure_authenticated_page(page, f"load announcements for course {course_id}")
 
             forum_links = await page.query_selector_all('a[href*="/mod/forum/view.php"]')
             for link in forum_links:
@@ -597,6 +685,7 @@ class IqraLMSClient:
                     forum_url = href if href.startswith("http") else f"{BASE_URL}{href}"
                     await page.goto(forum_url, wait_until="domcontentloaded", timeout=15_000)
                     await page.wait_for_timeout(500)
+                    await self._ensure_authenticated_page(page, f"load announcement forum for course {course_id}")
 
                     rows = await page.query_selector_all("table.forumheaderlist tbody tr.discussion")
                     for row in rows:
@@ -639,6 +728,7 @@ class IqraLMSClient:
                 timeout=20_000,
             )
             await page.wait_for_timeout(500)
+            await self._ensure_authenticated_page(page, f"load attendance for course {course_id}")
 
             attend_links = await page.query_selector_all('a[href*="/mod/attendance/view.php"]')
             if not attend_links:
@@ -648,6 +738,7 @@ class IqraLMSClient:
             attend_url = href if href.startswith("http") else f"{BASE_URL}{href}"
             await page.goto(attend_url, wait_until="domcontentloaded", timeout=20_000)
             await page.wait_for_timeout(1_000)
+            await self._ensure_authenticated_page(page, f"load attendance detail for course {course_id}")
 
             records = []
             rows = await page.query_selector_all("table.generaltable tbody tr")

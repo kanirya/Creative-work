@@ -22,8 +22,10 @@ import logging
 import os
 from pathlib import Path
 from typing import Optional
+from urllib.parse import unquote, urlparse
 
-from fastapi import APIRouter, BackgroundTasks, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, BackgroundTasks, File, Form, HTTPException, Query, UploadFile
+from fastapi.responses import Response
 from pydantic import BaseModel
 
 from app.services.lms_auth import LMSAuthenticationError, get_lms_auth_service
@@ -108,6 +110,12 @@ def serialize(obj):
     if isinstance(obj, list):
         return [serialize(i) for i in obj]
     return obj
+
+
+def handle_lms_error(e: Exception) -> None:
+    if isinstance(e, LMSAuthenticationError):
+        raise HTTPException(status_code=401, detail=str(e))
+    raise HTTPException(status_code=500, detail=str(e))
 
 
 # ── Login endpoints ───────────────────────────────────────────────────────────
@@ -284,7 +292,7 @@ async def get_profile():
     try:
         return serialize(await client.get_profile())
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        handle_lms_error(e)
     finally:
         await close_client_resources(client.ctx)
 
@@ -295,7 +303,7 @@ async def get_courses():
     try:
         return serialize(await client.get_courses())
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        handle_lms_error(e)
     finally:
         await close_client_resources(client.ctx)
 
@@ -315,7 +323,7 @@ async def get_all_assignments():
                 logger.warning(f"Could not get assignments for course {course['id']}: {e}")
         return serialize(all_assignments)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        handle_lms_error(e)
     finally:
         await close_client_resources(client.ctx)
 
@@ -327,7 +335,7 @@ async def get_assignments(course_id: int):
     try:
         return serialize(await client.get_assignments(course_id))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        handle_lms_error(e)
     finally:
         await close_client_resources(client.ctx)
 
@@ -338,7 +346,7 @@ async def get_grades_overview():
     try:
         return serialize(await client.get_grades_overview())
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        handle_lms_error(e)
     finally:
         await close_client_resources(client.ctx)
 
@@ -349,7 +357,7 @@ async def get_course_grades(course_id: int):
     try:
         return serialize(await client.get_course_grades(course_id))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        handle_lms_error(e)
     finally:
         await close_client_resources(client.ctx)
 
@@ -360,7 +368,7 @@ async def get_upcoming_events():
     try:
         return serialize(await client.get_upcoming_events())
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        handle_lms_error(e)
     finally:
         await close_client_resources(client.ctx)
 
@@ -371,7 +379,7 @@ async def get_announcements(course_id: int):
     try:
         return serialize(await client.get_announcements(course_id))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        handle_lms_error(e)
     finally:
         await close_client_resources(client.ctx)
 
@@ -382,7 +390,7 @@ async def get_attendance(course_id: int):
     try:
         return serialize(await client.get_attendance(course_id))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        handle_lms_error(e)
     finally:
         await close_client_resources(client.ctx)
 
@@ -421,6 +429,34 @@ async def submit_assignment(
             tmp_path.unlink()
 
 
+@router.get("/files/download")
+async def download_file(
+    url: str = Query(..., description="Absolute LMS file URL"),
+):
+    client = await get_client()
+    try:
+        normalized_url = unquote(url).strip()
+        parsed = urlparse(normalized_url)
+
+        if parsed.scheme not in {"http", "https"} or parsed.netloc != "lms.iqra.edu.pk":
+            raise HTTPException(status_code=400, detail="Only Iqra LMS file URLs are allowed")
+
+        file_result = await client.download_file(normalized_url)
+        return Response(
+            content=file_result["content"],
+            media_type=file_result["content_type"],
+            headers={
+                "Content-Disposition": f'attachment; filename="{file_result["filename"]}"',
+            },
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        await close_client_resources(client.ctx)
+
+
 @router.get("/scrape/all")
 async def scrape_all():
     client = await get_client()
@@ -429,4 +465,4 @@ async def scrape_all():
         return serialize(data)
     except Exception as e:
         logger.error(f"Full scrape error: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=str(e))
+        handle_lms_error(e)

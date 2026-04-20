@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Card } from '@edupilot/ui';
 import { lmsApi, LMSGrade, LMSCourseGrade } from '@/lib/lms-api';
 
-export default function GradesPage() {
+function GradesContent() {
+  const router = useRouter();
   const params = useSearchParams();
   const courseId = Number(params.get('course') || 0);
   const courseName = params.get('name') || '';
@@ -25,80 +26,105 @@ export default function GradesPage() {
         setOverview(ov);
         setDetail(det);
       } catch (e: any) {
+        if (e?.message?.includes('Please log in again')) {
+          router.push('/login');
+          return;
+        }
         setError(e.message);
       } finally {
         setLoading(false);
       }
     };
-    load();
-  }, [courseId]);
 
-  const gradeColor = (g: number | null) => {
-    if (g === null) return 'text-gray-400';
-    if (g >= 80) return 'text-green-600';
-    if (g >= 60) return 'text-yellow-600';
-    return 'text-red-600';
+    load();
+  }, [courseId, router]);
+
+  const gradeTone = (grade: number | null) => {
+    if (grade === null) return 'text-slate-400';
+    if (grade >= 80) return 'text-emerald-600';
+    if (grade >= 60) return 'text-amber-600';
+    return 'text-rose-600';
   };
 
-  if (loading) return <div className="p-8 text-gray-600">Loading grades...</div>;
-  if (error) return <div className="p-8 text-red-600">Error: {error}</div>;
+  if (loading) {
+    return <div className="app-page text-sm text-slate-500">Loading grade reports...</div>;
+  }
+
+  if (error) {
+    return <div className="app-page text-sm text-red-600">Error: {error}</div>;
+  }
 
   return (
-    <div className="p-8 space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Grades</h1>
-        {courseName && <p className="text-gray-600 mt-1 text-sm">{decodeURIComponent(courseName)}</p>}
+    <div className="app-page space-y-8">
+      <div className="page-header">
+        <div>
+          <h1 className="page-title">Grades</h1>
+          {courseName && (
+            <p className="page-subtitle">{decodeURIComponent(courseName)}</p>
+          )}
+        </div>
       </div>
 
-      {/* Overview */}
-      <section>
-        <h2 className="text-xl font-semibold text-gray-900 mb-3">All Courses</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {overview.filter(g => g.course_name).map((g, i) => (
-            <Card key={i} className="p-4 flex items-center justify-between">
-              <p className="text-sm text-gray-700 flex-1 pr-4">{g.course_name}</p>
-              <span className={`text-xl font-bold ${gradeColor(g.grade)}`}>
-                {g.grade !== null ? `${g.grade}%` : '-'}
-              </span>
-            </Card>
-          ))}
-        </div>
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {overview.filter((g) => g.course_name).map((grade, index) => (
+          <Card key={`${grade.course_id}-${index}`} className="section-card">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Overview</p>
+                <p className="mt-3 text-sm leading-7 text-slate-700">{grade.course_name}</p>
+              </div>
+              <p className={`text-3xl font-semibold tracking-tight ${gradeTone(grade.grade)}`}>
+                {grade.grade !== null ? `${grade.grade}%` : '--'}
+              </p>
+            </div>
+          </Card>
+        ))}
       </section>
 
-      {/* Detailed breakdown */}
       {detail.length > 0 && (
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">Grade Breakdown</h2>
-          <Card className="overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50">
+        <section className="section-card overflow-hidden">
+          <div className="border-b border-slate-200/80 px-7 py-5">
+            <h2 className="text-xl font-semibold tracking-tight text-slate-950">Grade breakdown</h2>
+            <p className="mt-1 text-sm text-slate-500">Detailed items from the selected course.</p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead className="bg-slate-50/90 text-left text-slate-500">
                 <tr>
-                  <th className="text-left p-3 text-gray-600 font-medium">Item</th>
-                  <th className="text-right p-3 text-gray-600 font-medium">Grade</th>
-                  <th className="text-right p-3 text-gray-600 font-medium">Max</th>
-                  <th className="text-right p-3 text-gray-600 font-medium">%</th>
+                  <th className="px-7 py-4 font-medium">Item</th>
+                  <th className="px-7 py-4 text-right font-medium">Grade</th>
+                  <th className="px-7 py-4 text-right font-medium">Max</th>
+                  <th className="px-7 py-4 text-right font-medium">Percent</th>
                 </tr>
               </thead>
               <tbody>
-                {detail.map((g, i) => (
-                  <tr key={i} className="border-t border-gray-100 hover:bg-gray-50">
-                    <td className="p-3 text-gray-800">{g.item_name}</td>
-                    <td className={`p-3 text-right font-medium ${gradeColor(g.grade)}`}>
-                      {g.grade !== null ? g.grade : '-'}
+                {detail.map((item, index) => (
+                  <tr key={`${item.item_name}-${index}`} className="border-t border-slate-200/70">
+                    <td className="px-7 py-4 text-slate-800">{item.item_name}</td>
+                    <td className={`px-7 py-4 text-right font-medium ${gradeTone(item.grade)}`}>
+                      {item.grade !== null ? item.grade : '--'}
                     </td>
-                    <td className="p-3 text-right text-gray-500">
-                      {g.max_grade !== null ? g.max_grade : '-'}
+                    <td className="px-7 py-4 text-right text-slate-500">
+                      {item.max_grade !== null ? item.max_grade : '--'}
                     </td>
-                    <td className={`p-3 text-right font-medium ${gradeColor(g.percentage)}`}>
-                      {g.percentage !== null ? `${g.percentage}%` : '-'}
+                    <td className={`px-7 py-4 text-right font-medium ${gradeTone(item.percentage)}`}>
+                      {item.percentage !== null ? `${item.percentage}%` : '--'}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </Card>
+          </div>
         </section>
       )}
     </div>
+  );
+}
+
+export default function GradesPage() {
+  return (
+    <Suspense fallback={<div className="app-page text-sm text-slate-500">Loading grade reports...</div>}>
+      <GradesContent />
+    </Suspense>
   );
 }
