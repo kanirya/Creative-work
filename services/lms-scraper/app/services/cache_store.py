@@ -2,6 +2,7 @@ import json
 import logging
 from datetime import datetime, timedelta, timezone
 from typing import Any, Optional
+from urllib.parse import urlparse
 
 try:
     import psycopg2
@@ -30,17 +31,48 @@ class CacheStore:
         if psycopg2 is None or not settings.database_url:
             return None
         if self._conn is None or self._conn.closed:
-            self._conn = psycopg2.connect(
-                settings.database_url,
-                cursor_factory=psycopg2.extras.RealDictCursor,
-            )
+            try:
+                self._conn = psycopg2.connect(
+                    settings.database_url,
+                    cursor_factory=psycopg2.extras.RealDictCursor,
+                )
+            except Exception:
+                logger.exception("PostgreSQL cache connection failed. Continuing without PostgreSQL cache.")
+                self._conn = None
         return self._conn
 
     async def _get_redis(self) -> Optional[Redis]:
         if Redis is None or not settings.redis_url:
             return None
         if self._redis is None:
-            self._redis = Redis.from_url(settings.redis_url, decode_responses=True)
+            try:
+                normalized_url = settings.redis_url.strip()
+                parsed = urlparse(normalized_url)
+
+                if parsed.scheme and parsed.scheme.startswith("redis"):
+                    host = (parsed.hostname or "localhost").strip()
+                    port = parsed.port or 6379
+                    db = int((parsed.path or "/0").strip("/ ") or "0")
+                    password = parsed.password
+                    self._redis = Redis(
+                        host=host,
+                        port=port,
+                        db=db,
+                        password=password,
+                        decode_responses=True,
+                    )
+                else:
+                    host_port = normalized_url.replace("redis://", "").strip().strip("/")
+                    host, _, port_str = host_port.partition(":")
+                    port = int((port_str or "6379").strip())
+                    self._redis = Redis(
+                        host=(host or "localhost").strip(),
+                        port=port,
+                        decode_responses=True,
+                    )
+            except Exception:
+                logger.exception("Redis configuration is invalid. Falling back to PostgreSQL cache only.")
+                self._redis = None
         return self._redis
 
     def _ensure_db(self) -> None:
@@ -87,6 +119,7 @@ class CacheStore:
                     return json.loads(cached)
             except Exception:
                 logger.exception("Redis read failed for cache key %s", cache_key)
+                self._redis = None
 
         conn = self._get_conn()
         if conn is None:
@@ -119,6 +152,7 @@ class CacheStore:
                 await redis.set(cache_key, json.dumps(payload, default=self._json_default), ex=ttl_seconds)
             except Exception:
                 logger.exception("Redis write failed for cache key %s", cache_key)
+                self._redis = None
 
         conn = self._get_conn()
         if conn is None:
@@ -156,6 +190,7 @@ class CacheStore:
                     await redis.delete(*keys)
             except Exception:
                 logger.exception("Redis cache invalidation failed for prefix %s", prefix)
+                self._redis = None
 
         conn = self._get_conn()
         if conn is None:

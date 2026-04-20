@@ -83,14 +83,14 @@ export default function LoginPage() {
   useEffect(() => () => stopPolling(), []);
 
   return (
-    <div className="relative min-h-screen overflow-hidden px-6 py-10 md:px-10">
+    <div className="relative min-h-screen overflow-hidden px-4 py-5 md:px-6 md:py-6 lg:px-10 lg:py-10">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-[-8rem] top-[-10rem] h-80 w-80 rounded-full bg-white blur-3xl" />
         <div className="absolute right-[-7rem] top-24 h-72 w-72 rounded-full bg-slate-200/55 blur-3xl" />
       </div>
 
-      <div className="relative mx-auto grid min-h-[calc(100vh-5rem)] max-w-7xl gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-        <section className="flex flex-col justify-between rounded-[40px] border border-white/70 bg-white/72 p-8 shadow-[0_20px_70px_rgba(15,23,42,0.08)] backdrop-blur-2xl md:p-12">
+      <div className="relative mx-auto grid min-h-[calc(100vh-2.5rem)] max-w-7xl items-center gap-6 lg:min-h-[calc(100vh-5rem)] lg:grid-cols-[1.05fr_0.95fr] lg:gap-8">
+        <section className="hidden rounded-[40px] border border-white/70 bg-white/72 p-8 shadow-[0_20px_70px_rgba(15,23,42,0.08)] backdrop-blur-2xl lg:flex lg:flex-col lg:justify-between lg:p-10 xl:p-12">
           <div>
             <div className="inline-flex items-center rounded-full border border-slate-200 bg-white/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
               EduPilot desktop
@@ -106,7 +106,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <div className="mt-12 grid gap-4 md:grid-cols-3">
+          <div className="mt-10 grid gap-4 xl:grid-cols-3">
             {[
               ['Direct LMS Sync', 'Connect courses and assignments through the live Iqra LMS session.'],
               ['Submission Ready', 'Upload assignment files and review submitted documents from the same workspace.'],
@@ -120,12 +120,12 @@ export default function LoginPage() {
           </div>
         </section>
 
-        <div className="flex items-center">
-          <Card className="w-full rounded-[36px] border-white/80 bg-white/88 shadow-[0_18px_60px_rgba(15,23,42,0.09)]">
-            <div className="space-y-8">
+        <div className="flex items-center justify-center">
+          <Card className="w-full max-w-2xl rounded-[30px] border-white/80 bg-white/88 shadow-[0_18px_60px_rgba(15,23,42,0.09)] md:rounded-[36px]">
+            <div className="space-y-6 md:space-y-7">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Sign in</p>
-                <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950">Connect your LMS</h2>
+                <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-950 md:text-3xl">Connect your LMS</h2>
                 <p className="mt-2 text-sm leading-7 text-slate-500">
                   Use your Microsoft 365 university account to start a live LMS session.
                 </p>
@@ -182,7 +182,7 @@ export default function LoginPage() {
                   <Button
                     type="submit"
                     variant="primary"
-                    className="w-full justify-center"
+                    className="mt-1 w-full justify-center"
                     disabled={status === 'logging_in'}
                   >
                     {status === 'logging_in' ? 'Connecting to Microsoft...' : 'Connect to Iqra LMS'}
@@ -190,7 +190,7 @@ export default function LoginPage() {
                 </form>
               )}
 
-              <div className="flex items-center justify-between rounded-[24px] border border-slate-200/80 bg-slate-50/80 px-4 py-3 text-xs text-slate-500">
+              <div className="flex flex-col gap-2 rounded-[24px] border border-slate-200/80 bg-slate-50/80 px-4 py-3 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
                 <span>Secure browser-based Microsoft flow</span>
                 <span className="font-medium text-slate-700">White minimal UI refresh in progress</span>
               </div>
