@@ -5,6 +5,7 @@ using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace EduPilot.Infrastructure.Services;
 
@@ -47,7 +48,7 @@ public class QueryProcessorHttpClient : IQueryProcessor
             {
                 student_id = request.StudentId.ToString(),
                 query = request.Query,
-                query_type = request.Type.ToString().ToLower()
+                type = request.Type.ToString().ToLower()
             }, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
@@ -67,10 +68,10 @@ public class QueryProcessorHttpClient : IQueryProcessor
             {
                 Success = true,
                 Answer = result.Answer,
-                ConfidenceScore = result.ConfidenceScore,
+                ConfidenceScore = result.Confidence,
                 Sources = result.Sources.Select(s => new SourceCitation
                 {
-                    DocumentType = s.DocumentType,
+                    DocumentType = s.SourceType,
                     Title = s.Title,
                     Excerpt = s.Excerpt,
                     Url = s.Url
@@ -143,10 +144,10 @@ public class QueryProcessorHttpClient : IQueryProcessor
             {
                 Success = true,
                 Answer = result.Answer,
-                ConfidenceScore = result.ConfidenceScore,
+                ConfidenceScore = result.Confidence,
                 Sources = result.Sources.Select(s => new SourceCitation
                 {
-                    DocumentType = s.DocumentType,
+                    DocumentType = s.SourceType,
                     Title = s.Title,
                     Excerpt = s.Excerpt,
                     Url = s.Url
@@ -166,16 +167,28 @@ public class QueryProcessorHttpClient : IQueryProcessor
 
     private class AgentServiceResponse
     {
+        [JsonPropertyName("answer")]
         public string Answer { get; set; } = string.Empty;
-        public float ConfidenceScore { get; set; }
+
+        [JsonPropertyName("confidence")]
+        public float Confidence { get; set; }
+
+        [JsonPropertyName("sources")]
         public List<AgentSourceCitation> Sources { get; set; } = new();
     }
 
     private class AgentSourceCitation
     {
-        public string DocumentType { get; set; } = string.Empty;
+        [JsonPropertyName("source_type")]
+        public string SourceType { get; set; } = string.Empty;
+
+        [JsonPropertyName("title")]
         public string Title { get; set; } = string.Empty;
+
+        [JsonPropertyName("excerpt")]
         public string Excerpt { get; set; } = string.Empty;
+
+        [JsonPropertyName("url")]
         public string? Url { get; set; }
     }
 }

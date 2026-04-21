@@ -4,7 +4,7 @@
   "description": "EduPilot Desktop Application",
   "main": "main/index.js",
   "scripts": {
-    "dev": "concurrently \"next dev\" \"electron .\"",
+    "dev": "concurrently \"next dev -p 3002\" \"electron .\"",
     "build": "next build && electron-builder",
     "build:win": "next build && electron-builder --win",
     "build:mac": "next build && electron-builder --mac",

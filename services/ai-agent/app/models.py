@@ -16,6 +16,7 @@ class SourceCitation(BaseModel):
     title: str = Field(..., description="Title of the source")
     excerpt: str = Field(..., description="Relevant excerpt from the source")
     similarity_score: float = Field(..., ge=0.0, le=1.0, description="Similarity score")
+    url: Optional[str] = Field(None, description="Optional LMS or storage URL for the source")
 
 
 class QueryResponse(BaseModel):

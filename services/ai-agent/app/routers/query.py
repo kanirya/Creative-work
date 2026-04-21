@@ -7,8 +7,7 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.post("/process", response_model=QueryResponse)
-async def process_query(request: Request, query_request: QueryRequest):
+async def _handle_query(request: Request, query_request: QueryRequest):
     """
     Process a natural language query using RAG
     """
@@ -30,3 +29,13 @@ async def process_query(request: Request, query_request: QueryRequest):
     except Exception as e:
         logger_adapter.error(f"Error processing query: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail="Failed to process query")
+
+
+@router.post("", response_model=QueryResponse)
+async def process_query(request: Request, query_request: QueryRequest):
+    return await _handle_query(request, query_request)
+
+
+@router.post("/process", response_model=QueryResponse)
+async def process_query_legacy(request: Request, query_request: QueryRequest):
+    return await _handle_query(request, query_request)

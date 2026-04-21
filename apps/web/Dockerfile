@@ -13,6 +13,9 @@ COPY tsconfig.json .eslintrc.json .prettierrc* ./
 COPY apps/web ./apps/web
 COPY packages ./packages
 
+# Remove copied local build artifacts so Docker builds from current source.
+RUN rm -rf apps/web/.next apps/web/node_modules
+
 # Create public directory if it doesn't exist
 RUN mkdir -p apps/web/public
 

@@ -77,6 +77,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 
 # Include routers
+app.include_router(query.router, prefix="/query", tags=["Query Processing"])
 app.include_router(query.router, prefix="/api/query", tags=["Query Processing"])
 
 

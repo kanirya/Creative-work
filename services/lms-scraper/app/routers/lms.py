@@ -31,6 +31,7 @@ from pydantic import BaseModel
 from app.services.lms_auth import LMSAuthenticationError, get_lms_auth_service
 from app.services.cache_store import get_cache_store
 from app.services.lms_client import IqraLMSClient
+from app.services.query_service import get_lms_query_service
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -48,6 +49,11 @@ _login_state: dict = {
 class LoginRequest(BaseModel):
     email: str
     password: str
+
+
+class QueryRequest(BaseModel):
+    query: str
+    type: str = "text"
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -514,3 +520,18 @@ async def scrape_all():
     except Exception as e:
         logger.error(f"Full scrape error: {e}", exc_info=True)
         handle_lms_error(e)
+
+
+@router.post("/query")
+async def query_lms_ai(request: QueryRequest):
+    if not request.query.strip():
+        raise HTTPException(status_code=400, detail="Query is required")
+
+    try:
+        query_service = get_lms_query_service()
+        return await query_service.process_query(request.query.strip())
+    except RuntimeError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error("LMS AI query error: %s", e, exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to process AI query")

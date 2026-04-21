@@ -13,6 +13,7 @@ prometheus-client==0.19.0
 langchain-openai==0.0.5
 langchain==0.1.4
 msal==1.28.0
+python-multipart==0.0.9
 # Testing
 pytest==7.4.0
 pytest-asyncio==0.23.0

@@ -16,6 +16,8 @@ volumes:
     driver: local
   redis-data:
     driver: local
+  lms-session-data:
+    driver: local
 
 services:
   # Database Services
@@ -144,14 +146,19 @@ services:
       - REDIS_URL=${REDIS_URL:-redis://redis:6379}
       - API_GATEWAY_URL=http://api-gateway:8080
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - AI_PROVIDER=${AI_PROVIDER:-openai}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.5-flash}
       - LMS_BASE_URL=https://lms.iqra.edu.pk
       - MS_EMAIL=${MS_EMAIL}
       - MS_PASSWORD=${MS_PASSWORD}
-      - SESSION_STORAGE_PATH=/tmp/moodle_session.json
+      - SESSION_STORAGE_PATH=/data/moodle_session.json
       - SCRAPE_INTERVAL_HOURS=${SCRAPE_INTERVAL_HOURS:-6}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
     ports:
       - "8002:8002"
+    volumes:
+      - lms-session-data:/data
     depends_on:
       postgres:
         condition: service_healthy

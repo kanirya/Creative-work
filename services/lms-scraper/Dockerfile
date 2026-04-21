@@ -1,6 +1,7 @@
-FROM python:3.11-slim
+FROM python:3.11-bookworm
 
 WORKDIR /app
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
 # Install system dependencies including Playwright dependencies
 RUN apt-get update && apt-get install -y \
@@ -19,7 +20,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN playwright install-deps chromium && playwright install chromium
 
 # Create non-root user for security
-RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
+RUN useradd -m -u 1000 appuser && \
+    mkdir -p /ms-playwright && \
+    chown -R appuser:appuser /app /ms-playwright
 
 # Copy application code
 COPY app/ ./app/

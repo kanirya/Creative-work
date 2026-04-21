@@ -88,6 +88,18 @@ export interface LMSAnnouncement {
   url: string;
 }
 
+export interface LMSQuerySource {
+  title: string;
+  source_type: string;
+  url?: string | null;
+}
+
+export interface LMSQueryResponse {
+  answer: string;
+  confidence: number;
+  sources: LMSQuerySource[];
+}
+
 export interface LMSScrapeAll {
   profile: LMSProfile;
   courses: LMSCourse[];
@@ -147,6 +159,12 @@ export const lmsApi = {
     ),
 
   scrapeAll: () => lmsFetch<LMSScrapeAll>('/scrape/all'),
+
+  queryAI: (query: string, type: 'text' | 'voice' = 'text') =>
+    lmsFetch<LMSQueryResponse>('/query', {
+      method: 'POST',
+      body: JSON.stringify({ query, type }),
+    }),
 
   submitAssignment: async (
     assignmentId: number,

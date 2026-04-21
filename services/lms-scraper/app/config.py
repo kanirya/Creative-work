@@ -34,6 +34,11 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
     embedding_model: str = "text-embedding-3-small"
 
+    # AI provider
+    ai_provider: str = "openai"
+    gemini_api_key: str = ""
+    gemini_model: str = "gemini-2.5-flash"
+
     class Config:
         env_file = ".env"
         case_sensitive = False
