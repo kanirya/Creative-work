@@ -38,6 +38,8 @@ class Settings(BaseSettings):
     ai_provider: str = "openai"
     gemini_api_key: str = ""
     gemini_model: str = "gemini-2.5-flash"
+    deepseek_api_key: str = ""
+    deepseek_model: str = "deepseek-chat"
 
     class Config:
         env_file = ".env"

@@ -141,14 +141,21 @@ services:
       dockerfile: Dockerfile
     container_name: edupilot-lms-scraper
     restart: unless-stopped
+    user: "0:0"
+    command:
+      - /bin/sh
+      - -lc
+      - chown -R appuser:appuser /data /app /ms-playwright && exec su appuser -s /bin/sh -c "uvicorn app.main:app --host 0.0.0.0 --port 8002"
     environment:
       - DATABASE_URL=${DATABASE_URL:-postgresql://edupilot:password@postgres:5432/edupilot}
       - REDIS_URL=${REDIS_URL:-redis://redis:6379}
       - API_GATEWAY_URL=http://api-gateway:8080
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - AI_PROVIDER=${AI_PROVIDER:-openai}
+      - AI_PROVIDER=${AI_PROVIDER:-deepseek}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.5-flash}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - DEEPSEEK_MODEL=${DEEPSEEK_MODEL:-deepseek-chat}
       - LMS_BASE_URL=https://lms.iqra.edu.pk
       - MS_EMAIL=${MS_EMAIL}
       - MS_PASSWORD=${MS_PASSWORD}

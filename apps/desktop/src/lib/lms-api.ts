@@ -100,6 +100,12 @@ export interface LMSQueryResponse {
   sources: LMSQuerySource[];
 }
 
+export interface LMSRuntimeAIOptions {
+  ai_provider?: 'gemini' | 'openai' | 'deepseek';
+  api_key?: string;
+  model?: string;
+}
+
 export interface LMSScrapeAll {
   profile: LMSProfile;
   courses: LMSCourse[];
@@ -160,10 +166,14 @@ export const lmsApi = {
 
   scrapeAll: () => lmsFetch<LMSScrapeAll>('/scrape/all'),
 
-  queryAI: (query: string, type: 'text' | 'voice' = 'text') =>
+  queryAI: (
+    query: string,
+    type: 'text' | 'voice' = 'text',
+    aiOptions?: LMSRuntimeAIOptions
+  ) =>
     lmsFetch<LMSQueryResponse>('/query', {
       method: 'POST',
-      body: JSON.stringify({ query, type }),
+      body: JSON.stringify({ query, type, ...aiOptions }),
     }),
 
   submitAssignment: async (

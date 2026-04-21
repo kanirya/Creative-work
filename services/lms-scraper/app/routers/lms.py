@@ -54,6 +54,9 @@ class LoginRequest(BaseModel):
 class QueryRequest(BaseModel):
     query: str
     type: str = "text"
+    ai_provider: Optional[str] = None
+    api_key: Optional[str] = None
+    model: Optional[str] = None
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -529,7 +532,12 @@ async def query_lms_ai(request: QueryRequest):
 
     try:
         query_service = get_lms_query_service()
-        return await query_service.process_query(request.query.strip())
+        return await query_service.process_query(
+            request.query.strip(),
+            ai_provider=request.ai_provider,
+            api_key=request.api_key,
+            model=request.model,
+        )
     except RuntimeError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:

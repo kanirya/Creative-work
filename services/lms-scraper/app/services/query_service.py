@@ -21,7 +21,7 @@ settings = get_settings()
 class LMSQueryService:
     def __init__(self) -> None:
         self._cache = get_cache_store()
-        self._provider = (settings.ai_provider or "openai").strip().lower()
+        self._provider = (settings.ai_provider or "deepseek").strip().lower()
         self._openai_llm = None
 
         if self._provider == "gemini":
@@ -35,10 +35,16 @@ class LMSQueryService:
                 openai_api_key=settings.openai_api_key,
             )
 
-    async def process_query(self, query: str) -> Dict[str, Any]:
+    async def process_query(
+        self,
+        query: str,
+        ai_provider: str | None = None,
+        api_key: str | None = None,
+        model: str | None = None,
+    ) -> Dict[str, Any]:
         academic_data = await self._load_academic_data()
         context, sources = self._build_context(academic_data)
-        answer = await self._generate_answer(query, context)
+        answer = await self._generate_answer(query, context, ai_provider, api_key, model)
         confidence = self._estimate_confidence(sources)
 
         return {
@@ -152,18 +158,6 @@ class LMSQueryService:
                 f"Email: {profile.get('email', '')}\n"
             )
 
-        courses = data.get("courses") or []
-        if courses:
-            lines = []
-            for course in courses[:20]:
-                lines.append(f"- {course.get('name', 'Unknown')} ({course.get('code', 'No code')})")
-                sources.append({
-                    "title": course.get("name", "Course"),
-                    "source_type": "course",
-                    "url": course.get("url"),
-                })
-            context_parts.append("[Courses]\n" + "\n".join(lines))
-
         assignments = data.get("assignments") or []
         if assignments:
             lines = []
@@ -182,6 +176,18 @@ class LMSQueryService:
                     "url": assignment.get("url"),
                 })
             context_parts.append("[Assignments]\n" + "\n".join(lines))
+
+        courses = data.get("courses") or []
+        if courses:
+            lines = []
+            for course in courses[:20]:
+                lines.append(f"- {course.get('name', 'Unknown')} ({course.get('code', 'No code')})")
+                sources.append({
+                    "title": course.get("name", "Course"),
+                    "source_type": "course",
+                    "url": course.get("url"),
+                })
+            context_parts.append("[Courses]\n" + "\n".join(lines))
 
         grades = data.get("grades") or []
         if grades:
@@ -214,7 +220,14 @@ class LMSQueryService:
 
         return "\n\n".join(context_parts), self._dedupe_sources(sources)
 
-    async def _generate_answer(self, query: str, context: str) -> str:
+    async def _generate_answer(
+        self,
+        query: str,
+        context: str,
+        ai_provider: str | None = None,
+        api_key: str | None = None,
+        model: str | None = None,
+    ) -> str:
         system_prompt = """You are EduPilot AI, a university study copilot.
 
 You should behave like a polished academic chat assistant:
@@ -223,7 +236,9 @@ You should behave like a polished academic chat assistant:
 - if context is missing, say that directly
 - be precise with dates, deadlines, grades, and submission states
 - do not invent policies or marks
-- when helpful, mention the relevant assignment, course, or event names naturally"""
+- when helpful, mention the relevant assignment, course, or event names naturally
+- if assignment records exist but due dates are missing, say due dates are unavailable instead of claiming there is no assignment data
+- treat the Assignments section as authoritative for submission status, grading status, can_submit, and assignment presence"""
 
         user_prompt = (
             f"LMS context:\n{context}\n\n"
@@ -231,28 +246,56 @@ You should behave like a polished academic chat assistant:
             "Answer like a professional AI study assistant. Keep it useful and direct."
         )
 
-        if self._provider == "gemini":
-            if not settings.gemini_api_key:
-                raise RuntimeError("Gemini API key is not configured for LMS AI chat")
-            return await self._generate_gemini_answer(system_prompt, user_prompt)
+        provider = (ai_provider or self._provider or "deepseek").strip().lower()
 
-        if self._openai_llm is None:
+        if provider == "gemini":
+            gemini_key = (api_key or settings.gemini_api_key).strip()
+            gemini_model = (model or settings.gemini_model or "gemini-2.5-flash-lite").strip()
+            if not gemini_key:
+                raise RuntimeError("Gemini API key is not configured for LMS AI chat")
+            return await self._generate_gemini_answer(system_prompt, user_prompt, gemini_key, gemini_model)
+
+        if provider == "deepseek":
+            deepseek_key = (api_key or settings.deepseek_api_key).strip()
+            deepseek_model = (model or settings.deepseek_model or "deepseek-chat").strip()
+            if not deepseek_key:
+                raise RuntimeError("DeepSeek API key is not configured for LMS AI chat")
+            return await self._generate_deepseek_answer(system_prompt, user_prompt, deepseek_key, deepseek_model)
+
+        openai_key = (api_key or settings.openai_api_key).strip()
+        openai_model = (model or "gpt-4.1-mini").strip()
+        if not openai_key:
             raise RuntimeError("OpenAI API key is not configured for LMS AI chat")
 
-        response = await self._openai_llm.ainvoke([
+        llm = self._openai_llm
+        if llm is None or api_key or model:
+            llm = ChatOpenAI(
+                model=openai_model,
+                temperature=0.2,
+                max_tokens=1200,
+                openai_api_key=openai_key,
+            )
+
+        response = await llm.ainvoke([
             SystemMessage(content=system_prompt),
             HumanMessage(content=user_prompt),
         ])
         return response.content
 
-    async def _generate_gemini_answer(self, system_prompt: str, user_prompt: str) -> str:
+    async def _generate_gemini_answer(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        api_key: str,
+        model_name: str,
+    ) -> str:
         payload = {
             "system_instruction": {"parts": [{"text": system_prompt}]},
             "contents": [{"role": "user", "parts": [{"text": user_prompt}]}],
             "generationConfig": {"temperature": 0.2, "maxOutputTokens": 900},
         }
-        models_to_try = [settings.gemini_model]
-        if settings.gemini_model != "gemini-2.5-flash-lite":
+        models_to_try = [model_name]
+        if model_name != "gemini-2.5-flash-lite":
             models_to_try.append("gemini-2.5-flash-lite")
 
         last_error: Exception | None = None
@@ -266,7 +309,7 @@ You should behave like a polished academic chat assistant:
                     response = await client.post(
                         endpoint,
                         headers={
-                            "x-goog-api-key": settings.gemini_api_key,
+                            "x-goog-api-key": api_key,
                             "Content-Type": "application/json",
                         },
                         json=payload,
@@ -286,6 +329,46 @@ You should behave like a polished academic chat assistant:
         if last_error is not None:
             raise RuntimeError(self._describe_gemini_error(last_error.response)) from last_error
         raise RuntimeError("Gemini did not return a response.")
+
+    async def _generate_deepseek_answer(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        api_key: str,
+        model_name: str,
+    ) -> str:
+        payload = {
+            "model": model_name,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            "temperature": 0.2,
+            "max_tokens": 900,
+            "stream": False,
+        }
+
+        async with httpx.AsyncClient(timeout=45.0) as client:
+            response = await client.post(
+                "https://api.deepseek.com/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                },
+                json=payload,
+            )
+            response.raise_for_status()
+
+        data = response.json()
+        choices = data.get("choices") or []
+        if not choices:
+            raise RuntimeError("DeepSeek returned no answer.")
+
+        message = (choices[0] or {}).get("message") or {}
+        content = (message.get("content") or "").strip()
+        if not content:
+            raise RuntimeError("DeepSeek returned an empty answer.")
+        return content
 
     def _extract_gemini_text(self, data: Dict[str, Any]) -> str:
         candidates = data.get("candidates") or []

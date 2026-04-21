@@ -1,9 +1,10 @@
 'use client';
 
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, KeyboardEvent, useMemo, useState } from 'react';
 import { Card, Button } from '@edupilot/ui';
 import { isValidQueryLength } from '@edupilot/utils';
 import { lmsApi, LMSQueryResponse } from '@/lib/lms-api';
+import { getProviderLabel, getStoredAISettings } from '@/lib/ai-settings';
 import { useOffline } from '@/lib/offline';
 
 type MessageRole = 'user' | 'assistant';
@@ -40,6 +41,7 @@ export default function QueryPage() {
     },
   ]);
   const { isOnline, queueQuery } = useOffline();
+  const activeAISettings = getStoredAISettings();
 
   const suggestions = useMemo(
     () => [
@@ -78,7 +80,12 @@ export default function QueryPage() {
     setQuery('');
 
     try {
-      const response = await lmsApi.queryAI(trimmed);
+      const aiSettings = getStoredAISettings();
+      const response = await lmsApi.queryAI(trimmed, 'text', {
+        ai_provider: aiSettings.provider,
+        api_key: aiSettings.apiKey || undefined,
+        model: aiSettings.model || undefined,
+      });
       setMessages((current) => [...current, buildAssistantMessage(response)]);
     } catch (err: any) {
       setError(err?.message || 'AI is unavailable right now.');
@@ -101,6 +108,19 @@ export default function QueryPage() {
     await submitQuery(query);
   };
 
+  const handleComposerKeyDown = async (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key !== 'Enter' || e.shiftKey) {
+      return;
+    }
+
+    e.preventDefault();
+    if (loading || !query.trim()) {
+      return;
+    }
+
+    await submitQuery(query);
+  };
+
   return (
     <div className="app-page flex min-h-[calc(100vh-2rem)] flex-col gap-5">
       <section className="section-card flex items-start justify-between gap-4 px-6 py-5">
@@ -111,8 +131,15 @@ export default function QueryPage() {
             A real OpenAI-backed chat over your live LMS session. Ask about deadlines, submissions, grades, and academic workload in natural language.
           </p>
         </div>
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-500">
-          Live LMS context
+        <div className="flex flex-col items-end gap-2">
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-500">
+            Live LMS context
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600">
+            <span className="font-semibold text-slate-800">{getProviderLabel(activeAISettings.provider)}</span>
+            <span className="mx-1.5 text-slate-300">•</span>
+            <span>{activeAISettings.model}</span>
+          </div>
         </div>
       </section>
 
@@ -135,8 +162,55 @@ export default function QueryPage() {
       )}
 
       <div className="grid min-h-0 flex-1 items-start gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
-        <Card className="section-card flex min-h-[620px] flex-col overflow-hidden">
-          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto pr-1">
+        <Card className="section-card flex min-h-[620px] flex-col overflow-hidden p-5">
+          <form onSubmit={handleSubmit} className="shrink-0 border-b border-slate-100 pb-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+              <div className="flex-1">
+                <textarea
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={handleComposerKeyDown}
+                  placeholder="Ask about assignments, grades, deadlines, course load, or what to study next..."
+                  disabled={loading}
+                  rows={3}
+                  className="min-h-[88px] w-full resize-none rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-slate-300 focus:bg-white"
+                />
+                <p className="mt-2 px-1 text-xs text-slate-400">
+                  Press <span className="font-semibold text-slate-500">Enter</span> to send. Use <span className="font-semibold text-slate-500">Shift+Enter</span> for a new line.
+                </p>
+              </div>
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={loading || !query.trim()}
+                className="h-12 w-full gap-2 rounded-[18px] px-5 shadow-[0_10px_30px_rgba(15,23,42,0.12)] sm:w-auto sm:self-end"
+              >
+                <span>{loading ? 'Thinking...' : 'Send'}</span>
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  className="h-4 w-4"
+                >
+                  <path
+                    d="M4.166 10H15.834"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M10.834 5L15.834 10L10.834 15"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </Button>
+            </div>
+          </form>
+
+          <div className="mt-5 min-h-0 flex-1 space-y-4 overflow-y-auto pr-1">
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -202,27 +276,6 @@ export default function QueryPage() {
               </div>
             )}
           </div>
-
-          <form onSubmit={handleSubmit} className="mt-5 shrink-0 border-t border-slate-100 pt-5">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-              <textarea
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Ask about assignments, grades, deadlines, course load, or what to study next..."
-                disabled={loading}
-                rows={3}
-                className="min-h-[88px] w-full flex-1 resize-none rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-slate-300 focus:bg-white"
-              />
-              <Button
-                type="submit"
-                variant="primary"
-                disabled={loading || !query.trim()}
-                className="w-full sm:w-auto sm:self-end"
-              >
-                {loading ? 'Thinking...' : 'Send'}
-              </Button>
-            </div>
-          </form>
         </Card>
 
         <Card className="section-card sticky top-6 h-fit">
