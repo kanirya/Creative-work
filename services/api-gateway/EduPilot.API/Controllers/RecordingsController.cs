@@ -13,14 +13,14 @@ namespace EduPilot.API.Controllers;
 public class RecordingsController : ControllerBase
 {
     private readonly ILogger<RecordingsController> _logger;
-    private readonly ISchedulerService _schedulerService;
+    private readonly ITranscriptionService _transcriptionService;
 
     public RecordingsController(
         ILogger<RecordingsController> logger,
-        ISchedulerService schedulerService)
+        ITranscriptionService transcriptionService)
     {
         _logger = logger;
-        _schedulerService = schedulerService;
+        _transcriptionService = transcriptionService;
     }
 
     /// <summary>
@@ -44,13 +44,10 @@ public class RecordingsController : ControllerBase
             // Trigger transcription job via scheduler
             try
             {
-                await _schedulerService.TriggerTranscriptionAsync(new TranscriptionJobRequest
-                {
-                    RecordingId = Guid.NewGuid(),
-                    AudioFileUrl = recording.RecordingFiles?.FirstOrDefault()?.DownloadUrl ?? string.Empty,
-                    Source = "zoom",
-                    Title = recording.Topic,
-                });
+                await _transcriptionService.QueueTranscriptionAsync(
+                    Guid.NewGuid(),
+                    recording.RecordingFiles?.FirstOrDefault()?.DownloadUrl ?? string.Empty
+                );
             }
             catch (Exception ex)
             {
@@ -75,13 +72,10 @@ public class RecordingsController : ControllerBase
 
         try
         {
-            await _schedulerService.TriggerTranscriptionAsync(new TranscriptionJobRequest
-            {
-                RecordingId = Guid.TryParse(payload.RecordingId, out var id) ? id : Guid.NewGuid(),
-                AudioFileUrl = payload.AudioUrl ?? string.Empty,
-                Source = "meet",
-                Title = payload.Title ?? "Google Meet Recording",
-            });
+            await _transcriptionService.QueueTranscriptionAsync(
+                Guid.TryParse(payload.RecordingId, out var id) ? id : Guid.NewGuid(),
+                payload.AudioUrl ?? string.Empty
+            );
         }
         catch (Exception ex)
         {
@@ -126,10 +120,3 @@ public class GoogleMeetWebhookPayload
     public string? MeetingId { get; set; }
 }
 
-public class TranscriptionJobRequest
-{
-    public Guid RecordingId { get; set; }
-    public string AudioFileUrl { get; set; } = string.Empty;
-    public string Source { get; set; } = string.Empty;
-    public string Title { get; set; } = string.Empty;
-}

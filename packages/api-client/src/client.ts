@@ -62,8 +62,21 @@ export class EduPilotClient {
           }
         }
 
-        return Promise.reject(error);
+        return Promise.reject(new Error(this.getErrorMessage(error)));
       }
+    );
+  }
+
+  private getErrorMessage(error: AxiosError): string {
+    const responseData = error.response?.data as
+      | { errorMessage?: string; message?: string }
+      | undefined;
+
+    return (
+      responseData?.errorMessage ||
+      responseData?.message ||
+      error.message ||
+      'An unexpected error occurred'
     );
   }
 
@@ -134,6 +147,11 @@ export class EduPilotClient {
       '/api/v1/query',
       query
     );
+
+    if (!response.data.success || !response.data.data) {
+      throw new Error(response.data.errorMessage || 'Failed to process query');
+    }
+
     return response.data.data!;
   }
 

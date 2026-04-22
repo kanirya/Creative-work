@@ -75,18 +75,16 @@ export interface AnnouncementDto {
 
 // Query
 export interface SourceCitation {
-  sourceType: 'course' | 'assignment' | 'lecture' | 'announcement';
-  sourceId: string;
+  documentType: 'course' | 'assignment' | 'lecture' | 'announcement' | string;
   title: string;
   excerpt: string;
-  similarityScore: number;
+  url?: string;
 }
 
 export interface QueryResponseDto {
   answer: string;
   sources: SourceCitation[];
-  confidence: number;
-  correlationId?: string;
+  confidenceScore: number;
 }
 
 export interface QueryRequestDto {

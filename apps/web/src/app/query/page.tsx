@@ -12,24 +12,28 @@ export default function QueryPage() {
   const [query, setQuery] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [response, setResponse] = useState<QueryResponseDto | null>(null);
+  const [errorMessage, setErrorMessage] = useState('');
   const submitQuery = useSubmitQuery();
 
   const handleTextSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!isValidQueryLength(query)) {
       alert('Please enter a valid query (1-1000 characters)');
       return;
     }
 
     try {
+      setErrorMessage('');
       const result = await submitQuery.mutateAsync({
-        query: query,
+        query,
         type: 'text',
       });
       setResponse(result);
     } catch (error) {
       console.error('Query failed:', error);
+      setResponse(null);
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to process your query. Please try again.');
     }
   };
 
@@ -39,9 +43,10 @@ export default function QueryPage() {
       return;
     }
 
-    const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+    const SpeechRecognition =
+      (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
     const recognition = new SpeechRecognition();
-    
+
     recognition.lang = 'en-US';
     recognition.continuous = false;
     recognition.interimResults = false;
@@ -56,6 +61,7 @@ export default function QueryPage() {
       setIsRecording(false);
 
       try {
+        setErrorMessage('');
         const result = await submitQuery.mutateAsync({
           query: transcript,
           type: 'voice',
@@ -63,6 +69,8 @@ export default function QueryPage() {
         setResponse(result);
       } catch (error) {
         console.error('Query failed:', error);
+        setResponse(null);
+        setErrorMessage(error instanceof Error ? error.message : 'Failed to process your query. Please try again.');
       }
     };
 
@@ -82,7 +90,6 @@ export default function QueryPage() {
     <ProtectedRoute>
       <DashboardLayout>
         <div className="max-w-4xl mx-auto space-y-6">
-          {/* Header */}
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Ask AI</h1>
             <p className="text-gray-600 mt-2">
@@ -90,7 +97,6 @@ export default function QueryPage() {
             </p>
           </div>
 
-          {/* Query Input */}
           <Card className="p-6">
             <form onSubmit={handleTextSubmit} className="space-y-4" aria-label="Query submission form">
               <div>
@@ -128,47 +134,46 @@ export default function QueryPage() {
                   disabled={submitQuery.isPending || isRecording}
                   aria-label={isRecording ? 'Recording voice input' : 'Start voice input'}
                 >
-                  {isRecording ? 'Listening...' : '🎤 Voice'}
+                  {isRecording ? 'Listening...' : 'Voice'}
                 </Button>
               </div>
             </form>
           </Card>
 
-          {/* Response Display */}
           {response && (
             <Card className="p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Response</h2>
-              
+
               <div className="prose max-w-none">
-                <p className="text-gray-800 whitespace-pre-wrap" aria-live="polite">{response.answer}</p>
+                <p className="text-gray-800 whitespace-pre-wrap" aria-live="polite">
+                  {response.answer}
+                </p>
               </div>
 
-              {/* Confidence Score */}
-              {response.confidence !== undefined && (
+              {response.confidenceScore !== undefined && (
                 <div className="mt-4 pt-4 border-t border-gray-200">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Confidence Score:</span>
                     <span className="text-sm font-medium text-gray-900">
-                      {(response.confidence * 100).toFixed(0)}%
+                      {(response.confidenceScore * 100).toFixed(0)}%
                     </span>
                   </div>
                   <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
                     <div
                       className="bg-blue-600 h-2 rounded-full transition-all"
-                      style={{ width: `${response.confidence * 100}%` }}
+                      style={{ width: `${response.confidenceScore * 100}%` }}
                     />
                   </div>
                 </div>
               )}
 
-              {/* Sources */}
               {response.sources && response.sources.length > 0 && (
                 <div className="mt-6 pt-4 border-t border-gray-200">
                   <h3 className="text-sm font-semibold text-gray-900 mb-3">Sources</h3>
                   <ul className="space-y-2">
                     {response.sources.map((source, index) => (
                       <li key={index} className="text-sm text-gray-600">
-                        <span className="font-medium text-gray-900">•</span> {source.title}
+                        <span className="font-medium text-gray-900">-</span> {source.title}
                       </li>
                     ))}
                   </ul>
@@ -177,12 +182,9 @@ export default function QueryPage() {
             </Card>
           )}
 
-          {/* Error Display */}
-          {submitQuery.isError && (
+          {errorMessage && (
             <Card className="p-6 bg-red-50 border-red-200">
-              <p className="text-red-700">
-                Failed to process your query. Please try again.
-              </p>
+              <p className="text-red-700">{errorMessage}</p>
             </Card>
           )}
         </div>

@@ -257,7 +257,9 @@ You should behave like a polished academic chat assistant:
 
         if provider == "deepseek":
             deepseek_key = (api_key or settings.deepseek_api_key).strip()
-            deepseek_model = (model or settings.deepseek_model or "deepseek-chat").strip()
+            deepseek_model = self._normalize_deepseek_model(
+                (model or settings.deepseek_model or "deepseek-chat").strip()
+            )
             if not deepseek_key:
                 raise RuntimeError("DeepSeek API key is not configured for LMS AI chat")
             return await self._generate_deepseek_answer(system_prompt, user_prompt, deepseek_key, deepseek_model)
@@ -348,27 +350,38 @@ You should behave like a polished academic chat assistant:
             "stream": False,
         }
 
+        models_to_try = [model_name]
+        if model_name not in {"deepseek-chat", "deepseek-reasoner"}:
+            models_to_try.append("deepseek-chat")
+
+        last_error: Exception | None = None
         async with httpx.AsyncClient(timeout=45.0) as client:
-            response = await client.post(
-                "https://api.deepseek.com/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {api_key}",
-                    "Content-Type": "application/json",
-                },
-                json=payload,
-            )
-            response.raise_for_status()
+            for current_model in models_to_try:
+                request_payload = {**payload, "model": current_model}
+                for attempt in range(2):
+                    response = await client.post(
+                        "https://api.deepseek.com/chat/completions",
+                        headers={
+                            "Authorization": f"Bearer {api_key}",
+                            "Content-Type": "application/json",
+                        },
+                        json=request_payload,
+                    )
+                    if response.status_code in {429, 503} and attempt == 0:
+                        await sleep(1.5)
+                        continue
+                    try:
+                        response.raise_for_status()
+                        return self._extract_deepseek_text(response.json())
+                    except httpx.HTTPStatusError as exc:
+                        last_error = exc
+                        if response.status_code not in {400, 404, 422, 429, 503}:
+                            raise RuntimeError(self._describe_deepseek_error(response)) from exc
+                        break
 
-        data = response.json()
-        choices = data.get("choices") or []
-        if not choices:
-            raise RuntimeError("DeepSeek returned no answer.")
-
-        message = (choices[0] or {}).get("message") or {}
-        content = (message.get("content") or "").strip()
-        if not content:
-            raise RuntimeError("DeepSeek returned an empty answer.")
-        return content
+        if last_error is not None:
+            raise RuntimeError(self._describe_deepseek_error(last_error.response)) from last_error
+        raise RuntimeError("DeepSeek did not return a response.")
 
     def _extract_gemini_text(self, data: Dict[str, Any]) -> str:
         candidates = data.get("candidates") or []
@@ -398,6 +411,70 @@ You should behave like a polished academic chat assistant:
         if response.status_code == 503:
             return f"Gemini is temporarily unavailable: {message}"
         return message
+
+    def _extract_deepseek_text(self, data: Dict[str, Any]) -> str:
+        choices = data.get("choices") or []
+        if not choices:
+            raise RuntimeError("DeepSeek returned no answer.")
+
+        message = (choices[0] or {}).get("message") or {}
+        content = message.get("content")
+
+        if isinstance(content, list):
+            text_parts = []
+            for part in content:
+                if isinstance(part, dict) and part.get("type") == "text" and part.get("text"):
+                    text_parts.append(str(part["text"]).strip())
+            content = "\n".join(part for part in text_parts if part)
+
+        normalized = str(content or "").strip()
+        if not normalized:
+            raise RuntimeError("DeepSeek returned an empty answer.")
+        return normalized
+
+    def _describe_deepseek_error(self, response: httpx.Response) -> str:
+        try:
+            data = response.json()
+        except ValueError:
+            return f"DeepSeek request failed with status {response.status_code}."
+
+        error = data.get("error") or {}
+        message = (
+            error.get("message")
+            or data.get("message")
+            or f"DeepSeek request failed with status {response.status_code}."
+        )
+
+        if response.status_code == 400:
+            return f"DeepSeek rejected the request: {message}"
+        if response.status_code == 401:
+            return f"DeepSeek API key is invalid or unauthorized: {message}"
+        if response.status_code == 402:
+            return f"DeepSeek account balance or billing issue: {message}"
+        if response.status_code == 404:
+            return f"DeepSeek model was not found: {message}"
+        if response.status_code == 422:
+            return f"DeepSeek could not process the request: {message}"
+        if response.status_code == 429:
+            return f"DeepSeek rate limit reached: {message}"
+        if response.status_code == 503:
+            return f"DeepSeek is temporarily unavailable: {message}"
+        return message
+
+    def _normalize_deepseek_model(self, model_name: str) -> str:
+        normalized = (model_name or "").strip().lower()
+        if not normalized:
+            return "deepseek-chat"
+
+        aliases = {
+            "deepseek-v3": "deepseek-chat",
+            "deepseek-v3.1": "deepseek-chat",
+            "deepseek-v3.2": "deepseek-chat",
+            "deepseek-r1": "deepseek-reasoner",
+            "deepseek-reasoner": "deepseek-reasoner",
+            "deepseek-chat": "deepseek-chat",
+        }
+        return aliases.get(normalized, normalized)
 
     def _estimate_confidence(self, sources: List[Dict[str, Any]]) -> float:
         if not sources:
