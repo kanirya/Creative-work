@@ -2,7 +2,7 @@
 
 import { EduPilotClient } from '@edupilot/api-client';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '/proxy';
 
 export const apiClient = new EduPilotClient({
   baseURL: API_URL,

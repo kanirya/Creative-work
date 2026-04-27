@@ -1,11 +1,4 @@
-/**
- * LMS API client for the desktop app.
- * Call the scraper service directly from the browser; it already allows CORS.
- * This avoids flaky long-running responses through the Next.js rewrite proxy.
- */
-
-const LMS_BASE =
-  (process.env.NEXT_PUBLIC_LMS_SCRAPER_URL || 'http://localhost:8002') + '/api/lms';
+const LMS_BASE = process.env.NEXT_PUBLIC_LMS_SCRAPER_URL || '/proxy/lms';
 
 async function lmsFetch<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${LMS_BASE}${path}`, {
@@ -185,8 +178,7 @@ export const lmsApi = {
     if (file) form.append('file', file);
     if (onlineText) form.append('online_text', onlineText);
 
-    const base =
-      (process.env.NEXT_PUBLIC_LMS_SCRAPER_URL || 'http://localhost:8002') + '/api/lms';
+    const base = process.env.NEXT_PUBLIC_LMS_SCRAPER_URL || '/proxy/lms';
 
     const res = await fetch(
       `${base}/assignments/${assignmentId}/submit`,

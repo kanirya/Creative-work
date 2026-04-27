@@ -40,8 +40,8 @@ export default function SettingsPage() {
       setAiProvider(defaults.provider);
       setAiModel(defaults.model);
     }
-    // Check if lms-scraper service is reachable
-    fetch('http://localhost:8002/health')
+    // Check whether the scraper is reachable through the desktop proxy.
+    fetch('/proxy/lms-health')
       .then(() => setServiceStatus('online'))
       .catch(() => setServiceStatus('offline'));
   }, []);
@@ -147,7 +147,7 @@ export default function SettingsPage() {
         <div>
           <p className="text-sm font-medium text-gray-900">LMS Scraper Service</p>
           <p className="text-xs text-gray-500">
-            {serviceStatus === 'online' ? 'Running on localhost:8002' :
+            {serviceStatus === 'online' ? 'Running through the desktop proxy' :
              serviceStatus === 'offline' ? 'Not running — start with: cd services/lms-scraper && uvicorn app.main:app --port 8002' :
              'Checking...'}
           </p>

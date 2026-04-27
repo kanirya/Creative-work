@@ -7,7 +7,7 @@ import { lmsApi, LMSAssignment, LMSCourse } from '@/lib/lms-api';
 import { AssignmentsSkeleton } from '@/components/loading-skeletons';
 
 const LMS_FILE_DOWNLOAD_BASE =
-  `${process.env.NEXT_PUBLIC_LMS_SCRAPER_URL || 'http://localhost:8002'}/api/lms/files/download?url=`;
+  `${process.env.NEXT_PUBLIC_LMS_SCRAPER_URL || '/proxy/lms'}/files/download?url=`;
 
 function AssignmentsContent() {
   const router = useRouter();
