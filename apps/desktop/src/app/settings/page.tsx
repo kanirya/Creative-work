@@ -42,7 +42,7 @@ export default function SettingsPage() {
     }
     // Check whether the scraper is reachable through the desktop proxy.
     fetch('/proxy/lms-health')
-      .then(() => setServiceStatus('online'))
+      .then((response) => setServiceStatus(response.ok ? 'online' : 'offline'))
       .catch(() => setServiceStatus('offline'));
   }, []);
 

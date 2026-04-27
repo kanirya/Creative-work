@@ -1,11 +1,28 @@
 const LMS_BASE = process.env.NEXT_PUBLIC_LMS_SCRAPER_URL || '/proxy/lms';
 
+function getServiceUnavailableMessage(path: string, status: number): string | null {
+  if (status < 500) {
+    return null;
+  }
+
+  if (path.startsWith('/login')) {
+    return 'LMS login service is unavailable right now. The scraper backend on port 8002 is not running.';
+  }
+
+  return 'LMS service is unavailable right now. The scraper backend on port 8002 is not running.';
+}
+
 async function lmsFetch<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${LMS_BASE}${path}`, {
     headers: { 'Content-Type': 'application/json' },
     ...options,
   });
   if (!res.ok) {
+    const unavailableMessage = getServiceUnavailableMessage(path, res.status);
+    if (unavailableMessage) {
+      throw new Error(unavailableMessage);
+    }
+
     const err = await res.json().catch(() => ({ detail: res.statusText }));
     throw new Error(err.detail || `LMS API error: ${res.status}`);
   }
